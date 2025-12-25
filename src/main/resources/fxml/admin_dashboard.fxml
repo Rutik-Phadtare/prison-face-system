@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.prison.controller.AdminDashboardController"
+            prefWidth="600"
+            prefHeight="400">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox spacing="10"
+              style="-fx-background-color:#2c3e50; -fx-padding:15;">
+            <Label text="Admin Dashboard"
+                   style="-fx-font-size:20px; -fx-text-fill:white;" />
+        </HBox>
+    </top>
+
+    <!-- CENTER CONTENT -->
+    <center>
+        <VBox spacing="15"
+              alignment="CENTER"
+              style="-fx-padding:20;">
+
+            <Button text="Manage Prisoners"
+                    prefWidth="200"
+                    onAction="#openPrisonerManagement"/>
+
+            <Button text="Manage Guards"
+                    prefWidth="200"
+                    onAction="#openGuardManagement"/>
+
+            <Button text="Face Recognition"
+                    prefWidth="200"
+                    onAction="#openFaceRecognition"/>
+
+        </VBox>
+    </center>
+
+    <!-- BOTTOM -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT"
+              style="-fx-padding:10;">
+            <Button text="Logout"
+                    onAction="#logout"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

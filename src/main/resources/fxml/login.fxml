@@ -1,0 +1,72 @@
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.prison.controller.LoginController">
+
+    <!-- HEADER -->
+    <top>
+        <fx:include source="header.fxml"/>
+    </top>
+
+    <!-- CENTER CONTENT -->
+    <center>
+        <HBox alignment="CENTER"
+              spacing="80"
+              style="-fx-padding: 60;">
+
+            <!-- LEFT BRANDING -->
+            <VBox spacing="20" maxWidth="420">
+                <Label text="Yerwada Central Prison"
+                       styleClass="app-title"/>
+
+                <Label text="Prison Management System"
+                       styleClass="app-subtitle"/>
+
+                <Label text="A secure platform to manage inmates, guards, and surveillance using role-based access and face recognition."
+                       wrapText="true"
+                       styleClass="text-muted"/>
+
+                <HBox spacing="15">
+                    <Label text="📁 Inmate Records"
+                           styleClass="icon-text"/>
+                    <Label text="👮 Guard Management"
+                           styleClass="icon-text"/>
+                    <Label text="📷 Face Recognition"
+                           styleClass="icon-text"/>
+                </HBox>
+            </VBox>
+
+            <!-- LOGIN CARD -->
+            <VBox spacing="18"
+                  alignment="CENTER"
+                  prefWidth="360"
+                  styleClass="login-card">
+
+                <Label text="System Login"
+                       styleClass="app-subtitle"/>
+
+                <TextField fx:id="usernameField"
+                           promptText="Username"/>
+
+                <PasswordField fx:id="passwordField"
+                               promptText="Password"/>
+
+                <Button text="Admin Login"
+                        onAction="#handleLogin"
+                        styleClass="primary-button"/>
+
+                <Button text="Co-Admin Login"
+                        onAction="#handleLogin"
+                        styleClass="secondary-button"/>
+
+            </VBox>
+
+        </HBox>
+    </center>
+
+</BorderPane>

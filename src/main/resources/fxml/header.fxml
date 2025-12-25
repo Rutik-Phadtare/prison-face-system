@@ -1,0 +1,17 @@
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<HBox xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER_LEFT"
+      spacing="15"
+      style="-fx-padding: 20;">
+
+    <Label text="🛡 Maharashtra Police"
+           styleClass="icon-text"/>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <Label text="Prison Management System"
+           styleClass="text-muted"/>
+
+</HBox>

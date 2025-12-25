@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.prison.controller.CoAdminDashboardController">
+
+    <top>
+        <Label text="Co-Admin Dashboard"
+               style="-fx-font-size:20px; -fx-padding:10;" />
+    </top>
+
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <Button text="Manage Prisoners"/>
+            <Button text="Face Recognition"/>
+        </VBox>
+    </center>
+
+</BorderPane>

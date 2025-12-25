@@ -1,0 +1,50 @@
+.root {
+    -fx-font-family: "Segoe UI";
+}
+
+/* Background placeholders */
+.bg-login {
+    -fx-background-color: linear-gradient(to bottom right, #0b1537, #1c2c5b);
+}
+.bg-dashboard {
+    -fx-background-color: linear-gradient(to bottom right, #101a3a, #1f2f66);
+}
+
+/* Text */
+.title {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: #d0d8ff;
+}
+
+/* Cards */
+.card {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 20;
+    -fx-padding: 25;
+}
+
+/* Inputs */
+.text-field, .password-field {
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+/* Buttons */
+.primary-button {
+    -fx-background-color: #ff8c1a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24;
+    -fx-background-radius: 22;
+}
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-radius: 22;
+    -fx-text-fill: white;
+}

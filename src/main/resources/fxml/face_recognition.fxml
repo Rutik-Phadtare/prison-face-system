@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" alignment="CENTER"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.prison.controller.FaceRecognitionController"
+      prefWidth="400" prefHeight="300">
+
+    <Label text="Face Recognition"
+           style="-fx-font-size:18px;" />
+
+    <Button text="Start Recognition"
+            onAction="#startRecognition"/>
+
+    <Label fx:id="resultLabel"
+           style="-fx-font-size:14px;" />
+
+</VBox>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.prison.controller.PrisonerController"
+            prefWidth="800"
+            prefHeight="600">
+
+    <!-- TOP -->
+    <top>
+        <Label text="Prisoner Management"
+               style="-fx-font-size:18px; -fx-padding:10;" />
+    </top>
+
+    <!-- CENTER -->
+    <center>
+        <TableView fx:id="prisonerTable">
+
+            <columns>
+                <TableColumn fx:id="idCol" text="ID" />
+                <TableColumn fx:id="nameCol" text="Name" />
+                <TableColumn fx:id="crimeCol" text="Crime" />
+                <TableColumn fx:id="cellCol" text="Cell No" />
+                <TableColumn fx:id="yearsCol" text="Sentence (Years)" />
+                <TableColumn fx:id="statusCol" text="Status" />
+            </columns>
+
+        </TableView>
+    </center>
+
+    <!-- BOTTOM -->
+    <bottom>
+        <VBox spacing="8" style="-fx-padding:10;">
+
+            <TextField fx:id="nameField" promptText="Name"/>
+            <TextField fx:id="crimeField" promptText="Crime"/>
+            <TextField fx:id="cellField" promptText="Cell No"/>
+            <TextField fx:id="yearsField" promptText="Sentence Years"/>
+
+            <HBox spacing="10">
+                <Button text="Add Prisoner" onAction="#addPrisoner"/>
+                <Button text="Delete Selected" onAction="#deletePrisoner"/>
+            </HBox>
+
+        </VBox>
+    </bottom>
+
+</BorderPane>

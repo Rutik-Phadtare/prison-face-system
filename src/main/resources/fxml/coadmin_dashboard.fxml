@@ -1,20 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.prison.controller.CoAdminDashboardController">
+            fx:controller="com.prison.controller.CoAdminDashboardController"
+            styleClass="bg-dashboard">
 
     <top>
-        <Label text="Co-Admin Dashboard"
-               style="-fx-font-size:20px; -fx-padding:10;" />
+        <fx:include source="header.fxml"/>
     </top>
 
     <center>
-        <VBox spacing="10" alignment="CENTER">
-            <Button text="Manage Prisoners"/>
-            <Button text="Face Recognition"/>
+        <VBox spacing="30"
+              alignment="TOP_CENTER"
+              style="-fx-padding: 40;">
+
+            <Label text="Co-Admin Dashboard"
+                   styleClass="title"/>
+
+            <!-- STAT CARD -->
+            <VBox styleClass="card" prefWidth="280">
+                <Label text="Total Prisoners"
+                       styleClass="subtitle"/>
+                <Label fx:id="prisonerCountLabel"
+                       text="0"
+                       styleClass="title"/>
+            </VBox>
+
+            <!-- ACTIONS -->
+            <HBox spacing="30">
+
+                <VBox styleClass="card" prefWidth="260">
+                    <Label text="Prisoner Management"
+                           styleClass="subtitle"/>
+                    <Label text="Add, update and monitor prisoners"
+                           styleClass="muted"/>
+                    <Button text="Open"
+                            onAction="#openPrisoners"
+                            styleClass="primary-button"/>
+                </VBox>
+
+            </HBox>
+
         </VBox>
     </center>
 

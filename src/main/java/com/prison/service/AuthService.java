@@ -1,22 +1,41 @@
 package com.prison.service;
 
-import com.prison.dao.UserDao;
 import com.prison.model.User;
-import com.prison.util.PasswordUtil;
+import com.prison.util.DatabaseUtil;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class AuthService {
 
-    private final UserDao userDao = new UserDao();
-
     public User authenticate(String username, String password) {
 
-        User user = userDao.findByUsername(username);
+        String sql = "SELECT user_id, username, password_hash, role FROM users WHERE username=?";
 
-        if (user == null) return null;
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        boolean valid =
-                PasswordUtil.verifyPassword(password, user.getPasswordHash());
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
 
-        return valid ? user : null;
+            if (!rs.next()) return null;
+
+            if (!BCrypt.checkpw(password, rs.getString("password_hash"))) {
+                return null;
+            }
+
+            User user = new User();
+            user.setUserId(rs.getInt("user_id"));
+            user.setUsername(rs.getString("username"));
+            user.setRole(rs.getString("role"));
+            return user;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
 }

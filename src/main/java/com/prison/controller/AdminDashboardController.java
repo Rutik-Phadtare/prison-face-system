@@ -9,9 +9,7 @@ import javafx.event.ActionEvent;
 
 public class AdminDashboardController {
 
-    /**
-     * Opens the Prisoner Management screen
-     */
+
     @FXML
     public void openPrisonerManagement() {
 

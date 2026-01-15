@@ -2,17 +2,16 @@ package com.prison.controller;
 
 import com.prison.model.User;
 import com.prison.service.AuthService;
+import com.prison.session.UserSession;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-
 
 public class LoginController {
 
@@ -27,8 +26,26 @@ public class LoginController {
 
     private final AuthService authService = new AuthService();
 
+    /* =========================
+       ADMIN LOGIN BUTTON
+       ========================= */
     @FXML
-    public void handleLogin() throws IOException {
+    public void handleLogin() {
+        loginWithRole("ADMIN");
+    }
+
+    /* =========================
+       CO-ADMIN LOGIN BUTTON
+       ========================= */
+    @FXML
+    public void handleCoAdminLogin() {
+        loginWithRole("CO_ADMIN");
+    }
+
+    /* =========================
+       COMMON LOGIN LOGIC
+       ========================= */
+    private void loginWithRole(String expectedRole) {
 
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -38,6 +55,7 @@ public class LoginController {
             return;
         }
 
+        // 🔐 Authenticate user
         User user = authService.authenticate(username, password);
 
         if (user == null) {
@@ -45,39 +63,41 @@ public class LoginController {
             return;
         }
 
+        // 🔒 Role check
+        if (!expectedRole.equals(user.getRole())) {
+            messageLabel.setText("Unauthorized access for role: " + user.getRole());
+            return;
+        }
+
+        // ✅ STORE USER IN SESSION (CORRECT PLACE)
+        UserSession.setUser(user);
+
         try {
             Stage stage = (Stage) usernameField.getScene().getWindow();
             FXMLLoader loader;
 
             if ("ADMIN".equals(user.getRole())) {
                 loader = new FXMLLoader(
-                        getClass().getResource("/fxml/admin_dashboard.fxml"));
+                        getClass().getResource("/fxml/admin_dashboard.fxml")
+                );
             } else {
                 loader = new FXMLLoader(
-                        getClass().getResource("/fxml/coadmin_dashboard.fxml"));
+                        getClass().getResource("/fxml/coadmin_dashboard.fxml")
+                );
             }
 
-            Scene scene = new Scene(loader.load());
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
             scene.getStylesheets().add(
                     getClass().getResource("/css/style.css").toExternalForm()
             );
-            stage.setScene(scene);
 
+            stage.setScene(scene);
 
         } catch (Exception e) {
             e.printStackTrace();
+            messageLabel.setText("Unable to load dashboard");
         }
-        Parent root = FXMLLoader.load(
-                getClass().getResource("/fxml/admin_dashboard.fxml")
-        );
-
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(
-                getClass().getResource("/css/style.css").toExternalForm()
-        );
-
-        Stage stage = (Stage) usernameField.getScene().getWindow();
-        stage.setScene(scene);
     }
-
 }

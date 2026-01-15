@@ -1,12 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Button?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.prison.controller.LoginController">
+            fx:controller="com.prison.controller.LoginController"
+            styleClass="bg-login">
 
     <!-- HEADER -->
     <top>
@@ -16,39 +19,28 @@
     <!-- CENTER CONTENT -->
     <center>
         <HBox alignment="CENTER"
-              spacing="80"
+              spacing="90"
               style="-fx-padding: 60;">
 
-            <!-- LEFT BRANDING -->
-            <VBox spacing="20" maxWidth="420">
+            <!-- LEFT INFO SECTION -->
+            <VBox spacing="18" maxWidth="420">
                 <Label text="Yerwada Central Prison"
-                       styleClass="app-title"/>
-
+                       styleClass="title"/>
                 <Label text="Prison Management System"
-                       styleClass="app-subtitle"/>
-
-                <Label text="A secure platform to manage inmates, guards, and surveillance using role-based access and face recognition."
+                       styleClass="subtitle"/>
+                <Label text="Secure role-based access system using face recognition for guard and prisoner management."
                        wrapText="true"
-                       styleClass="text-muted"/>
-
-                <HBox spacing="15">
-                    <Label text="📁 Inmate Records"
-                           styleClass="icon-text"/>
-                    <Label text="👮 Guard Management"
-                           styleClass="icon-text"/>
-                    <Label text="📷 Face Recognition"
-                           styleClass="icon-text"/>
-                </HBox>
+                       styleClass="subtitle"/>
             </VBox>
 
             <!-- LOGIN CARD -->
             <VBox spacing="18"
                   alignment="CENTER"
                   prefWidth="360"
-                  styleClass="login-card">
+                  styleClass="card">
 
-                <Label text="System Login"
-                       styleClass="app-subtitle"/>
+                <Label text="Select Login Role"
+                       styleClass="subtitle"/>
 
                 <TextField fx:id="usernameField"
                            promptText="Username"/>
@@ -56,13 +48,21 @@
                 <PasswordField fx:id="passwordField"
                                promptText="Password"/>
 
-                <Button text="Admin Login"
+                <!-- ADMIN LOGIN -->
+                <Button text="Login as Admin"
                         onAction="#handleLogin"
+                        maxWidth="Infinity"
                         styleClass="primary-button"/>
 
-                <Button text="Co-Admin Login"
-                        onAction="#handleLogin"
+                <!-- CO-ADMIN LOGIN -->
+                <Button text="Login as Co-Admin"
+                        onAction="#handleCoAdminLogin"
+                        maxWidth="Infinity"
                         styleClass="secondary-button"/>
+
+                <!-- MESSAGE -->
+                <Label fx:id="messageLabel"
+                       style="-fx-text-fill: #ffb3b3;"/>
 
             </VBox>
 

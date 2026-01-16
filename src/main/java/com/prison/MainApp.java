@@ -20,7 +20,7 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(
-                getClass().getResource("/css/style.css").toExternalForm()
+                getClass().getResource("/css/modern.css").toExternalForm()
         );
 
         stage.setScene(scene);

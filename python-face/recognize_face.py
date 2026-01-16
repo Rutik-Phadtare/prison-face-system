@@ -7,11 +7,15 @@ import numpy as np
 import os
 import time
 
-# Resolve paths relative to this file
+# =====================
+# PATH SETUP
+# =====================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ENCODINGS_DIR = os.path.join(BASE_DIR, "encodings")
 GUARDS_DIR = os.path.join(ENCODINGS_DIR, "guards")
 PRISONERS_DIR = os.path.join(ENCODINGS_DIR, "prisoners")
+
+TOLERANCE = 0.6  # realistic & safe
 
 
 def load_encodings(folder, label):
@@ -29,7 +33,9 @@ def load_encodings(folder, label):
     return data
 
 
-# Load all known faces
+# =====================
+# LOAD ALL KNOWN FACES
+# =====================
 known_faces = []
 known_faces += load_encodings(GUARDS_DIR, "GUARD")
 known_faces += load_encodings(PRISONERS_DIR, "PRISONER")
@@ -39,7 +45,9 @@ if not known_faces:
     exit()
 
 
-# Open camera and wait for stable face
+# =====================
+# CAPTURE FACE
+# =====================
 cap = cv2.VideoCapture(0)
 
 face_encoding = None
@@ -51,11 +59,13 @@ while time.time() - start_time < 5:
         continue
 
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    faces = face_recognition.face_locations(rgb)
+    locations = face_recognition.face_locations(rgb)
 
-    if len(faces) >= 1:
-        face_encoding = face_recognition.face_encodings(rgb, faces)[0]
-        break
+    if locations:
+        encodings = face_recognition.face_encodings(rgb, locations)
+        if encodings:
+            face_encoding = encodings[0]
+            break
 
 cap.release()
 
@@ -64,16 +74,29 @@ if face_encoding is None:
     exit()
 
 
-# Compare with known encodings
+# =====================
+# BEST-MATCH LOGIC (FIX)
+# =====================
+best_distance = None
+best_label = None
+best_person_id = None
+
 for label, person_id, known_encoding in known_faces:
     distance = face_recognition.face_distance(
         [known_encoding],
         face_encoding
     )[0]
 
-    # Final, realistic threshold for webcam-based academic projects
-    if distance < 0.8:
-        print(f"OK|{label}|{person_id}")
-        exit()
+    if best_distance is None or distance < best_distance:
+        best_distance = distance
+        best_label = label
+        best_person_id = person_id
 
-print("OK|UNKNOWN|0")
+
+# =====================
+# FINAL DECISION
+# =====================
+if best_distance is not None and best_distance <= TOLERANCE:
+    print(f"OK|{best_label}|{best_person_id}")
+else:
+    print("OK|UNKNOWN|0")

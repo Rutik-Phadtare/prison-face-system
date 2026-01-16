@@ -3,48 +3,38 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.prison.controller.AdminDashboardController"
-            prefWidth="600"
-            prefHeight="400">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" spacing="20" stylesheets="@../css/modern.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.AdminDashboardController">
 
-    <!-- TOP BAR -->
-    <top>
-        <HBox spacing="10"
-              style="-fx-background-color:#2c3e50; -fx-padding:15;">
-            <Label text="Admin Dashboard"
-                   style="-fx-font-size:20px; -fx-text-fill:white;" />
-        </HBox>
-    </top>
+    <!-- HEADER -->
+    <fx:include source="header.fxml" />
 
-    <!-- CENTER CONTENT -->
-    <center>
-        <VBox spacing="15"
-              alignment="CENTER"
-              style="-fx-padding:20;">
+    <!-- DASHBOARD CARDS -->
+    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 30;">
 
-            <Button text="Manage Prisoners"
-                    prefWidth="200"
-                    onAction="#openPrisonerManagement"/>
-
-            <Button text="Manage Guards"
-                    prefWidth="200"
-                    onAction="#openGuardManagement"/>
-
-            <Button text="Face Recognition"
-                    prefWidth="200"
-                    onAction="#openFaceRecognition"/>
-
+        <!-- PRISONERS -->
+        <VBox alignment="CENTER" spacing="12" styleClass="card">
+            <Label styleClass="title" text="Prisoners" />
+            <Button onAction="#openPrisonerManagement" styleClass="primary-button" text="Manage Prisoners" />
         </VBox>
-    </center>
 
-    <!-- BOTTOM -->
-    <bottom>
-        <HBox alignment="CENTER_RIGHT"
-              style="-fx-padding:10;">
-            <Button text="Logout"
-                    onAction="#logout"/>
-        </HBox>
-    </bottom>
+        <!-- GUARDS -->
+        <VBox alignment="CENTER" spacing="12" styleClass="card">
+            <Label styleClass="title" text="Guards" />
+            <Button onAction="#openGuardManagement" styleClass="primary-button" text="Manage Guards" />
+        </VBox>
 
-</BorderPane>
+        <!-- FACE RECOGNITION -->
+        <VBox alignment="CENTER" spacing="12" styleClass="card">
+            <Label styleClass="title" text="Recognition" />
+            <Button onAction="#openFaceRecognition" styleClass="primary-button" text="Face Recognition" />
+        </VBox>
+
+        <!-- ✅ RECOGNITION LOGS (NEW) -->
+        <VBox alignment="CENTER" spacing="12" styleClass="card">
+            <Label styleClass="title" text="Logs" />
+            <Button onAction="#openRecognitionLogs" styleClass="primary-button" text="Recognition Logs" />
+        </VBox>
+
+    </HBox>
+
+</VBox>

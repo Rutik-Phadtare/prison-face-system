@@ -59,9 +59,9 @@
          <Insets bottom="250.0" left="300.0" />
       </StackPane.margin>
       <children>
-         <Label prefHeight="91.0" prefWidth="472.0" style="-fx-font-size: 80; -fx-font-weight: bold; -fx-font-family:'Times New Roman';" text="Public Safety " textAlignment="CENTER">
+         <Label prefHeight="91.0" prefWidth="472.0" style="-fx-font-size: 80; -fx-font-weight: bold; -fx-font-family:'Times New Roman';" text="Public Safety " textAlignment="CENTER" textFill="#7e7777">
             <font>
-               <Font name="Tempus Sans ITC" size="64.0" />
+               <Font name="Bell MT" size="96.0" />
             </font>
             <VBox.margin>
                <Insets />

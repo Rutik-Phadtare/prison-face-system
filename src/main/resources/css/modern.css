@@ -210,3 +210,99 @@
     -fx-text-fill: #6b7280;
 }
 
+/* =========================
+   INFO DISPLAY CARDS
+   ========================= */
+
+.info-card {
+    -fx-background-color: linear-gradient(to bottom right, #ffffff, #f4f6fb);
+    -fx-padding: 16;
+    -fx-spacing: 8;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-border-color: #e0e4ef;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0.3, 0, 6);
+}
+
+/* =========================
+   GUARD STYLE
+   ========================= */
+.guard-title {
+    -fx-text-fill: #0b5ed7;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.guard-text {
+    -fx-text-fill: #1f2937;
+    -fx-font-size: 14px;
+}
+
+/* ===== TABLE TEXT STYLES ===== */
+
+.prisoner-name {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.prisoner-crime {
+    -fx-text-fill: #ff4d4d;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}
+
+.prisoner-status {
+    -fx-text-fill: #ffcc00;
+    -fx-font-weight: bold;
+}
+
+.prisoner-years {
+    -fx-text-fill: #66ccff;
+    -fx-font-weight: bold;
+}
+
+
+.remaining-time {
+    -fx-text-fill: #ffcc00;
+    -fx-font-weight: bold;
+}
+
+.description-area {
+    -fx-font-size: 13px;
+}
+
+.page-header {
+    -fx-padding: 16;
+}
+
+.page-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.page-subtitle {
+    -fx-text-fill: #9ca3af;
+}
+
+.form-card {
+    -fx-padding: 16;
+    -fx-background-radius: 12;
+    -fx-background-color: rgba(255,255,255,0.04);
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.dark-table {
+    -fx-font-size: 14px;
+}
+
+.dark-table .table-row-cell {
+    -fx-cell-size: 36px;
+}

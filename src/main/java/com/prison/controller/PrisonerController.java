@@ -1,146 +1,223 @@
 package com.prison.controller;
 
+import com.prison.dao.PrisonerDao;
 import com.prison.model.Prisoner;
-import com.prison.service.PrisonerService;
+import com.prison.util.PythonRunnerUtil;
+import com.prison.util.StyledCell;
+import com.prison.util.TimeUtil;
+
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.time.LocalDate;
 
-public class PrisonerController implements Initializable {
+public class PrisonerController {
 
+    /* =========================
+       TABLE & COLUMNS
+       ========================= */
+    @FXML private TableView<Prisoner> prisonerTable;
+    @FXML private TableColumn<Prisoner, Integer> idCol;
+    @FXML private TableColumn<Prisoner, String> nameCol;
+    @FXML private TableColumn<Prisoner, String> crimeCol;
+    @FXML private TableColumn<Prisoner, String> cellCol;
+    @FXML private TableColumn<Prisoner, Integer> yearsCol;
+    @FXML private TableColumn<Prisoner, String> statusCol;
+
+    /* =========================
+       FORM FIELDS
+       ========================= */
+    @FXML private TextField nameField;
+    @FXML private TextField crimeField;
+    @FXML private TextField cellField;
+    @FXML private TextField yearsField;
+    @FXML private TextArea descriptionArea;
+
+    // Optional label (safe if missing in FXML)
+    @FXML private Label remainingTimeLabel;
+
+    private final PrisonerDao dao = new PrisonerDao();
+    private Prisoner selectedPrisoner;
+
+    /* =========================
+       INITIALIZE
+       ========================= */
     @FXML
-    private TableView<Prisoner> prisonerTable;
+    public void initialize() {
 
-    @FXML
-    private TableColumn<Prisoner, Integer> idCol;
+        idCol.setCellValueFactory(new PropertyValueFactory<>("prisonerId"));
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        crimeCol.setCellValueFactory(new PropertyValueFactory<>("crime"));
+        cellCol.setCellValueFactory(new PropertyValueFactory<>("cellNo"));
+        yearsCol.setCellValueFactory(new PropertyValueFactory<>("sentenceYears"));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-    @FXML
-    private TableColumn<Prisoner, String> nameCol;
+        // Styled cells
+        nameCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
+        crimeCol.setCellFactory(col -> new StyledCell<>("prisoner-crime"));
+        statusCol.setCellFactory(col -> new StyledCell<>("prisoner-status"));
+        yearsCol.setCellFactory(col -> new StyledCell<>("prisoner-years"));
 
-    @FXML
-    private TableColumn<Prisoner, String> crimeCol;
+        refreshTable();
 
-    @FXML
-    private TableColumn<Prisoner, String> cellCol;
+        prisonerTable.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldVal, p) -> {
 
-    @FXML
-    private TableColumn<Prisoner, Integer> yearsCol;
+                    selectedPrisoner = p;
+                    if (p == null) return;
 
-    @FXML
-    private TableColumn<Prisoner, String> statusCol;
+                    nameField.setText(p.getName());
+                    crimeField.setText(p.getCrime());
+                    cellField.setText(p.getCellNo());
+                    yearsField.setText(String.valueOf(p.getSentenceYears()));
+                    descriptionArea.setText(p.getDescription());
 
-    @FXML
-    private TextField nameField, crimeField, cellField, yearsField;
-
-    private final PrisonerService prisonerService = new PrisonerService();
-    private final ObservableList<Prisoner> prisonerList =
-            FXCollections.observableArrayList();
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        idCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleIntegerProperty(
-                        data.getValue().getPrisonerId()).asObject());
-
-        nameCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getName()));
-
-        crimeCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getCrime()));
-
-        cellCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getCellNo()));
-
-        yearsCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleIntegerProperty(
-                        data.getValue().getSentenceYears()).asObject());
-
-        statusCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getStatus()));
-
-        loadPrisoners();
+                    if (remainingTimeLabel != null && p.getReleaseDate() != null) {
+                        remainingTimeLabel.setText(
+                                TimeUtil.calculateRemainingTime(p.getReleaseDate())
+                        );
+                    }
+                });
     }
 
-    private void loadPrisoners() {
-        prisonerList.clear();
-        prisonerList.addAll(prisonerService.getAllPrisoners());
-        prisonerTable.setItems(prisonerList);
-    }
-
+    /* =========================
+       ADD PRISONER + FACE TRAIN
+       ========================= */
     @FXML
     public void addPrisoner() {
 
-        Prisoner p = new Prisoner();
-        p.setName(nameField.getText());
-        p.setCrime(crimeField.getText());
-        p.setCellNo(cellField.getText());
-        p.setSentenceYears(Integer.parseInt(yearsField.getText()));
-        p.setStatus("IN_CUSTODY");
+        if (!validateInput()) return;
 
-        int prisonerId =
-                prisonerService.addPrisonerAndReturnId(p);
+        try {
+            Prisoner p = new Prisoner();
+            p.setName(nameField.getText());
+            p.setCrime(crimeField.getText());
+            p.setCellNo(cellField.getText());
 
-        if (prisonerId > 0) {
-            String result =
-                    com.prison.util.PythonRunnerUtil
-                            .trainFace("PRISONER", prisonerId);
+            int years = Integer.parseInt(yearsField.getText());
+            p.setSentenceYears(years);
+            p.setReleaseDate(LocalDate.now().plusYears(years));
 
-            if (result == null) {
-                System.out.println("Training failed: No response from Python");
-            } else {
-                System.out.println("Training Result: " + result);
+            p.setDescription(descriptionArea.getText());
+            p.setStatus("IN_CUSTODY");
 
-                if (!result.startsWith("OK")) {
-                    javafx.scene.control.Alert alert =
-                            new javafx.scene.control.Alert(
-                                    javafx.scene.control.Alert.AlertType.ERROR
-                            );
-                    alert.setTitle("Face Training Failed");
-                    alert.setHeaderText("Guard face training failed");
-                    alert.setContentText(
-                            "Reason: " + result +
-                                    "\n\nPlease ensure:\n" +
-                                    "- Face is clearly visible\n" +
-                                    "- Only one person in camera\n" +
-                                    "- Good lighting\n" +
-                                    "- Face centered"
-                    );
-                    alert.showAndWait();
-                }
+            // 1️⃣ Save to DB
+            int prisonerId = dao.saveAndReturnId(p);
+            if (prisonerId <= 0) {
+                showAlert("Database Error", "Failed to save prisoner");
+                return;
             }
 
+            // 2️⃣ TRAIN FACE (RESTORED & CORRECT)
+            String output =
+                    PythonRunnerUtil.trainFace("PRISONER", prisonerId);
+
+            if (output == null || !output.startsWith("OK")) {
+                showAlert(
+                        "Face Training Warning",
+                        "Prisoner saved, but face training failed."
+                );
+            }
+
+            clearFields();
+            refreshTable();
+
+        } catch (NumberFormatException e) {
+            showAlert("Input Error", "Sentence years must be numeric");
+        }
+    }
+
+    /* =========================
+       UPDATE PRISONER
+       ========================= */
+    @FXML
+    public void updatePrisoner() {
+
+        if (selectedPrisoner == null) {
+            showAlert("Selection Required", "Select a prisoner to update");
+            return;
         }
 
-        loadPrisoners();
+        try {
+            selectedPrisoner.setName(nameField.getText());
+            selectedPrisoner.setCrime(crimeField.getText());
+            selectedPrisoner.setCellNo(cellField.getText());
 
+            int years = Integer.parseInt(yearsField.getText());
+            selectedPrisoner.setSentenceYears(years);
+            selectedPrisoner.setReleaseDate(LocalDate.now().plusYears(years));
+            selectedPrisoner.setDescription(descriptionArea.getText());
+
+            dao.update(selectedPrisoner);
+
+            if (remainingTimeLabel != null) {
+                remainingTimeLabel.setText(
+                        TimeUtil.calculateRemainingTime(
+                                selectedPrisoner.getReleaseDate()
+                        )
+                );
+            }
+
+            refreshTable();
+            clearFields();
+            prisonerTable.getSelectionModel().clearSelection();
+
+
+        } catch (NumberFormatException e) {
+            showAlert("Input Error", "Sentence years must be numeric");
+        }
+    }
+
+    /* =========================
+       DELETE PRISONER
+       ========================= */
+    @FXML
+    public void deletePrisoner() {
+
+        Prisoner p = prisonerTable.getSelectionModel().getSelectedItem();
+        if (p == null) {
+            showAlert("Selection Required", "Select a prisoner to delete");
+            return;
+        }
+
+        dao.delete(p.getPrisonerId());
+        clearFields();
+        refreshTable();
+    }
+
+    /* =========================
+       HELPERS
+       ========================= */
+    private void refreshTable() {
+        prisonerTable.setItems(
+                FXCollections.observableArrayList(dao.findAll())
+        );
+    }
+
+    private void clearFields() {
         nameField.clear();
         crimeField.clear();
         cellField.clear();
         yearsField.clear();
+        descriptionArea.clear();
+        if (remainingTimeLabel != null) remainingTimeLabel.setText("");
+        selectedPrisoner = null;
     }
 
+    private boolean validateInput() {
+        return !nameField.getText().isEmpty()
+                && !crimeField.getText().isEmpty()
+                && !cellField.getText().isEmpty()
+                && !yearsField.getText().isEmpty();
+    }
 
-    @FXML
-    public void deletePrisoner() {
-
-        Prisoner selected = prisonerTable.getSelectionModel()
-                .getSelectedItem();
-
-        if (selected == null) {
-            return;
-        }
-
-        prisonerService.deletePrisoner(selected.getPrisonerId());
-        loadPrisoners();
+    private void showAlert(String title, String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }

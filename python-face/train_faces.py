@@ -34,7 +34,7 @@ cap = cv2.VideoCapture(0)
 encodings = []
 start_time = time.time()
 
-while time.time() - start_time < 7:  # slightly longer for stability
+while time.time() - start_time < 5:  # slightly longer for stability
     ret, frame = cap.read()
     if not ret:
         continue

@@ -5,43 +5,94 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.prison.controller.PrisonerController"
-            prefWidth="800"
-            prefHeight="600">
+            stylesheets="@../css/modern.css">
 
-    <!-- TOP -->
+    <!-- ================= HEADER ================= -->
     <top>
-        <Label text="Prisoner Management"
-               style="-fx-font-size:18px; -fx-padding:10;" />
+        <VBox spacing="4" styleClass="page-header">
+            <Label text="Prisoner Management" styleClass="page-title"/>
+            <Label text="Manage prisoner records securely"
+                   styleClass="page-subtitle"/>
+        </VBox>
     </top>
 
-    <!-- CENTER -->
+    <!-- ================= TABLE ================= -->
     <center>
-        <TableView fx:id="prisonerTable">
+        <TableView fx:id="prisonerTable" styleClass="dark-table">
 
             <columns>
-                <TableColumn fx:id="idCol" text="ID" />
-                <TableColumn fx:id="nameCol" text="Name" />
-                <TableColumn fx:id="crimeCol" text="Crime" />
-                <TableColumn fx:id="cellCol" text="Cell No" />
-                <TableColumn fx:id="yearsCol" text="Sentence (Years)" />
-                <TableColumn fx:id="statusCol" text="Status" />
+                <TableColumn fx:id="idCol" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="nameCol" text="Name" prefWidth="160"/>
+                <TableColumn fx:id="crimeCol" text="Crime" prefWidth="200"/>
+                <TableColumn fx:id="cellCol" text="Cell No" prefWidth="100"/>
+                <TableColumn fx:id="yearsCol" text="Sentence (Years)" prefWidth="140"/>
+                <TableColumn fx:id="statusCol" text="Status" prefWidth="140"/>
+                <TableColumn fx:id="remainingCol" text="Remaining Time" prefWidth="160"/>
+                <TableColumn fx:id="descCol" text="Description" prefWidth="220"/>
+
             </columns>
 
         </TableView>
     </center>
 
-    <!-- BOTTOM -->
+    <!-- ================= FORM ================= -->
     <bottom>
-        <VBox spacing="8" style="-fx-padding:10;">
+        <VBox spacing="12" styleClass="form-card">
 
-            <TextField fx:id="nameField" promptText="Name"/>
-            <TextField fx:id="crimeField" promptText="Crime"/>
-            <TextField fx:id="cellField" promptText="Cell No"/>
-            <TextField fx:id="yearsField" promptText="Sentence Years"/>
+            <Label text="Prisoner Details" styleClass="section-title"/>
 
-            <HBox spacing="10">
-                <Button text="Add Prisoner" onAction="#addPrisoner"/>
-                <Button text="Delete Selected" onAction="#deletePrisoner"/>
+            <!-- Row 1 -->
+            <HBox spacing="12">
+                <VBox spacing="4">
+                    <Label text="Prisoner Name"/>
+                    <TextField fx:id="nameField"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Crime"/>
+                    <TextField fx:id="crimeField"/>
+                </VBox>
+            </HBox>
+
+            <!-- Row 2 -->
+            <HBox spacing="12">
+                <VBox spacing="4">
+                    <Label text="Cell Number"/>
+                    <TextField fx:id="cellField"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Sentence Years"/>
+                    <TextField fx:id="yearsField"/>
+                </VBox>
+                <Label fx:id="remainingTimeLabel"
+                       text="Remaining Time"
+                       styleClass="remaining-time"/>
+
+            </HBox>
+
+            <!-- Description -->
+            <VBox spacing="4">
+                <Label text="Description / Notes"/>
+                <TextArea fx:id="descriptionArea"
+                          promptText="Prisoner Description"
+                          prefRowCount="3"/>
+
+            </VBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Add Prisoner"
+                        onAction="#addPrisoner"
+                        styleClass="primary-button"/>
+
+                <Button text="Update Prisoner"
+                        onAction="#updatePrisoner"
+                        styleClass="secondary-button"/>
+
+                <Button text="Delete Selected"
+                        onAction="#deletePrisoner"
+                        styleClass="danger-button"/>
             </HBox>
 
         </VBox>

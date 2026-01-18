@@ -3,21 +3,30 @@ package com.prison.dao;
 import com.prison.model.Prisoner;
 import com.prison.util.DatabaseUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class PrisonerDao {
 
+    /* =========================
+       SAVE (CONTROLLER-FRIENDLY)
+       ========================= */
+    public void save(Prisoner prisoner) {
+        saveAndReturnId(prisoner);
+    }
+
+    /* =========================
+       SAVE AND RETURN ID
+       ========================= */
     public int saveAndReturnId(Prisoner prisoner) {
 
         String sql = """
-        INSERT INTO prisoners (name, crime, cell_no, sentence_years, status)
-        VALUES (?, ?, ?, ?, ?)
-    """;
+            INSERT INTO prisoners (name, crime, cell_no, sentence_years, status)
+            VALUES (?, ?, ?, ?, ?)
+        """;
 
         try (Connection con = DatabaseUtil.getConnection();
              PreparedStatement ps =
@@ -42,6 +51,9 @@ public class PrisonerDao {
         return -1;
     }
 
+    /* =========================
+       FIND BY ID
+       ========================= */
     public Prisoner findById(int id) {
 
         String sql = "SELECT * FROM prisoners WHERE prisoner_id = ?";
@@ -69,7 +81,9 @@ public class PrisonerDao {
         return null;
     }
 
-
+    /* =========================
+       FIND ALL
+       ========================= */
     public List<Prisoner> findAll() {
 
         List<Prisoner> list = new ArrayList<>();
@@ -97,6 +111,9 @@ public class PrisonerDao {
         return list;
     }
 
+    /* =========================
+       DELETE
+       ========================= */
     public void delete(int prisonerId) {
 
         String sql = "DELETE FROM prisoners WHERE prisoner_id = ?";
@@ -111,4 +128,32 @@ public class PrisonerDao {
             e.printStackTrace();
         }
     }
+    public void update(Prisoner prisoner) {
+
+        String sql = """
+        UPDATE prisoners
+        SET name = ?, crime = ?, cell_no = ?, sentence_years = ?,
+            status = ?, description = ?, release_date = ?
+        WHERE prisoner_id = ?
+    """;
+
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, prisoner.getName());
+            ps.setString(2, prisoner.getCrime());
+            ps.setString(3, prisoner.getCellNo());
+            ps.setInt(4, prisoner.getSentenceYears());
+            ps.setString(5, prisoner.getStatus());
+            ps.setString(6, prisoner.getDescription());
+            ps.setDate(7, Date.valueOf(prisoner.getReleaseDate()));
+            ps.setInt(8, prisoner.getPrisonerId());
+
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

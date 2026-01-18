@@ -1,5 +1,7 @@
 package com.prison.model;
 
+import java.time.LocalDate;
+
 public class Prisoner {
 
     private int prisonerId;
@@ -8,6 +10,14 @@ public class Prisoner {
     private String cellNo;
     private int sentenceYears;
     private String status;
+
+    /* 🔴 NEW FIELDS */
+    private String description;
+    private LocalDate releaseDate;
+
+    /* =========================
+       GETTERS & SETTERS
+       ========================= */
 
     public int getPrisonerId() {
         return prisonerId;
@@ -55,5 +65,25 @@ public class Prisoner {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    /* =========================
+       🔴 NEW GETTERS & SETTERS
+       ========================= */
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }

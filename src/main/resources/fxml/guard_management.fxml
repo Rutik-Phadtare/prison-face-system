@@ -2,28 +2,25 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.prison.controller.GuardController"
-            prefWidth="800"
-            prefHeight="600">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.GuardController">
 
     <!-- TOP -->
     <top>
-        <Label text="Guard Management"
-               style="-fx-font-size:18px; -fx-padding:10;" />
+        <Label style="-fx-font-size: 35; -fx-padding: 10; -fx-font-family: 'Times New Roman';" text="Guard Management" />
     </top>
 
     <!-- CENTER -->
     <center>
-        <TableView fx:id="guardTable">
+        <TableView fx:id="guardTable" prefHeight="500.0" prefWidth="1500.0">
 
             <columns>
-                <TableColumn fx:id="idCol" text="ID" />
-                <TableColumn fx:id="nameCol" text="Name" />
-                <TableColumn fx:id="designationCol" text="Designation" />
-                <TableColumn fx:id="shiftCol" text="Shift" />
-                <TableColumn fx:id="statusCol" text="Status" />
+                <TableColumn fx:id="idCol" prefWidth="66.60000455379486" text="ID" />
+                <TableColumn fx:id="nameCol" prefWidth="450.20001220703125" text="Name" />
+                <TableColumn fx:id="designationCol" minWidth="0.0" prefWidth="285.79998779296875" text="Designation" />
+                <TableColumn fx:id="shiftCol" minWidth="0.0" prefWidth="327.3999328613281" text="Shift" />
+                <TableColumn fx:id="statusCol" prefWidth="370.20001220703125" text="Status" />
             </columns>
 
         </TableView>
@@ -31,15 +28,20 @@
 
     <!-- BOTTOM -->
     <bottom>
-        <VBox spacing="8" style="-fx-padding:10;">
+        <VBox prefHeight="205.0" prefWidth="1500.0" spacing="8" style="-fx-padding:10;">
+         <Label style="-fx-font-size: 25; -fx-font-family: 'Arial';" text="Add New Guard" textFill="#f09900">
+            <font>
+               <Font name="Arial" size="12.0" />
+            </font>
+         </Label>
 
-            <TextField fx:id="nameField" promptText="Name"/>
-            <TextField fx:id="designationField" promptText="Designation"/>
-            <TextField fx:id="shiftField" promptText="Shift (Morning/Night)"/>
+            <TextField fx:id="nameField" prefHeight="26.0" prefWidth="1479.0" promptText="Name" />
+            <TextField fx:id="designationField" promptText="Designation" />
+            <TextField fx:id="shiftField" promptText="Shift (Morning/Night)" />
 
             <HBox spacing="10">
-                <Button text="Add Guard" onAction="#addGuard"/>
-                <Button text="Delete Selected" onAction="#deleteGuard"/>
+                <Button onAction="#addGuard" prefHeight="26.0" prefWidth="190.0" text="Add Guard" />
+                <Button onAction="#deleteGuard" prefHeight="26.0" prefWidth="195.0" text="Delete Selected" />
             </HBox>
 
         </VBox>

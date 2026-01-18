@@ -70,7 +70,7 @@
 .card {
     -fx-background-color: #020617;
     -fx-background-radius: 14;
-    -fx-padding: 20;
+    -fx-padding: 10;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0, 0, 4);
 }
 
@@ -240,6 +240,11 @@
 }
 
 /* ===== TABLE TEXT STYLES ===== */
+.prisoner-prisonerId {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
 
 .prisoner-name {
     -fx-text-fill: #ffffff;
@@ -253,6 +258,11 @@
     -fx-font-style: italic;
 }
 
+.prisoner-cellNo {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
 .prisoner-status {
     -fx-text-fill: #ffcc00;
     -fx-font-weight: bold;

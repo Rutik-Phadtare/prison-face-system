@@ -6,6 +6,7 @@ import com.prison.util.PythonRunnerUtil;
 import com.prison.util.StyledCell;
 import com.prison.util.TimeUtil;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -26,6 +27,9 @@ public class PrisonerController {
     @FXML private TableColumn<Prisoner, Integer> yearsCol;
     @FXML private TableColumn<Prisoner, String> statusCol;
 
+    @FXML private TableColumn<Prisoner, String> remainingCol;
+    @FXML private TableColumn<Prisoner, String> descCol;
+
     /* =========================
        FORM FIELDS
        ========================= */
@@ -34,8 +38,6 @@ public class PrisonerController {
     @FXML private TextField cellField;
     @FXML private TextField yearsField;
     @FXML private TextArea descriptionArea;
-
-    // Optional label (safe if missing in FXML)
     @FXML private Label remainingTimeLabel;
 
     private final PrisonerDao dao = new PrisonerDao();
@@ -54,11 +56,24 @@ public class PrisonerController {
         yearsCol.setCellValueFactory(new PropertyValueFactory<>("sentenceYears"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Styled cells
+        // 🔹 Remaining time (computed)
+        remainingCol.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        TimeUtil.calculateRemainingTime(data.getValue().getReleaseDate())
+                )
+        );
+
+        // 🔹 Description
+        descCol.setCellValueFactory(
+                new PropertyValueFactory<>("description")
+        );
+
+        // Styling
         nameCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
         crimeCol.setCellFactory(col -> new StyledCell<>("prisoner-crime"));
         statusCol.setCellFactory(col -> new StyledCell<>("prisoner-status"));
         yearsCol.setCellFactory(col -> new StyledCell<>("prisoner-years"));
+        remainingCol.setCellFactory(col -> new StyledCell<>("prisoner-remaining"));
 
         refreshTable();
 
@@ -75,7 +90,7 @@ public class PrisonerController {
                     yearsField.setText(String.valueOf(p.getSentenceYears()));
                     descriptionArea.setText(p.getDescription());
 
-                    if (remainingTimeLabel != null && p.getReleaseDate() != null) {
+                    if (remainingTimeLabel != null) {
                         remainingTimeLabel.setText(
                                 TimeUtil.calculateRemainingTime(p.getReleaseDate())
                         );
@@ -84,50 +99,31 @@ public class PrisonerController {
     }
 
     /* =========================
-       ADD PRISONER + FACE TRAIN
+       ADD PRISONER + TRAIN FACE
        ========================= */
     @FXML
     public void addPrisoner() {
 
         if (!validateInput()) return;
 
-        try {
-            Prisoner p = new Prisoner();
-            p.setName(nameField.getText());
-            p.setCrime(crimeField.getText());
-            p.setCellNo(cellField.getText());
+        Prisoner p = new Prisoner();
+        p.setName(nameField.getText());
+        p.setCrime(crimeField.getText());
+        p.setCellNo(cellField.getText());
 
-            int years = Integer.parseInt(yearsField.getText());
-            p.setSentenceYears(years);
-            p.setReleaseDate(LocalDate.now().plusYears(years));
+        int years = Integer.parseInt(yearsField.getText());
+        p.setSentenceYears(years);
+        p.setReleaseDate(LocalDate.now().plusYears(years));
+        p.setDescription(descriptionArea.getText());
+        p.setStatus("IN_CUSTODY");
 
-            p.setDescription(descriptionArea.getText());
-            p.setStatus("IN_CUSTODY");
-
-            // 1️⃣ Save to DB
-            int prisonerId = dao.saveAndReturnId(p);
-            if (prisonerId <= 0) {
-                showAlert("Database Error", "Failed to save prisoner");
-                return;
-            }
-
-            // 2️⃣ TRAIN FACE (RESTORED & CORRECT)
-            String output =
-                    PythonRunnerUtil.trainFace("PRISONER", prisonerId);
-
-            if (output == null || !output.startsWith("OK")) {
-                showAlert(
-                        "Face Training Warning",
-                        "Prisoner saved, but face training failed."
-                );
-            }
-
-            clearFields();
-            refreshTable();
-
-        } catch (NumberFormatException e) {
-            showAlert("Input Error", "Sentence years must be numeric");
+        int id = dao.saveAndReturnId(p);
+        if (id > 0) {
+            PythonRunnerUtil.trainFace("PRISONER", id);
         }
+
+        refreshTable();
+        clearFields();
     }
 
     /* =========================
@@ -137,38 +133,24 @@ public class PrisonerController {
     public void updatePrisoner() {
 
         if (selectedPrisoner == null) {
-            showAlert("Selection Required", "Select a prisoner to update");
+            showAlert("Select prisoner", "Choose a prisoner to update");
             return;
         }
 
-        try {
-            selectedPrisoner.setName(nameField.getText());
-            selectedPrisoner.setCrime(crimeField.getText());
-            selectedPrisoner.setCellNo(cellField.getText());
+        int years = Integer.parseInt(yearsField.getText());
 
-            int years = Integer.parseInt(yearsField.getText());
-            selectedPrisoner.setSentenceYears(years);
-            selectedPrisoner.setReleaseDate(LocalDate.now().plusYears(years));
-            selectedPrisoner.setDescription(descriptionArea.getText());
+        selectedPrisoner.setName(nameField.getText());
+        selectedPrisoner.setCrime(crimeField.getText());
+        selectedPrisoner.setCellNo(cellField.getText());
+        selectedPrisoner.setSentenceYears(years);
+        selectedPrisoner.setReleaseDate(LocalDate.now().plusYears(years));
+        selectedPrisoner.setDescription(descriptionArea.getText());
 
-            dao.update(selectedPrisoner);
+        dao.update(selectedPrisoner);
 
-            if (remainingTimeLabel != null) {
-                remainingTimeLabel.setText(
-                        TimeUtil.calculateRemainingTime(
-                                selectedPrisoner.getReleaseDate()
-                        )
-                );
-            }
-
-            refreshTable();
-            clearFields();
-            prisonerTable.getSelectionModel().clearSelection();
-
-
-        } catch (NumberFormatException e) {
-            showAlert("Input Error", "Sentence years must be numeric");
-        }
+        refreshTable();
+        clearFields();
+        prisonerTable.getSelectionModel().clearSelection();
     }
 
     /* =========================
@@ -178,14 +160,11 @@ public class PrisonerController {
     public void deletePrisoner() {
 
         Prisoner p = prisonerTable.getSelectionModel().getSelectedItem();
-        if (p == null) {
-            showAlert("Selection Required", "Select a prisoner to delete");
-            return;
-        }
+        if (p == null) return;
 
         dao.delete(p.getPrisonerId());
-        clearFields();
         refreshTable();
+        clearFields();
     }
 
     /* =========================

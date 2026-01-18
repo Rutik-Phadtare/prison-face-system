@@ -2,17 +2,15 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.prison.controller.PrisonerController"
-            stylesheets="@../css/modern.css">
+<BorderPane stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.PrisonerController">
 
     <!-- ================= HEADER ================= -->
     <top>
         <VBox spacing="4" styleClass="page-header">
-            <Label text="Prisoner Management" styleClass="page-title"/>
-            <Label text="Manage prisoner records securely"
-                   styleClass="page-subtitle"/>
+            <Label style="-fx-font-size: 25;" styleClass="page-title" text="Prisoner Management" />
+            <Label style="-fx-font-size: 16;" styleClass="page-subtitle" text="Manage prisoner records securely" />
         </VBox>
     </top>
 
@@ -21,14 +19,14 @@
         <TableView fx:id="prisonerTable" styleClass="dark-table">
 
             <columns>
-                <TableColumn fx:id="idCol" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="nameCol" text="Name" prefWidth="160"/>
-                <TableColumn fx:id="crimeCol" text="Crime" prefWidth="200"/>
-                <TableColumn fx:id="cellCol" text="Cell No" prefWidth="100"/>
-                <TableColumn fx:id="yearsCol" text="Sentence (Years)" prefWidth="140"/>
-                <TableColumn fx:id="statusCol" text="Status" prefWidth="140"/>
-                <TableColumn fx:id="remainingCol" text="Remaining Time" prefWidth="160"/>
-                <TableColumn fx:id="descCol" text="Description" prefWidth="220"/>
+                <TableColumn fx:id="idCol" prefWidth="60" text="ID" />
+                <TableColumn fx:id="nameCol" prefWidth="160" text="Name" />
+                <TableColumn fx:id="crimeCol" prefWidth="200" text="Crime" />
+                <TableColumn fx:id="cellCol" prefWidth="100" text="Cell No" />
+                <TableColumn fx:id="yearsCol" prefWidth="140" text="Sentence (Years)" />
+                <TableColumn fx:id="statusCol" prefWidth="140" text="Status" />
+                <TableColumn fx:id="remainingCol" prefWidth="160" text="Remaining Time" />
+                <TableColumn fx:id="descCol" prefWidth="220" text="Description" />
 
             </columns>
 
@@ -39,60 +37,53 @@
     <bottom>
         <VBox spacing="12" styleClass="form-card">
 
-            <Label text="Prisoner Details" styleClass="section-title"/>
+            <Label style="-fx-text-fill: #ffc800;" styleClass="section-title" text="Prisoner Details" textFill="#ffc800" />
 
             <!-- Row 1 -->
             <HBox spacing="12">
                 <VBox spacing="4">
-                    <Label text="Prisoner Name"/>
-                    <TextField fx:id="nameField"/>
+                    <Label text="Prisoner Name" textFill="WHITE" />
+                    <TextField fx:id="nameField" promptText="Name" />
                 </VBox>
 
                 <VBox spacing="4">
-                    <Label text="Crime"/>
-                    <TextField fx:id="crimeField"/>
+                    <Label text="Crime" textFill="WHITE" />
+                    <TextField fx:id="crimeField" promptText="Crime" />
                 </VBox>
             </HBox>
 
             <!-- Row 2 -->
             <HBox spacing="12">
                 <VBox spacing="4">
-                    <Label text="Cell Number"/>
-                    <TextField fx:id="cellField"/>
+                    <Label text="Cell Number" textFill="WHITE" />
+                    <TextField fx:id="cellField" promptText="Cell" />
                 </VBox>
 
                 <VBox spacing="4">
-                    <Label text="Sentence Years"/>
-                    <TextField fx:id="yearsField"/>
+                    <Label text="Sentence Years" textFill="WHITE" />
+                    <TextField fx:id="yearsField" promptText="Year" />
                 </VBox>
-                <Label fx:id="remainingTimeLabel"
-                       text="Remaining Time"
-                       styleClass="remaining-time"/>
+                <Label fx:id="remainingTimeLabel" styleClass="remaining-time" text="Remaining Time" />
 
             </HBox>
 
             <!-- Description -->
             <VBox spacing="4">
-                <Label text="Description / Notes"/>
-                <TextArea fx:id="descriptionArea"
-                          promptText="Prisoner Description"
-                          prefRowCount="3"/>
+                <Label text="Description / Notes" textFill="WHITE">
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+                <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="Prisoner Description" style="-fx-control-inner-background: #020617;" />
 
             </VBox>
 
             <!-- Buttons -->
-            <HBox spacing="12" alignment="CENTER_RIGHT">
-                <Button text="Add Prisoner"
-                        onAction="#addPrisoner"
-                        styleClass="primary-button"/>
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+                <Button onAction="#addPrisoner" styleClass="primary-button" text="Add Prisoner" />
 
-                <Button text="Update Prisoner"
-                        onAction="#updatePrisoner"
-                        styleClass="secondary-button"/>
+                <Button onAction="#updatePrisoner" styleClass="secondary-button" text="Update Prisoner" />
 
-                <Button text="Delete Selected"
-                        onAction="#deletePrisoner"
-                        styleClass="danger-button"/>
+                <Button onAction="#deletePrisoner" styleClass="danger-button" text="Delete Selected" />
             </HBox>
 
         </VBox>

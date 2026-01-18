@@ -98,9 +98,9 @@ public class PrisonerController {
                 });
     }
 
-    /* =========================
-       ADD PRISONER + TRAIN FACE
-       ========================= */
+
+      // ADD PRISONER + TRAIN FACE
+
     @FXML
     public void addPrisoner() {
 
@@ -126,9 +126,9 @@ public class PrisonerController {
         clearFields();
     }
 
-    /* =========================
-       UPDATE PRISONER
-       ========================= */
+
+       //UPDATE PRISONER
+
     @FXML
     public void updatePrisoner() {
 

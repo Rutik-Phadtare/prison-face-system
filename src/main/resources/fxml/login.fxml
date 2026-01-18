@@ -5,6 +5,7 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
 <StackPane minHeight="100.0" minWidth="100.0" prefHeight="820.0" prefWidth="1530.0" style="-fx-background-image: url(/images/bg_login.png); -fx-background-size: cover; -fx-background-repeat: no-repeat;" styleClass="root" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.LoginController">
@@ -59,20 +60,39 @@
          <Insets bottom="250.0" left="300.0" />
       </StackPane.margin>
       <children>
-         <Label prefHeight="91.0" prefWidth="472.0" style="-fx-font-size: 80; -fx-font-weight: bold; -fx-font-family:'Times New Roman';" text="Public Safety " textAlignment="CENTER" textFill="#7e7777">
+         <Label prefHeight="91.0" prefWidth="472.0" style="-fx-font-size: 80; -fx-font-weight: bold; -fx-font-family:'Times New Roman';" text="Public Safety " textAlignment="CENTER">
             <font>
                <Font name="Bell MT" size="96.0" />
             </font>
             <VBox.margin>
                <Insets />
             </VBox.margin>
+            <textFill>
+               <LinearGradient endX="0.6931818037322073" endY="0.5795454468690988" startX="0.3229166666666667">
+                  <stops>
+                     <Stop>
+                        <color>
+                           <Color red="1.0" green="0.47058823704719543" />
+                        </color>
+                     </Stop>
+                     <Stop offset="1.0">
+                        <color>
+                           <Color red="0.0313725508749485" green="0.11764705926179886" blue="0.4941176474094391" />
+                        </color>
+                     </Stop>
+                  </stops>
+               </LinearGradient>
+            </textFill>
          </Label>
-         <Label alignment="CENTER" prefHeight="38.0" prefWidth="507.0" style="-fx-font-size: 30;" text="Integrated Management System " textAlignment="CENTER">
+         <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="613.0" style="-fx-font-size: 35; -fx-font-family: 'Arial';" text="Integrated Management System " textAlignment="CENTER" textFill="#0a206b">
             <VBox.margin>
                <Insets />
             </VBox.margin>
+            <font>
+               <Font name="Bodoni MT Poster Compressed" size="58.0" />
+            </font>
             <padding>
-               <Insets right="20.0" />
+               <Insets bottom="5.0" />
             </padding>
          </Label>
       </children>

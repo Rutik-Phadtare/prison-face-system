@@ -15,7 +15,7 @@ ENCODINGS_DIR = os.path.join(BASE_DIR, "encodings")
 GUARDS_DIR = os.path.join(ENCODINGS_DIR, "guards")
 PRISONERS_DIR = os.path.join(ENCODINGS_DIR, "prisoners")
 
-TOLERANCE = 0.6  # realistic & safe
+TOLERANCE = 0.9  # realistic & safe
 
 
 def load_encodings(folder, label):

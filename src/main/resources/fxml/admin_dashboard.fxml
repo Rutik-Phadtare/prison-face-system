@@ -22,7 +22,7 @@
 
         <!-- GUARDS -->
         <VBox alignment="CENTER" spacing="12" styleClass="card">
-            <Label styleClass="title" text="Guards" />
+            <Label styleClass="title" text="Guards" textFill="#8c3232" />
             <Button onAction="#openGuardManagement" styleClass="primary-button" text="Manage Guards" />
         </VBox>
 

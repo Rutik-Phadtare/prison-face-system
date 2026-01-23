@@ -4,29 +4,32 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" styleClass="bg-dashboard" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.CoAdminDashboardController">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" spacing="20" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.CoAdminDashboardController">
+    <fx:include source="header.fxml" />
 
-    <top>
-        <fx:include source="header.fxml" />
-    </top>
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" styleClass="bg-dashboard" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+
+
+
+
 
     <center>
         <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40;">
 
-            <Label styleClass="title" text="Co-Admin Dashboard" />
+            <Label style="-fx-font-family: 'Arial'; -fx-font-size: 30;" styleClass="title" text="Co-Admin Dashboard" />
 
             <!-- STAT CARD -->
             <VBox prefWidth="280" styleClass="card">
-                <Label styleClass="subtitle" text="Total Prisoners" />
-                <Label fx:id="prisonerCountLabel" styleClass="title" text="0" />
+                <Label style="-fx-font-size: 24;" styleClass="subtitle" text="Total Prisoners" />
+                <Label fx:id="prisonerCountLabel" style="-fx-font-size: 24;" styleClass="title" text="0" />
             </VBox>
 
             <!-- ACTIONS -->
             <HBox spacing="30" style="-fx-alignment: center;">
 
-                <VBox prefWidth="800.0" styleClass="card">
-                    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="824.0" style="-fx-alignment: CENTER;" styleClass="subtitle" text="Prisoner Management" textAlignment="CENTER" />
-                    <Label prefHeight="18.0" prefWidth="801.0" style="-fx-alignment: CENTER;" styleClass="muted" text="Add, update and monitor prisoners" />
+                <VBox prefHeight="125.0" prefWidth="800.0" styleClass="card">
+                    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="824.0" style="-fx-alignment: CENTER; -fx-font-size: 24;" styleClass="subtitle" text="Prisoner Management" textAlignment="CENTER" textFill="WHITE" />
+                    <Label prefHeight="42.0" prefWidth="779.0" style="-fx-alignment: CENTER; -fx-font-size: 16;" styleClass="muted" text="Add, update and monitor prisoners" textAlignment="CENTER" textFill="WHITE" />
                     <Button onAction="#openPrisoners" prefHeight="26.0" prefWidth="199.0" style="-fx-alignment: CENTER;" styleClass="primary-button" text="Open">
                   <VBox.margin>
                      <Insets left="300.0" />
@@ -39,3 +42,4 @@
     </center>
 
 </BorderPane>
+        </VBox>

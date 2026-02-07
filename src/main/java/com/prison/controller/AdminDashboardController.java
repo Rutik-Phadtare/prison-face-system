@@ -1,8 +1,13 @@
 package com.prison.controller;
 
+import com.prison.dao.GuardDao;
+import com.prison.dao.PrisonerDao;
 import com.prison.model.User;
 import com.prison.session.UserSession;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -31,11 +36,42 @@ public class AdminDashboardController {
     @FXML
     private Button faceRecognitionBtn;
 
+    @FXML
+    private Button prisonerCountButton;
+
+    @FXML
+    private Button guardCountButton;
+
+    private final PrisonerDao prisonerDao = new PrisonerDao();
+    private final GuardDao guardDao = new GuardDao();
+
+
+    private void updateCounts() {
+        prisonerCountButton.setText(
+                "👤 " + prisonerDao.countActivePrisoners()
+        );
+
+        guardCountButton.setText(
+                "🧑‍✈️ " + guardDao.countActiveGuards()
+        );
+    }
+
+    private void startAutoRefresh() {
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(5), e -> updateCounts())
+        );
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+
     /* =========================
        INITIALIZE (ROLE CHECK)
        ========================= */
     @FXML
     public void initialize() {
+        updateCounts();
+        startAutoRefresh();
 
         User user = UserSession.getUser();
 

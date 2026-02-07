@@ -3,7 +3,7 @@
    ===================== */
 .root {
     -fx-font-family: "Segoe UI", "Roboto", sans-serif;
-    -fx-background-color: #0f172a;
+    -fx-background-color: #fff1da;
 }
 
 /* =====================
@@ -55,8 +55,8 @@
    INPUT FIELDS
    ===================== */
 .text-field, .password-field {
-    -fx-background-color: #020617;
-    -fx-text-fill: white;
+    -fx-background-color: white;
+    -fx-text-fill: black;
     -fx-prompt-text-fill: #64748b;
     -fx-border-color: #334155;
     -fx-border-radius: 6;
@@ -82,24 +82,24 @@
    TABLE VIEW
    ===================== */
 .table-view {
-    -fx-background-color: #020617;
+    -fx-background-color: white;
     -fx-border-color: #334155;
 
 }
 
 .table-view .column-header {
-    -fx-background-color: #020617;
+    -fx-background-color: white;
     -fx-text-fill: #e5e7eb;
 }
 
 .table-row-cell {
-    -fx-background-color: #020617;
+    -fx-background-color: white;
     -fx-text-fill: #e5e7eb;
 
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #1e3a8a;
+    -fx-background-color: lightgray;
 }
 
 /* =====================
@@ -241,13 +241,13 @@
 
 /* ===== TABLE TEXT STYLES ===== */
 .prisoner-prisonerId {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: black;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
 .prisoner-name {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: black;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
@@ -315,4 +315,16 @@
 
 .dark-table .table-row-cell {
     -fx-cell-size: 36px;
+}
+.stat-button {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(to right, #19a7b7, #1ecad3);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-cursor: default;
+}
+
+.stat-button:hover {
+    -fx-background-color: linear-gradient(to right, #1ecad3, #19a7b7);
 }

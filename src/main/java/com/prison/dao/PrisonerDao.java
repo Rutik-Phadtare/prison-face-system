@@ -128,6 +128,25 @@ public class PrisonerDao {
             e.printStackTrace();
         }
     }
+    public int countActivePrisoners() {
+
+        String sql = "SELECT COUNT(*) FROM prisoners WHERE status = 'IN_CUSTODY'";
+
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     public void update(Prisoner prisoner) {
 
         String sql = """

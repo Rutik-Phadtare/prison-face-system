@@ -4,7 +4,7 @@ public class PasswordGenerator {
 
     public static void main(String[] args) {
 
-        String plainPassword = "rutik";
+        String plainPassword = "r";
 
         String hashed = PasswordUtil.hashPassword(plainPassword);
 

@@ -6,17 +6,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" spacing="20" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.AdminDashboardController">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" spacing="20" style="-fx-background-color: 'white';" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.AdminDashboardController">
 
     <!-- HEADER -->
     <fx:include source="header.fxml" />
 
     <!-- DASHBOARD CARDS -->
-    <HBox alignment="CENTER" prefHeight="144.0" prefWidth="1500.0" spacing="20" style="-fx-padding: 30;">
+    <HBox alignment="CENTER" prefHeight="144.0" prefWidth="1500.0" spacing="20" style="-fx-background-color: 'white';">
 
            <!-- PRISONERS -->
         <VBox alignment="CENTER" spacing="12" styleClass="card">
-            <Label styleClass="title" text="Prisoners" />
+            <Label styleClass="title" text="Prisoners" textFill="#9c1717" />
             <Button onAction="#openPrisonerManagement" styleClass="primary-button" text="Manage Prisoners" />
         </VBox>
 
@@ -29,7 +29,7 @@
         <!-- FACE RECOGNITION -->
         <VBox alignment="CENTER" spacing="12" styleClass="card">
             <Label styleClass="title" text="Recognition" />
-            <Button onAction="#openFaceRecognition" styleClass="primary-button" text="Face Recognition" />
+            <Button onAction="#openFaceRecognition" styleClass="primary-button" text="Face Recognition" textFill="#f8fafc" />
         </VBox>
 
         <!-- ✅ RECOGNITION LOGS (NEW) -->
@@ -45,9 +45,9 @@
       </VBox.margin>
 
     </HBox>
-   <Label alignment="CENTER" prefHeight="46.0" prefWidth="462.0" style="-fx-alignment: center; -fx-border-color: white; -fx-font-family: 'Calibri'; -fx-border-radius: 20;" text="Prison Statistics Summary" textFill="WHITE">
+   <Label alignment="CENTER" prefHeight="46.0" prefWidth="462.0" style="-fx-alignment: center; -fx-border-color: 'blue'; -fx-font-family: 'Times new roman'; -fx-border-radius: 20;" text="Prison Statistics Summary" textFill="#3a36c1">
       <font>
-         <Font name="Calibri" size="38.0" />
+         <Font name="Calibri" size="41.0" />
       </font>
       <VBox.margin>
          <Insets left="520.0" top="50.0" />
@@ -59,11 +59,13 @@
    <HBox prefHeight="137.0" prefWidth="1492.0">
        <VBox alignment="CENTER" prefHeight="138.0" prefWidth="234.0" spacing="12" style="-fx-border-color: #0066ff; -fx-border-radius: 20;" styleClass="card">
            <Label styleClass="title" text="Total Inmates" textFill="#0066ff" />
-           <Button style="-fx-background-color: #19a7b7;" styleClass="primary-button" text="👤 1,248" textFill="#793131" textOverrun="CLIP">
-            <effect>
-               <Reflection fraction="0.73" />
-            </effect></Button>
-         <HBox.margin>
+           <Button fx:id="prisonerCountButton" focusTraversable="false" style="-fx-background-color: #19a7b7;" styleClass="primary-button" text="👤 0" textFill="#313333">
+               <effect>
+                   <Reflection fraction="0.6" />
+               </effect>
+           </Button>
+
+           <HBox.margin>
             <Insets left="150.0" />
          </HBox.margin>
          <opaqueInsets>
@@ -73,7 +75,7 @@
       <VBox alignment="CENTER" layoutX="210.0" layoutY="10.0" prefHeight="138.0" prefWidth="314.0" spacing="12" style="-fx-border-color: #0066ff; -fx-border-radius: 20;" styleClass="card">
          <children>
             <Label styleClass="title" text="Active Staff Members" />
-            <Button style="-fx-background-color: #19a7b7;" styleClass="primary-button" text=" 🧑‍✈️ 214" textFill="#19a7b7">
+            <Button style="-fx-background-color: #19a7b7;" styleClass="primary-button" text=" 🧑‍✈️ 214" textFill="#313333">
                <effect>
                   <Reflection />
                </effect></Button>
@@ -85,14 +87,11 @@
       <VBox alignment="CENTER" layoutX="464.0" layoutY="10.0" prefHeight="138.0" prefWidth="240.0" spacing="12" style="-fx-border-color: #0066ff; -fx-border-radius: 20;" styleClass="card">
          <children>
             <Label styleClass="title" text="Guards on Duty" />
-            <Button style="-fx-background-color: #19a7b7;" styleClass="primary-button" text="🚔 58" textFill="#793131">
-               <effect>
-                  <Reflection />
-               </effect>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Button>
+             <Button fx:id="guardCountButton" focusTraversable="false" style="-fx-background-color: #19a7b7;" styleClass="primary-button" text="🧑‍✈️ 0" textFill="#313333">
+                 <effect>
+                     <Reflection fraction="0.6" />
+                 </effect>
+             </Button>
          </children>
          <HBox.margin>
             <Insets left="20.0" />
@@ -121,9 +120,9 @@
          <Reflection fraction="0.67" topOpacity="0.44" />
       </effect>
    </HBox>
-   <VBox blendMode="LIGHTEN" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: 'transparent';">
+   <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: 'transparent';">
       <children>
-         <Label lineSpacing="1.0" prefHeight="124.0" prefWidth="1516.0" style="-fx-font-size: 30; -fx-font-family: 'Verdana'; -fx-background-color: 'transparent';" text="The administrator is responsible for managing inmate data, assigning staff roles, monitoringsecurity activities, approving access permissions, and ensuring the smooth operation of the prison management system." textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP" wrapText="true">
+         <Label lineSpacing="1.0" prefHeight="124.0" prefWidth="1516.0" style="-fx-font-size: 30; -fx-font-family: 'Verdana'; -fx-background-color: 'transparent';" text="The administrator is responsible for managing inmate data, assigning staff roles, monitoringsecurity activities, approving access permissions, and ensuring the smooth operation of the prison management system." textAlignment="CENTER" textFill="#387984" textOverrun="CLIP" wrapText="true">
             <font>
                <Font size="48.0" />
             </font>

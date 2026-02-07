@@ -13,7 +13,7 @@
         </image>
     </ImageView>
 
-    <Label style="-fx-font-family: 'Times New Roman'; -fx-font-size: 35;" styleClass="title" text="Prison Face System" />
+    <Label style="-fx-font-family: 'Times New Roman'; -fx-font-size: 35;" styleClass="title" text="Prison Management System" />
 
     <Region HBox.hgrow="ALWAYS" />
 

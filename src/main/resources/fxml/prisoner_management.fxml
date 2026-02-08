@@ -10,7 +10,10 @@
     <top>
         <VBox spacing="4" styleClass="page-header">
             <Label style="-fx-font-size: 30;" styleClass="page-title" text="Prisoner Management" />
-            <Label style="-fx-font-size: 16;" styleClass="page-subtitle" text="Manage prisoner records securely" />
+            <Label style="-fx-font-size: 16; -fx-text-fill: #1c3cd6;" styleClass="section-title" text="Manage prisoner records securely">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font></Label>
         </VBox>
     </top>
 
@@ -37,17 +40,20 @@
     <bottom>
         <VBox spacing="12" styleClass="form-card">
 
-            <Label style="-fx-text-fill: #ffc800;" styleClass="section-title" text="Prisoner Details" textFill="#ffc800" />
+            <Label style="-fx-text-fill: #1c3cd6;" styleClass="section-title" text="Prisoner Details" textFill="#1c3cd6" />
 
             <!-- Row 1 -->
             <HBox spacing="12">
                 <VBox spacing="4">
-                    <Label text="Prisoner Name" textFill="WHITE" />
+                    <Label style="-fx-font-size: 16; -fx-font-family: 'Calibri';" text="Prisoner Name" textFill="#794848">
+                  <font>
+                     <Font size="9.0" />
+                  </font></Label>
                     <TextField fx:id="nameField" promptText="Name" />
                 </VBox>
 
                 <VBox spacing="4">
-                    <Label text="Crime" textFill="WHITE" />
+                    <Label style="-fx-font-size: 16; -fx-font-family: 'Calibri';" text="Crime" textFill="#794848" />
                     <TextField fx:id="crimeField" promptText="Crime" />
                 </VBox>
             </HBox>
@@ -55,12 +61,12 @@
             <!-- Row 2 -->
             <HBox spacing="12">
                 <VBox spacing="4">
-                    <Label text="Cell Number" textFill="WHITE" />
+                    <Label style="-fx-font-size: 16; -fx-font-family: 'Calibri';" text="Cell Number" textFill="#794848" />
                     <TextField fx:id="cellField" promptText="Cell" />
                 </VBox>
 
                 <VBox spacing="4">
-                    <Label text="Sentence Years" textFill="WHITE" />
+                    <Label style="-fx-font-size: 16; -fx-font-family: 'Calibri';" text="Sentence Years" textFill="#794848" />
                     <TextField fx:id="yearsField" promptText="Year" />
                 </VBox>
                 <Label fx:id="remainingTimeLabel" styleClass="remaining-time" text="Remaining Time" />
@@ -69,11 +75,11 @@
 
             <!-- Description -->
             <VBox spacing="4">
-                <Label text="Description / Notes" textFill="WHITE">
+                <Label style="-fx-font-family: 'Calibri'; -fx-font-size: 18;" text="Description / Notes" textFill="#794848">
                <font>
-                  <Font size="24.0" />
+                  <Font name="Calibri" size="24.0" />
                </font></Label>
-                <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="Prisoner Description" style="-fx-control-inner-background: #020617;" />
+                <TextField fx:id="descriptionArea" prefHeight="60.0" prefWidth="1154.0" promptText="Prisoner Description" style="-fx-control-inner-background: 'white'; -fx-border-color: 'black';" />
 
             </VBox>
 
@@ -81,9 +87,12 @@
             <HBox alignment="CENTER_RIGHT" spacing="12">
                 <Button onAction="#addPrisoner" styleClass="primary-button" text="Add Prisoner" />
 
-                <Button onAction="#updatePrisoner" styleClass="secondary-button" text="Update Prisoner" />
+                <Button onAction="#updatePrisoner" style="-fx-text-fill: 'white'; -fx-font-size: 12; -fx-font-style: 'bold'; -fx-background-color: #14a125;" styleClass="secondary-button" text="Update Prisoner">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Button>
 
-                <Button onAction="#deletePrisoner" styleClass="danger-button" text="Delete Selected" />
+                <Button onAction="#deletePrisoner" style="-fx-background-color: 'lightgray'; -fx-text-fill: 'black'; -fx-font-style: 'bold';" styleClass="secondary-button" text="Delete Selected" />
             </HBox>
 
         </VBox>

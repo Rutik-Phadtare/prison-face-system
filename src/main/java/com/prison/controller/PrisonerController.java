@@ -37,7 +37,7 @@ public class PrisonerController {
     @FXML private TextField crimeField;
     @FXML private TextField cellField;
     @FXML private TextField yearsField;
-    @FXML private TextArea descriptionArea;
+    @FXML private TextField descriptionArea;
     @FXML private Label remainingTimeLabel;
 
     private final PrisonerDao dao = new PrisonerDao();

@@ -48,7 +48,9 @@
 }
 
 .secondary-button:hover {
-    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-background-color: linear-gradient(to right, #1e40af, #1e3a8a);
+       -fx-scale-x: 1.05;
+       -fx-scale-y: 1.05;
 }
 
 /* =====================
@@ -290,7 +292,7 @@
 .page-title {
     -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 
 .page-subtitle {

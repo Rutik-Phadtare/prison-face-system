@@ -7,20 +7,20 @@
 <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" spacing="18" style="-fx-padding: 20;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.FaceRecognitionController">
 
     <!-- TITLE -->
-    <Label styleClass="title" text="Face Recognition" />
+    <Label style="-fx-text-fill: 'black';" styleClass="title" text="Face Recognition" />
 
     <!-- 🔴 IMPORTANT: INFO DISPLAY AREA -->
     <VBox fx:id="infoBox" alignment="CENTER_LEFT" prefWidth="420" spacing="8" />
 
     <!-- ACTION BUTTON -->
     <Button onAction="#startRecognition" prefHeight="50.0" prefWidth="229.0" styleClass="primary-button" text="Start Recognition" />
-   <Label alignment="CENTER_RIGHT" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: 'White';" text="• Click the Scan Face button to start face detection.ture">
+   <Label alignment="CENTER_RIGHT" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Click the Scan Face button to start face detection.ture">
       <VBox.margin>
          <Insets top="70.0" />
       </VBox.margin></Label>
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="168.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: 'White';" text="• Look straight toward the camera and keep your face centered." />
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="201.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: 'White';" text="• Ensure proper lighting and remove masks, caps, or glasses if possible." />
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="235.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: 'White';" text="• Do not move or turn your head during scanning." />
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="268.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: 'White';" text="• Follow system instructions for accurate and secure identification." />
+   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="168.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Look straight toward the camera and keep your face centered." />
+   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="201.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Ensure proper lighting and remove masks, caps, or glasses if possible." />
+   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="235.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Do not move or turn your head during scanning." />
+   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="268.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Follow system instructions for accurate and secure identification." />
 
 </VBox>

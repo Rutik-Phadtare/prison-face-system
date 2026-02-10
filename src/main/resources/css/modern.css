@@ -243,6 +243,7 @@
 
 /* ===== TABLE TEXT STYLES ===== */
 .prisoner-prisonerId {
+    -fx-font-family: Times New Roman;
     -fx-text-fill: black;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
@@ -257,7 +258,7 @@
 .prisoner-crime {
     -fx-text-fill: #ff4d4d;
     -fx-font-size: 13px;
-    -fx-font-style: italic;
+    -fx-font-weight: bold;
 }
 
 .prisoner-cellNo {
@@ -275,6 +276,11 @@
     -fx-font-weight: bold;
 }
 
+.prisoner-description{
+    -fx-text-fil: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
 
 .remaining-time {
     -fx-text-fill: #ffcc00;

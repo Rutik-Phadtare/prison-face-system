@@ -109,7 +109,10 @@ public class FaceRecognitionController {
         Label crime = new Label("Crime: " + p.getCrime());
         crime.getStyleClass().add("prisoner-text");
 
-        infoBox.getChildren().addAll(title, name, id, crime);
+        Label release = new Label("Release Date: "+p.getReleaseDate());
+        release.getStyleClass().add("Prisoner-text");
+
+        infoBox.getChildren().addAll(title, name, id, crime,release);
     }
 
     /* =========================

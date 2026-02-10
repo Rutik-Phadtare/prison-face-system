@@ -1,6 +1,7 @@
 package com.prison.util;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 public class TimeUtil {
@@ -14,27 +15,20 @@ public class TimeUtil {
      */
     public static String calculateRemainingTime(LocalDate releaseDate) {
 
-        if (releaseDate == null) {
-            return "Release date not set";
-        }
+        if (releaseDate == null) return "Release date not set";
 
-        long daysRemaining =
-                ChronoUnit.DAYS.between(LocalDate.now(), releaseDate);
+        LocalDate now = LocalDate.now();
 
-        if (daysRemaining <= 0) {
+        if (!releaseDate.isAfter(now)) {
             return "Sentence Completed";
         }
 
-        long years = daysRemaining / 365;
-        long months = (daysRemaining % 365) / 30;
-        long days = (daysRemaining % 365) % 30;
+        Period p = Period.between(now, releaseDate);
 
-        StringBuilder result = new StringBuilder();
-
-        if (years > 0) result.append(years).append(" year(s) ");
-        if (months > 0) result.append(months).append(" month(s) ");
-        if (days > 0) result.append(days).append(" day(s)");
-
-        return result.toString().trim() + " remaining";
+        return String.format(
+                "%d years, %d months, %d days",
+                p.getYears(), p.getMonths(), p.getDays()
+        );
     }
+
 }

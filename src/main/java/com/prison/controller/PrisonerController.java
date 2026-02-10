@@ -11,6 +11,8 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.collections.ObservableList;
+
 
 import java.time.LocalDate;
 
@@ -24,9 +26,8 @@ public class PrisonerController {
     @FXML private TableColumn<Prisoner, String> nameCol;
     @FXML private TableColumn<Prisoner, String> crimeCol;
     @FXML private TableColumn<Prisoner, String> cellCol;
-    @FXML private TableColumn<Prisoner, Integer> yearsCol;
+    @FXML private TableColumn<Prisoner, String> yearsCol;
     @FXML private TableColumn<Prisoner, String> statusCol;
-
     @FXML private TableColumn<Prisoner, String> remainingCol;
     @FXML private TableColumn<Prisoner, String> descCol;
 
@@ -34,14 +35,30 @@ public class PrisonerController {
        FORM FIELDS
        ========================= */
     @FXML private TextField nameField;
-    @FXML private TextField crimeField;
-    @FXML private TextField cellField;
-    @FXML private TextField yearsField;
-    @FXML private TextField descriptionArea;
+    @FXML private ComboBox<String> crimeField;
+    @FXML private ComboBox<String> cellField;
+    @FXML private Spinner<Integer> yearSpinner;
+    @FXML private Spinner<Integer> monthSpinner;
+    @FXML private TextArea descriptionArea;
     @FXML private Label remainingTimeLabel;
 
     private final PrisonerDao dao = new PrisonerDao();
     private Prisoner selectedPrisoner;
+
+    /* =========================
+       LOAD CELLS (MAX 2 PER CELL)
+       ========================= */
+    private void loadCellList() {
+        ObservableList<String> cells = FXCollections.observableArrayList();
+
+        for (int i = 1; i <= 100; i++) {
+            int count = dao.countPrisonersInCell(String.valueOf(i));
+            if (count < 2) {
+                cells.add(String.valueOf(i));
+            }
+        }
+        cellField.setItems(cells);
+    }
 
     /* =========================
        INITIALIZE
@@ -49,58 +66,176 @@ public class PrisonerController {
     @FXML
     public void initialize() {
 
+        /* Crime list (editable) */
+        crimeField.setEditable(true);
+        crimeField.setItems(FXCollections.observableArrayList(
+                "Murder",
+                "Robbery",
+                "Theft",
+                "Assault",
+                "Fraud",
+                "Rape",
+                "Kidnapping",
+                "Cyber Crime"
+        ));
+
+        /* Load cell list */
+        loadCellList();
+
+        /* Spinners */
+        yearSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100,0)
+        );
+        monthSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 11,1)
+        );
+
+        /* Table bindings */
         idCol.setCellValueFactory(new PropertyValueFactory<>("prisonerId"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         crimeCol.setCellValueFactory(new PropertyValueFactory<>("crime"));
         cellCol.setCellValueFactory(new PropertyValueFactory<>("cellNo"));
-        yearsCol.setCellValueFactory(new PropertyValueFactory<>("sentenceYears"));
+        yearsCol.setCellValueFactory(data -> {
+            Prisoner p = data.getValue();
+
+            if (p.getSentenceStartDate() == null || p.getReleaseDate() == null) {
+                return new SimpleStringProperty("-");
+            }
+
+            long months =
+                    java.time.temporal.ChronoUnit.MONTHS.between(
+                            p.getSentenceStartDate(),
+                            p.getReleaseDate()
+                    );
+
+            return new SimpleStringProperty(
+                    String.format("%.1f", months / 12.0)
+            );
+        });
+
+
+
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // 🔹 Remaining time (computed)
-        remainingCol.setCellValueFactory(data ->
-                new SimpleStringProperty(
-                        TimeUtil.calculateRemainingTime(data.getValue().getReleaseDate())
-                )
-        );
+        remainingCol.setCellValueFactory(data -> {
+            Prisoner p = data.getValue();
 
-        // 🔹 Description
+            LocalDate releaseDate = p.getReleaseDate();
+
+            // Fallback for old records
+            if (releaseDate == null) {
+                releaseDate = LocalDate.now().plusYears(p.getSentenceYears());
+                p.setReleaseDate(releaseDate);
+                dao.update(p);
+            }
+
+            // 🔥 AUTO-RELEASE LOGIC
+            if (!releaseDate.isAfter(LocalDate.now())
+                    && !"RELEASED".equals(p.getStatus())) {
+
+                p.setStatus("RELEASED");
+                dao.updateStatus(p.getPrisonerId(), "RELEASED");
+            }
+
+            return new SimpleStringProperty(releaseDate.toString());
+        });
+        remainingCol.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String date, boolean empty) {
+                super.updateItem(date, empty);
+
+                if (empty || date == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                LocalDate releaseDate = LocalDate.parse(date);
+
+                setText(date);
+
+                if (releaseDate.isBefore(LocalDate.now())) {
+                    // 🔴 Expired
+                    setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                } else {
+                    // 🟢 Active
+                    setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+                }
+            }
+        });
+        statusCol.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+
+                if (empty || status == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                setText(status);
+
+                if ("RELEASED".equals(status)) {
+                    setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                } else {
+                    setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+                }
+            }
+        });
+
+        yearsCol.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String value, boolean empty) {
+                super.updateItem(value, empty);
+                if (empty || value == null) {
+                    setText(null);
+                    return;
+                }
+                setText(value + " yrs");
+            }
+        });
+
+
         descCol.setCellValueFactory(
                 new PropertyValueFactory<>("description")
         );
 
-        // Styling
+        /* Styling */
+        idCol.setCellFactory(col -> new StyledCell<>("prisoner-prisonerId"));
         nameCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
         crimeCol.setCellFactory(col -> new StyledCell<>("prisoner-crime"));
-        statusCol.setCellFactory(col -> new StyledCell<>("prisoner-status"));
-        yearsCol.setCellFactory(col -> new StyledCell<>("prisoner-years"));
-        remainingCol.setCellFactory(col -> new StyledCell<>("prisoner-remaining"));
+       // statusCol.setCellFactory(col -> new StyledCell<>("prisoner-status"));
+       // yearsCol.setCellFactory(col -> new StyledCell<>("prisoner-years"));
+       // remainingCol.setCellFactory(col -> new StyledCell<>("prisoner-remaining"));
+        descCol.setCellFactory(col->new StyledCell<>("prisoner-description"));
 
         refreshTable();
 
+        /* Selection → edit mode */
         prisonerTable.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((obs, oldVal, p) -> {
-
                     selectedPrisoner = p;
                     if (p == null) return;
 
                     nameField.setText(p.getName());
-                    crimeField.setText(p.getCrime());
-                    cellField.setText(p.getCellNo());
-                    yearsField.setText(String.valueOf(p.getSentenceYears()));
+                    crimeField.setValue(p.getCrime());
+                    cellField.setValue(p.getCellNo());
                     descriptionArea.setText(p.getDescription());
 
-                    if (remainingTimeLabel != null) {
-                        remainingTimeLabel.setText(
-                                TimeUtil.calculateRemainingTime(p.getReleaseDate())
-                        );
-                    }
+                    yearSpinner.getValueFactory().setValue(p.getSentenceYears());
+                    monthSpinner.getValueFactory().setValue(0);
+
+                    remainingTimeLabel.setText(
+                            TimeUtil.calculateRemainingTime(p.getReleaseDate())
+                    );
                 });
     }
 
-
-      // ADD PRISONER + TRAIN FACE
-
+    /* =========================
+       ADD PRISONER
+       ========================= */
     @FXML
     public void addPrisoner() {
 
@@ -108,12 +243,18 @@ public class PrisonerController {
 
         Prisoner p = new Prisoner();
         p.setName(nameField.getText());
-        p.setCrime(crimeField.getText());
-        p.setCellNo(cellField.getText());
+        p.setCrime(crimeField.getValue());
+        p.setCellNo(cellField.getValue());
 
-        int years = Integer.parseInt(yearsField.getText());
+        int years = yearSpinner.getValue();
+        int months = monthSpinner.getValue();
+
+        LocalDate start = LocalDate.now();
+        LocalDate releaseDate = start.plusYears(years).plusMonths(months);
+
         p.setSentenceYears(years);
-        p.setReleaseDate(LocalDate.now().plusYears(years));
+        p.setSentenceStartDate(start);
+        p.setReleaseDate(releaseDate);
         p.setDescription(descriptionArea.getText());
         p.setStatus("IN_CUSTODY");
 
@@ -126,24 +267,27 @@ public class PrisonerController {
         clearFields();
     }
 
-
-       //UPDATE PRISONER
-
+    /* =========================
+       UPDATE PRISONER
+       ========================= */
     @FXML
     public void updatePrisoner() {
 
         if (selectedPrisoner == null) {
-            showAlert("Select prisoner", "Choose a prisoner to update");
+            showAlert("Select Prisoner", "Choose a prisoner to update");
             return;
         }
 
-        int years = Integer.parseInt(yearsField.getText());
+        int years = yearSpinner.getValue();
+        int months = monthSpinner.getValue();
 
         selectedPrisoner.setName(nameField.getText());
-        selectedPrisoner.setCrime(crimeField.getText());
-        selectedPrisoner.setCellNo(cellField.getText());
+        selectedPrisoner.setCrime(crimeField.getValue());
+        selectedPrisoner.setCellNo(cellField.getValue());
         selectedPrisoner.setSentenceYears(years);
-        selectedPrisoner.setReleaseDate(LocalDate.now().plusYears(years));
+        selectedPrisoner.setReleaseDate(
+                LocalDate.now().plusYears(years).plusMonths(months)
+        );
         selectedPrisoner.setDescription(descriptionArea.getText());
 
         dao.update(selectedPrisoner);
@@ -154,7 +298,7 @@ public class PrisonerController {
     }
 
     /* =========================
-       DELETE PRISONER
+       DELETE
        ========================= */
     @FXML
     public void deletePrisoner() {
@@ -178,19 +322,24 @@ public class PrisonerController {
 
     private void clearFields() {
         nameField.clear();
-        crimeField.clear();
-        cellField.clear();
-        yearsField.clear();
+        crimeField.setValue(null);
+        cellField.setValue(null);
         descriptionArea.clear();
-        if (remainingTimeLabel != null) remainingTimeLabel.setText("");
+        yearSpinner.getValueFactory().setValue(1);
+        monthSpinner.getValueFactory().setValue(0);
+        remainingTimeLabel.setText("");
         selectedPrisoner = null;
     }
 
     private boolean validateInput() {
-        return !nameField.getText().isEmpty()
-                && !crimeField.getText().isEmpty()
-                && !cellField.getText().isEmpty()
-                && !yearsField.getText().isEmpty();
+        if (nameField.getText().isEmpty()
+                || crimeField.getValue() == null
+                || cellField.getValue() == null) {
+
+            showAlert("Validation Error", "All fields are required");
+            return false;
+        }
+        return true;
     }
 
     private void showAlert(String title, String msg) {

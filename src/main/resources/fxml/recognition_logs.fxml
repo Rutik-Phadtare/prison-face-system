@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.Label?>
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.prison.controller.RecognitionLogController"
-      spacing="15"
-      style="-fx-padding: 20;">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-    <Label text="Face Recognition Logs"
-           styleClass="title"/>
+<VBox spacing="15" style="-fx-padding: 20;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.RecognitionLogController">
+
+    <Label style="-fx-font-size: 26;" styleClass="page-title" text="Face Recognition Logs" />
 
     <TableView fx:id="logTable" prefHeight="500">
 
         <columns>
-            <TableColumn fx:id="timeCol" text="Detected At" prefWidth="180"/>
-            <TableColumn fx:id="typeCol" text="Person Type" prefWidth="150"/>
-            <TableColumn fx:id="idCol" text="Person ID" prefWidth="120"/>
-            <TableColumn fx:id="resultCol" text="Result" prefWidth="150"/>
+            <TableColumn fx:id="timeCol" prefWidth="180" text="Detected At" />
+            <TableColumn fx:id="typeCol" prefWidth="150" text="Person Type" />
+            <TableColumn fx:id="idCol" prefWidth="120" text="Person ID" />
+            <TableColumn fx:id="resultCol" prefWidth="150" text="Result" />
         </columns>
 
     </TableView>

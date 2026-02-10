@@ -11,13 +11,19 @@ public class Prisoner {
     private int sentenceYears;
     private String status;
 
+
     /* 🔴 NEW FIELDS */
     private String description;
     private LocalDate releaseDate;
 
+    private LocalDate sentenceStartDate;
+
+
     /* =========================
        GETTERS & SETTERS
        ========================= */
+    public LocalDate getSentenceStartDate() { return sentenceStartDate; }
+    public void setSentenceStartDate(LocalDate d) { this.sentenceStartDate = d; }
 
     public int getPrisonerId() {
         return prisonerId;
@@ -35,9 +41,8 @@ public class Prisoner {
         this.name = name;
     }
 
-    public String getCrime() {
-        return crime;
-    }
+    public String getCrime() { return crime; }
+
 
     public void setCrime(String crime) {
         this.crime = crime;
@@ -71,19 +76,10 @@ public class Prisoner {
        🔴 NEW GETTERS & SETTERS
        ========================= */
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
+    public LocalDate getReleaseDate() { return releaseDate; }
+    public void setReleaseDate(LocalDate d) { this.releaseDate = d; }
 }

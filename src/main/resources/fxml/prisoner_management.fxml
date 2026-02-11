@@ -67,9 +67,9 @@
                     <Label text="Sentence Duration" textFill="#794848" />
 
                     <HBox spacing="8">
-                        <Spinner fx:id="yearSpinner" editable="true" prefWidth="80" promptText="MM" />
+                        <Spinner fx:id="yearSpinner" editable="true" prefWidth="80" promptText="YY" />
                         <Label text="Years" />
-                        <Spinner fx:id="monthSpinner" editable="true" prefWidth="80" promptText="YY" />
+                        <Spinner fx:id="monthSpinner" editable="true" prefWidth="80" promptText="MM" />
                         <Label text="Months" />
                     </HBox>
                 </VBox>

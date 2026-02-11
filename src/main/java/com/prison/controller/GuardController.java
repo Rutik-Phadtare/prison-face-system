@@ -1,136 +1,209 @@
 package com.prison.controller;
 
+import com.prison.dao.GuardDao;
 import com.prison.model.Guard;
-import com.prison.service.GuardService;
+import com.prison.util.PythonRunnerUtil;
+import com.prison.util.StyledCell;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import java.time.LocalTime;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+public class GuardController {
 
-public class GuardController implements Initializable {
+    @FXML private TableView<Guard> guardTable;
+    @FXML private TableColumn<Guard, Integer> idCol;
+    @FXML private TableColumn<Guard, String> nameCol, designationCol, shiftCol, statusCol, joiningCol, descCol;
 
-    @FXML
-    private TableView<Guard> guardTable;
+    @FXML private TextField nameField;
+    @FXML private ComboBox<String> designationField, shiftField;
+    @FXML private DatePicker joiningDatePicker;
+    @FXML private TextArea descriptionArea;
+    @FXML private Label statusInfoLabel;
 
-    @FXML
-    private TableColumn<Guard, Integer> idCol;
-
-    @FXML
-    private TableColumn<Guard, String> nameCol;
-
-    @FXML
-    private TableColumn<Guard, String> designationCol;
-
-    @FXML
-    private TableColumn<Guard, String> shiftCol;
+    private final GuardDao dao = new GuardDao();
+    private Guard selectedGuard;
 
     @FXML
-    private TableColumn<Guard, String> statusCol;
+    public void initialize() {
+        setupTable();
+        setupForm();
+        refreshTable();
 
-    @FXML
-    private TextField nameField, designationField, shiftField;
+        /* Selection → edit mode */
+        guardTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, g) -> {
+            selectedGuard = g;
+            if (g == null) return;
 
-    private final GuardService guardService = new GuardService();
-    private final ObservableList<Guard> guardList =
-            FXCollections.observableArrayList();
+            nameField.setText(g.getName());
+            designationField.setValue(g.getDesignation());
+            shiftField.setValue(g.getShift());
+            joiningDatePicker.setValue(g.getJoiningDate());
+            descriptionArea.setText(g.getDescription());
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        idCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleIntegerProperty(
-                        data.getValue().getGuardId()).asObject());
-
-        nameCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getName()));
-
-        designationCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getDesignation()));
-
-        shiftCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getShift()));
-
-        statusCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getStatus()));
-
-        loadGuards();
+            statusInfoLabel.setText("Current Status: " + calculateLiveStatus(g.getShift()));
+        });
     }
 
-    private void loadGuards() {
-        guardList.clear();
-        guardList.addAll(guardService.getAllGuards());
-        guardTable.setItems(guardList);
+    /* ============================================================
+       🔥 LIVE STATUS LOGIC (TIME-BASED)
+       ============================================================ */
+    private String calculateLiveStatus(String shift) {
+        if (shift == null || shift.equalsIgnoreCase("On Leave")) {
+            return "INACTIVE";
+        }
+
+        try {
+            // Extract numbers from shift string like "Morning (06-14)"
+            String hoursOnly = shift.replaceAll("[^0-9-]", ""); // Result: "06-14"
+            String[] parts = hoursOnly.split("-");
+            int startHour = Integer.parseInt(parts[0]);
+            int endHour = Integer.parseInt(parts[1]);
+
+            int currentHour = LocalTime.now().getHour();
+
+            boolean isActive;
+            if (startHour < endHour) {
+                // Normal day shift (e.g., 06 to 14)
+                isActive = (currentHour >= startHour && currentHour < endHour);
+            } else {
+                // Overnight shift (e.g., 22 to 06)
+                isActive = (currentHour >= startHour || currentHour < endHour);
+            }
+
+            return isActive ? "ACTIVE" : "INACTIVE";
+
+        } catch (Exception e) {
+            return "INACTIVE"; // Fallback if parsing fails
+        }
+    }
+
+    private void setupTable() {
+        idCol.setCellValueFactory(new PropertyValueFactory<>("guardId"));
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        designationCol.setCellValueFactory(new PropertyValueFactory<>("designation"));
+
+        // 🔥 SHIFT & LIVE STATUS LOGIC
+        shiftCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getShift()));
+
+        statusCol.setCellValueFactory(data -> {
+            Guard g = data.getValue();
+            String liveStatus = calculateLiveStatus(g.getShift());
+
+            // Sync current calculated status to the object/DB if it changed
+            if (!liveStatus.equals(g.getStatus())) {
+                g.setStatus(liveStatus);
+                dao.update(g);
+            }
+
+            return new SimpleStringProperty(liveStatus);
+        });
+
+        // 🔥 STATUS CELL FACTORY (Mirroring Prisoner's color logic)
+        statusCol.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+                if (empty || status == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+                setText(status);
+                if ("ACTIVE".equals(status)) {
+                    setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+                } else {
+                    setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                }
+            }
+        });
+
+        joiningCol.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getJoiningDate() != null ? data.getValue().getJoiningDate().toString() : "N/A"
+        ));
+        descCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+        /* Styling matching Prisoner file */
+        idCol.setCellFactory(col -> new StyledCell<>("prisoner-id"));
+        nameCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
+        descCol.setCellFactory(col -> new StyledCell<>("guard-description"));
+        joiningCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
+    }
+
+    private void setupForm() {
+        designationField.setItems(FXCollections.observableArrayList(
+                "Gate Guard",
+                "Tower Guard",
+                "Control Room",
+                "Escort Officer",
+                "Supervisor"));
+        // IMPORTANT: Keep this format (HH-HH) for the parser to work
+        shiftField.setItems(FXCollections.observableArrayList(
+                "Morning (06-14)",
+                "Evening (14-22)",
+                "Night (22-06)",
+                "On Leave"
+        ));
     }
 
     @FXML
     public void addGuard() {
-
         Guard g = new Guard();
         g.setName(nameField.getText());
-        g.setDesignation(designationField.getText());
-        g.setShift(shiftField.getText());
-        g.setStatus("ACTIVE");
+        g.setDesignation(designationField.getValue());
+        g.setShift(shiftField.getValue());
+        g.setJoiningDate(joiningDatePicker.getValue());
+        g.setDescription(descriptionArea.getText());
 
-        int guardId = guardService.addGuardAndReturnId(g);
+        // Set initial live status
+        g.setStatus(calculateLiveStatus(g.getShift()));
 
-        if (guardId > 0) {
-            String result =
-                    com.prison.util.PythonRunnerUtil
-                            .trainFace("GUARD", guardId);
+        int id = dao.saveAndReturnId(g);
+        if (id > 0) PythonRunnerUtil.trainFace("GUARD", id);
 
-            if (result == null) {
-                System.out.println("Training failed: No response from Python");
-            } else {
-                System.out.println("Training Result: " + result);
-
-                if (!result.startsWith("OK")) {
-                    javafx.scene.control.Alert alert =
-                            new javafx.scene.control.Alert(
-                                    javafx.scene.control.Alert.AlertType.ERROR
-                            );
-                    alert.setTitle("Face Training Failed");
-                    alert.setHeaderText("Guard face training failed");
-                    alert.setContentText(
-                            "Reason: " + result +
-                                    "\n\nPlease ensure:\n" +
-                                    "- Face is clearly visible\n" +
-                                    "- Only one person in camera\n" +
-                                    "- Good lighting\n" +
-                                    "- Face centered"
-                    );
-                    alert.showAndWait();
-                }
-            }
-
-        }
-
-        loadGuards();
-
-        nameField.clear();
-        designationField.clear();
-        shiftField.clear();
+        refreshTable();
+        clearFields();
     }
 
+    @FXML
+    public void updateGuard() {
+        if (selectedGuard == null) return;
+
+        selectedGuard.setName(nameField.getText());
+        selectedGuard.setDesignation(designationField.getValue());
+        selectedGuard.setShift(shiftField.getValue());
+        selectedGuard.setJoiningDate(joiningDatePicker.getValue());
+        selectedGuard.setDescription(descriptionArea.getText());
+
+        // Update to current live status
+        selectedGuard.setStatus(calculateLiveStatus(selectedGuard.getShift()));
+
+        dao.update(selectedGuard);
+        refreshTable();
+        clearFields();
+    }
 
     @FXML
     public void deleteGuard() {
+        if (selectedGuard == null) return;
+        dao.delete(selectedGuard.getGuardId());
+        refreshTable();
+        clearFields();
+    }
 
-        Guard selected = guardTable.getSelectionModel()
-                .getSelectedItem();
+    private void refreshTable() {
+        guardTable.setItems(FXCollections.observableArrayList(dao.findAll()));
+    }
 
-        if (selected == null) {
-            return;
-        }
-
-        guardService.deleteGuard(selected.getGuardId());
-        loadGuards();
+    private void clearFields() {
+        nameField.clear();
+        designationField.setValue(null);
+        shiftField.setValue(null);
+        descriptionArea.clear();
+        joiningDatePicker.setValue(null);
+        statusInfoLabel.setText("");
+        selectedGuard = null;
     }
 }

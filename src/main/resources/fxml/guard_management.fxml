@@ -2,49 +2,60 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1500.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.GuardController">
-
-    <!-- TOP -->
+<BorderPane prefHeight="800.0" prefWidth="1500.0" stylesheets="@../css/modern.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.GuardController">
     <top>
-        <Label style="-fx-font-size: 35; -fx-padding: 10; -fx-font-family: 'Times New Roman';" text="Guard Management" />
+        <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #f4f4f4;">
+            <Label style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #e67e22;" text="Guard Force Management" />
+            <Label style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;" text="Monitor and assign security personnel shifts" />
+        </VBox>
     </top>
-
-    <!-- CENTER -->
     <center>
-        <TableView fx:id="guardTable" prefHeight="500.0" prefWidth="1500.0">
-
+        <TableView fx:id="guardTable" styleClass="dark-table">
             <columns>
-                <TableColumn fx:id="idCol" prefWidth="66.60000455379486" text="ID" />
-                <TableColumn fx:id="nameCol" prefWidth="450.20001220703125" text="Name" />
-                <TableColumn fx:id="designationCol" minWidth="0.0" prefWidth="285.79998779296875" text="Designation" />
-                <TableColumn fx:id="shiftCol" minWidth="0.0" prefWidth="327.3999328613281" text="Shift" />
-                <TableColumn fx:id="statusCol" prefWidth="370.20001220703125" text="Status" />
+                <TableColumn fx:id="idCol" prefWidth="50" text="ID" />
+                <TableColumn fx:id="nameCol" prefWidth="371.3999824523926" text="Guard Name" />
+                <TableColumn fx:id="designationCol" prefWidth="173.20001220703125" text="Designation" />
+                <TableColumn fx:id="shiftCol" prefWidth="146.0" text="Shift" />
+                <TableColumn fx:id="statusCol" prefWidth="169.60003662109375" text="Status" />
+                <TableColumn fx:id="joiningCol" prefWidth="212.60009765625" text="Joined" />
+                <TableColumn fx:id="descCol" prefWidth="374.4000244140625" text="Notes" />
             </columns>
-
         </TableView>
     </center>
-
-    <!-- BOTTOM -->
     <bottom>
-        <VBox prefHeight="205.0" prefWidth="1500.0" spacing="8" style="-fx-padding:10;">
-         <Label style="-fx-font-size: 25; -fx-font-family: 'Arial';" text="Add New Guard" textFill="#f09900">
-            <font>
-               <Font name="Arial" size="12.0" />
-            </font>
-         </Label>
-
-            <TextField fx:id="nameField" prefHeight="26.0" prefWidth="1479.0" promptText="Name" />
-            <TextField fx:id="designationField" promptText="Designation" />
-            <TextField fx:id="shiftField" promptText="Shift (Morning/Night)" />
-
-            <HBox spacing="10">
-                <Button onAction="#addGuard" prefHeight="26.0" prefWidth="190.0" text="Add Guard" />
-                <Button onAction="#deleteGuard" prefHeight="26.0" prefWidth="195.0" text="Delete Selected" />
+        <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 1 0 0 0;">
+            <HBox spacing="15">
+                <VBox spacing="5">
+                    <Label style="-fx-font-weight: bold;" text="Name" />
+                    <TextField fx:id="nameField" prefWidth="300" />
+                </VBox>
+                <VBox spacing="5">
+                    <Label style="-fx-font-weight: bold;" text="Designation" />
+                    <ComboBox fx:id="designationField" prefWidth="200" />
+                </VBox>
+                <VBox spacing="5">
+                    <Label style="-fx-font-weight: bold;" text="Shift" />
+                    <ComboBox fx:id="shiftField" prefWidth="200" />
+                </VBox>
+                <VBox spacing="5">
+                    <Label style="-fx-font-weight: bold;" text="Joining Date" />
+                    <DatePicker fx:id="joiningDatePicker" />
+                </VBox>
+                <VBox alignment="CENTER" spacing="5">
+                    <Label style="-fx-text-fill: #d35400; -fx-font-weight: bold;" text="Live Status" />
+                    <Label fx:id="statusInfoLabel" style="-fx-font-weight: bold;" text="—" />
+                </VBox>
             </HBox>
-
+            <VBox spacing="5">
+                <Label style="-fx-font-weight: bold;" text="Performance Notes / Biography" />
+                <TextArea fx:id="descriptionArea" prefHeight="80" style="-fx-border-color: 'black';" wrapText="true" />
+            </VBox>
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button onAction="#addGuard" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" text="Register Guard" />
+                <Button onAction="#updateGuard" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Save Changes" />
+                <Button onAction="#deleteGuard" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold;" text="Remove Guard" />
+            </HBox>
         </VBox>
     </bottom>
-
 </BorderPane>

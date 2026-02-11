@@ -82,13 +82,24 @@ public class PrisonerController {
         /* Load cell list */
         loadCellList();
 
+        /* Spinners - FIXED SECTION */
+        yearSpinner.setEditable(true); // Must be true for empty prompt
+        monthSpinner.setEditable(true);
         /* Spinners */
         yearSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100,0)
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000,0)
         );
         monthSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 11,1)
         );
+
+        // CALL THE HELPER HERE (You missed this part!)
+        setupEmptyPrompt(yearSpinner);
+        setupEmptyPrompt(monthSpinner);
+
+        // Force them to start empty
+        yearSpinner.getEditor().setText("");
+        monthSpinner.getEditor().setText("");
 
         /* Table bindings */
         idCol.setCellValueFactory(new PropertyValueFactory<>("prisonerId"));
@@ -119,22 +130,30 @@ public class PrisonerController {
 
         remainingCol.setCellValueFactory(data -> {
             Prisoner p = data.getValue();
-
             LocalDate releaseDate = p.getReleaseDate();
+            LocalDate today = LocalDate.now();
 
             // Fallback for old records
             if (releaseDate == null) {
-                releaseDate = LocalDate.now().plusYears(p.getSentenceYears());
+                releaseDate = today.plusYears(p.getSentenceYears());
                 p.setReleaseDate(releaseDate);
                 dao.update(p);
             }
 
-            // 🔥 AUTO-RELEASE LOGIC
-            if (!releaseDate.isAfter(LocalDate.now())
-                    && !"RELEASED".equals(p.getStatus())) {
-
-                p.setStatus("RELEASED");
-                dao.updateStatus(p.getPrisonerId(), "RELEASED");
+            // 🔥 DUAL-DIRECTION LOGIC
+            if (!releaseDate.isAfter(today)) {
+                // Should be released
+                if (!"RELEASED".equals(p.getStatus())) {
+                    p.setStatus("RELEASED");
+                    dao.updateStatus(p.getPrisonerId(), "RELEASED");
+                }
+            } else {
+                // Release date is in the future.
+                // If they were marked "RELEASED", bring them back to "IN_CUSTODY"
+                if ("RELEASED".equals(p.getStatus())) {
+                    p.setStatus("IN_CUSTODY");
+                    dao.updateStatus(p.getPrisonerId(), "IN_CUSTODY");
+                }
             }
 
             return new SimpleStringProperty(releaseDate.toString());
@@ -154,11 +173,13 @@ public class PrisonerController {
 
                 setText(date);
 
-                if (releaseDate.isBefore(LocalDate.now())) {
-                    // 🔴 Expired
+                LocalDate today = LocalDate.now();
+
+                if (!releaseDate.isAfter(today)) {
+                    // 🔴 Today or in the past (Expired/Due)
                     setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
                 } else {
-                    // 🟢 Active
+                    // 🟢 In the future (Active)
                     setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
                 }
             }
@@ -325,8 +346,10 @@ public class PrisonerController {
         crimeField.setValue(null);
         cellField.setValue(null);
         descriptionArea.clear();
-        yearSpinner.getValueFactory().setValue(1);
+        yearSpinner.getValueFactory().setValue(0);
+        yearSpinner.getEditor().setText(""); // Force the text to disappear
         monthSpinner.getValueFactory().setValue(0);
+        monthSpinner.getEditor().setText("");
         remainingTimeLabel.setText("");
         selectedPrisoner = null;
     }
@@ -347,5 +370,29 @@ public class PrisonerController {
         alert.setTitle(title);
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+    /* =========================
+   HELPERS
+   ========================= */
+
+    private void setupEmptyPrompt(Spinner<Integer> spinner) {
+        // This allows the text field to be empty even if the value is 0
+        spinner.getValueFactory().setConverter(new javafx.util.StringConverter<Integer>() {
+            @Override
+            public String toString(Integer value) {
+                if (value == null || value == 0) return "";
+                return value.toString();
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                try {
+                    if (string == null || string.trim().isEmpty()) return 0;
+                    return Integer.parseInt(string);
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            }
+        });
     }
 }

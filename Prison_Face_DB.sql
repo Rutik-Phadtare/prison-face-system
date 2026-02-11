@@ -16,11 +16,16 @@ CREATE TABLE users (
 drop table guards;
 CREATE TABLE guards (
     guard_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    designation VARCHAR(50),
+    name VARCHAR(100),
+    role VARCHAR(100),
     shift VARCHAR(20),
-    status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE'
+    joining_date DATE,
+    status VARCHAR(20),
+    description TEXT,
+    image_path VARCHAR(255)
 );
+ALTER TABLE guards ADD COLUMN designation VARCHAR(100);
+select guard_id,name from guards;
 
 -- PRISONERS TABLE
 drop table prisoners;
@@ -36,7 +41,9 @@ ALTER TABLE prisoners
 ADD COLUMN description TEXT,
 ADD COLUMN release_date DATE;
 ALTER TABLE prisoners
-ADD COLUMN sentence_start DATE;
+ADD COLUMN sentence_start_date DATE;
+ALTER TABLE prisoners 
+DROP COLUMN sentence_start;
 
 -- FACE ENCODING METADATA
 drop table face_encodings;
@@ -75,7 +82,7 @@ VALUES (
 SELECT user_id, username,password_hash, role FROM users;
 DELETE FROM users;
 SELECT * FROM recognition_logs ORDER BY detected_at DESC;
-select prisoner_id ,name,crime,cell_no,status,release_date,description,sentence_start,sentence_years from prisoners;
+select prisoner_id ,name,crime,cell_no,status,release_date,description,sentence_start_date,sentence_years from prisoners;
 SELECT COUNT(*) FROM prisoners WHERE status = 'IN_CUSTODY';
 SELECT COUNT(*) FROM guards WHERE status = 'ACTIVE';
 
@@ -88,4 +95,8 @@ SET release_date = DATE_ADD(CURDATE(), INTERVAL sentence_years YEAR)
 WHERE release_date IS NULL;
 
 SET SQL_SAFE_UPDATES = 0;
+UPDATE prisoners
+SET sentence_start_date = CURDATE(),
+    release_date = DATE_ADD(CURDATE(), INTERVAL sentence_years YEAR)
+WHERE sentence_start_date IS NULL;
 

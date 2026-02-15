@@ -42,6 +42,9 @@ public class AdminDashboardController {
     @FXML
     private Button guardCountButton;
 
+    @FXML
+    private Button guardCount;
+
     private final PrisonerDao prisonerDao = new PrisonerDao();
     private final GuardDao guardDao = new GuardDao();
 
@@ -53,6 +56,10 @@ public class AdminDashboardController {
 
         guardCountButton.setText(
                 "🧑‍✈️ " + guardDao.countActiveGuards()
+        );
+
+        guardCount.setText(
+                " "+guardDao.countGuards()
         );
     }
 

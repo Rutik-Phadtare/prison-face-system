@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="800.0" prefWidth="1500.0" stylesheets="@../css/modern.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.GuardController">
+<BorderPane prefHeight="800.0" prefWidth="1500.0" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.GuardController">
     <top>
         <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #f4f4f4;">
             <Label style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #e67e22;" text="Guard Force Management" />
@@ -18,8 +18,8 @@
                 <TableColumn fx:id="designationCol" prefWidth="173.20001220703125" text="Designation" />
                 <TableColumn fx:id="shiftCol" prefWidth="146.0" text="Shift" />
                 <TableColumn fx:id="statusCol" prefWidth="169.60003662109375" text="Status" />
-                <TableColumn fx:id="joiningCol" prefWidth="212.60009765625" text="Joined" />
-                <TableColumn fx:id="descCol" prefWidth="374.4000244140625" text="Notes" />
+                <TableColumn fx:id="joiningCol" prefWidth="199.79998779296875" text="Joined" />
+                <TableColumn fx:id="descCol" prefWidth="380.800048828125" text="Notes" />
             </columns>
         </TableView>
     </center>

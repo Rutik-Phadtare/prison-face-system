@@ -150,6 +150,8 @@ public class GuardController {
 
     @FXML
     public void addGuard() {
+        if (!validateInput()) return;
+
         Guard g = new Guard();
         g.setName(nameField.getText());
         g.setDesignation(designationField.getValue());
@@ -157,16 +159,32 @@ public class GuardController {
         g.setJoiningDate(joiningDatePicker.getValue());
         g.setDescription(descriptionArea.getText());
 
-        // Set initial live status
         g.setStatus(calculateLiveStatus(g.getShift()));
 
         int id = dao.saveAndReturnId(g);
-        if (id > 0) PythonRunnerUtil.trainFace("GUARD", id);
+        if (id > 0) {
+            PythonRunnerUtil.trainFace("GUARD", id);
+        }
 
         refreshTable();
         clearFields();
     }
+    private boolean validateInput() {
+        if (nameField.getText().isEmpty()
+                || designationField.getValue() == null
+                || shiftField.getValue() == null) {
 
+            showAlert("Validation Error", "All fields are required");
+            return false;
+        }
+        return true;
+    }
+    private void showAlert(String title, String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
     @FXML
     public void updateGuard() {
         if (selectedGuard == null) return;

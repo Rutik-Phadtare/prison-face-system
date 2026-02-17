@@ -85,6 +85,7 @@ SELECT * FROM recognition_logs ORDER BY detected_at DESC;
 select prisoner_id ,name,crime,cell_no,status,release_date,description,sentence_start_date,sentence_years from prisoners;
 SELECT COUNT(*) FROM prisoners WHERE status = 'IN_CUSTODY';
 SELECT COUNT(*) FROM guards WHERE status = 'ACTIVE';
+SELECT COUNT(*) FROM guards;
 
 INSERT INTO prisoners
 (name, crime, cell_no, sentence_years, status, description, release_date)

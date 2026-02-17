@@ -32,6 +32,20 @@ public class GuardController {
         setupForm();
         refreshTable();
 
+        guardTable.setRowFactory(tv -> {
+            TableRow<Guard> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Guard selectedGuard = row.getItem();
+                    openGuardProfile(selectedGuard);
+                }
+            });
+
+            return row;
+        });
+
         /* Selection → edit mode */
         guardTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, g) -> {
             selectedGuard = g;
@@ -77,6 +91,30 @@ public class GuardController {
 
         } catch (Exception e) {
             return "INACTIVE"; // Fallback if parsing fails
+        }
+    }
+    private void openGuardProfile(Guard guard) {
+
+        try {
+            javafx.fxml.FXMLLoader loader =
+                    new javafx.fxml.FXMLLoader(
+                            getClass().getResource("/fxml/guard_profile.fxml")
+                    );
+
+            javafx.scene.Parent root = loader.load();
+
+            GuardProfileController controller =
+                    loader.getController();
+
+            controller.setGuard(guard);
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Guard Profile");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

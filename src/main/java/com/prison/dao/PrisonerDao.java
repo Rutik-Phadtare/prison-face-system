@@ -12,7 +12,7 @@ import java.util.List;
 public class PrisonerDao {
 
     public int countPrisonersInCell(String cellNo) {
-        String sql = "SELECT COUNT(*) FROM prisoners WHERE cell_no = ?";
+        String sql = "SELECT COUNT(*) FROM prisoners WHERE cell_no = ? AND status != 'Released'";
 
         try (Connection con = DatabaseUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

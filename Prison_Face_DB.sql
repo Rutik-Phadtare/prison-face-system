@@ -26,6 +26,15 @@ CREATE TABLE guards (
 );
 ALTER TABLE guards ADD COLUMN designation VARCHAR(100);
 select guard_id,name from guards;
+ALTER TABLE guards ADD COLUMN age INT;
+ALTER TABLE guards ADD COLUMN birthDate DATE;
+ALTER TABLE guards ADD COLUMN address VARCHAR(255);
+ALTER TABLE guards ADD COLUMN gender VARCHAR(20);
+ALTER TABLE guards ADD COLUMN transferFrom VARCHAR(100);
+ALTER TABLE guards ADD COLUMN salary DOUBLE;
+
+ALTER TABLE guards CHANGE COLUMN birthDate birth_date DATE;
+ALTER TABLE guards CHANGE COLUMN transferFrom transfer_from VARCHAR(100);
 
 -- PRISONERS TABLE
 drop table prisoners;

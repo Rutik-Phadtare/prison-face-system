@@ -11,6 +11,14 @@ public class Guard {
     private LocalDate joiningDate;
     private String description;
 
+    // 🔥 Added New Fields
+    private int age;
+    private LocalDate birthDate;
+    private String address;
+    private String gender;
+    private String transferFrom;
+    private double salary;
+
     // Getters and Setters
     public int getGuardId() { return guardId; }
     public void setGuardId(int guardId) { this.guardId = guardId; }
@@ -26,4 +34,18 @@ public class Guard {
     public void setJoiningDate(LocalDate joiningDate) { this.joiningDate = joiningDate; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    // 🔥 New Getters/Setters
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+    public LocalDate getBirthDate() { return birthDate; }
+    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+    public String getTransferFrom() { return transferFrom; }
+    public void setTransferFrom(String transferFrom) { this.transferFrom = transferFrom; }
+    public double getSalary() { return salary; }
+    public void setSalary(double salary) { this.salary = salary; }
 }

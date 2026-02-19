@@ -59,7 +59,7 @@ public class AdminDashboardController {
         );
 
         guardCount.setText(
-                " "+guardDao.countGuards()
+                "🧑‍✈️ " + guardDao.countGuards()
         );
     }
 

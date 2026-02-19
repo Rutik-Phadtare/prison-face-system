@@ -1,152 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.prison.controller.GuardProfileController"
-            stylesheets="@../css/modern.css"
-            prefWidth="700"
-            prefHeight="520"
-            style="-fx-background-color: #f5f7fa;">
+<BorderPane prefHeight="650" prefWidth="850" style="-fx-background-color: #f5f7fa;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.GuardProfileController">
 
-    <!-- HEADER -->
     <top>
         <VBox style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
             <padding>
-                <Insets top="20" right="25" bottom="20" left="25"/>
+                <Insets bottom="20" left="25" right="25" top="20" />
             </padding>
-            <Label text="PERSONNEL MANAGEMENT"
-                   style="-fx-text-fill: #8898aa; -fx-font-size: 11; -fx-font-weight: 600; -fx-letter-spacing: 1.5;"/>
-            <Label text="Guard Profile"
-                   styleClass="page-title"
-                   style="-fx-font-size: 28; -fx-font-weight: 700; -fx-text-fill: #32325d; -fx-padding: 5 0 0 0;" />
+            <Label style="-fx-text-fill: #8898aa; -fx-font-size: 11; -fx-font-weight: 600; -fx-letter-spacing: 1.5;" text="PERSONNEL MANAGEMENT" />
+            <Label style="-fx-font-size: 28; -fx-font-weight: 700; -fx-text-fill: #32325d; -fx-padding: 5 0 0 0;" styleClass="page-title" text="Guard Profile" />
         </VBox>
     </top>
 
-    <!-- CENTER -->
     <center>
         <HBox spacing="25" style="-fx-padding: 30 25 25 25;">
 
-            <!-- IMAGE CARD -->
-            <VBox spacing="15"
-                  alignment="CENTER"
-                  styleClass="card"
-                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);">
+            <VBox alignment="CENTER" spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);" styleClass="card">
                 <padding>
-                    <Insets top="25" right="25" bottom="25" left="25"/>
+                    <Insets bottom="25" left="25" right="25" top="25" />
                 </padding>
-
                 <VBox alignment="CENTER" spacing="8">
-                    <Label text="Profile Photo"
-                           style="-fx-text-fill: #32325d; -fx-font-weight: 700; -fx-font-size: 14;"/>
-                    <Label text="Upload guard image"
-                           style="-fx-text-fill: #8898aa; -fx-font-size: 11;"/>
+                    <Label style="-fx-text-fill: #32325d; -fx-font-weight: 700; -fx-font-size: 14;" text="Profile Photo" />
+                    <Label style="-fx-text-fill: #8898aa; -fx-font-size: 11;" text="Upload guard image" />
                 </VBox>
-
                 <StackPane style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-width: 2; -fx-border-style: dashed; -fx-background-radius: 8; -fx-border-radius: 8;">
                     <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
+                        <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
-                    <ImageView fx:id="guardImage"
-                               fitWidth="180"
-                               fitHeight="200"
-                               preserveRatio="true" />
+                    <ImageView fx:id="guardImage" fitHeight="200" fitWidth="180" preserveRatio="true" />
                 </StackPane>
-
-                <Button text="Upload Photo"
-                        onAction="#uploadPhoto"
-                        styleClass="primary-button"
-                        style="-fx-background-color: #5469d4; -fx-text-fill: white; -fx-font-weight: 600; -fx-font-size: 13; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(84,105,212,0.3), 8, 0, 0, 2);"/>
-
+                <Button onAction="#uploadPhoto" style="-fx-background-color: #5469d4; -fx-text-fill: white; -fx-font-weight: 600; -fx-font-size: 13; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;" text="Upload Photo" />
             </VBox>
 
-            <!-- INFO CARD -->
-            <VBox spacing="18"
-                  styleClass="card"
-                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);"
-                  prefWidth="400"
-                  HBox.hgrow="ALWAYS">
+            <VBox prefWidth="500" spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);" styleClass="card" HBox.hgrow="ALWAYS">
                 <padding>
-                    <Insets top="25" right="25" bottom="25" left="25"/>
+                    <Insets bottom="25" left="25" right="25" top="25" />
                 </padding>
 
                 <VBox spacing="6">
-                    <Label text="Personal Information"
-                           style="-fx-text-fill: #32325d; -fx-font-weight: 700; -fx-font-size: 16;"/>
-                    <Separator style="-fx-background-color: #e3e8ee;"/>
+                    <Label style="-fx-text-fill: #32325d; -fx-font-weight: 700; -fx-font-size: 16;" text="Personal Information" />
+                    <Separator style="-fx-background-color: #e3e8ee;" />
                 </VBox>
 
-                <VBox spacing="6">
-                    <Label text="Full Name"
-                           style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;"/>
-                    <TextField fx:id="nameField"
-                               promptText="Enter guard name"
-                               style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10 12; -fx-font-size: 13; -fx-prompt-text-fill: #adb5bd;"/>
-                </VBox>
-
-                <VBox spacing="6">
-                    <Label text="Role / Designation"
-                           style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;"/>
-                    <TextField fx:id="designationField"
-                               promptText="Enter designation"
-                               style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10 12; -fx-font-size: 13; -fx-prompt-text-fill: #adb5bd;"/>
-                </VBox>
-
-                <VBox spacing="6">
-                    <Label text="Shift Assignment"
-                           style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;"/>
-                    <ComboBox fx:id="shiftBox"
-                              promptText="Select shift"
-                              maxWidth="Infinity"
-                              style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12; -fx-font-size: 13;"/>
-                </VBox>
-
-                <HBox spacing="15" alignment="CENTER_LEFT">
+                <HBox spacing="15">
                     <VBox spacing="6" HBox.hgrow="ALWAYS">
-                        <Label text="Status"
-                               style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;"/>
-                        <HBox>
-                            <Label fx:id="statusBadge"
-                                   text="ACTIVE"
-                                   style="-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-padding: 8 16; -fx-background-radius: 20; -fx-font-weight: 700; -fx-font-size: 11; -fx-letter-spacing: 0.5;" />
-                        </HBox>
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Full Name" />
+                        <TextField fx:id="nameField" promptText="Enter guard name" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-radius: 6; -fx-padding: 10 12;" />
                     </VBox>
+                    <VBox spacing="6" prefWidth="100">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Age" />
+                        <TextField fx:id="ageField" promptText="Age" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-radius: 6; -fx-padding: 10 12;" />
+                    </VBox>
+                </HBox>
 
+                <HBox spacing="15">
                     <VBox spacing="6" HBox.hgrow="ALWAYS">
-                        <Label text="Joining Date"
-                               style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;"/>
-                        <DatePicker fx:id="joiningDatePicker"
-                                    maxWidth="Infinity"
-                                    style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12; -fx-font-size: 13;"/>
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Role / Designation" />
+                        <ComboBox fx:id="designationBox" promptText="Select designation" maxWidth="Infinity"
+                                  style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-radius: 6; -fx-padding: 8 12;" />
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Gender" />
+                        <ComboBox fx:id="genderBox" maxWidth="Infinity" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee;" />
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="15">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Shift Assignment" />
+                        <ComboBox fx:id="shiftBox" maxWidth="Infinity" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee;" />
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Birth Date" />
+                        <DatePicker fx:id="birthDatePicker" maxWidth="Infinity" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee;" />
                     </VBox>
                 </HBox>
 
                 <VBox spacing="6">
-                    <Label text="Background / Notes"
-                           style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;"/>
-                    <TextArea fx:id="descriptionArea"
-                              prefHeight="80"
-                              promptText="Enter additional details or background information"
-                              wrapText="true"
-                              style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10 12; -fx-font-size: 13; -fx-prompt-text-fill: #adb5bd;"/>
+                    <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Address" />
+                    <TextField fx:id="addressField" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-padding: 10 12;" />
                 </VBox>
 
-                <Separator style="-fx-background-color: #e3e8ee;"/>
+                <HBox spacing="15">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Transfer From" />
+                        <TextField fx:id="transferField" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee; -fx-padding: 10 12;" />
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Salary" />
+                        <TextField fx:id="salaryField" editable="false" style="-fx-background-color: #eeeeee; -fx-border-color: #e3e8ee; -fx-padding: 10 12;" />
+                    </VBox>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Status" />
+                        <Label fx:id="statusBadge" text="ACTIVE" style="-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-padding: 8 16; -fx-background-radius: 20;" />
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Joining Date" />
+                        <DatePicker fx:id="joiningDatePicker" maxWidth="Infinity" />
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6">
+                    <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Notes" />
+                    <TextArea fx:id="descriptionArea" prefHeight="60" wrapText="true" style="-fx-background-color: #f6f9fc; -fx-border-color: #e3e8ee;" />
+                </VBox>
 
                 <HBox alignment="CENTER_RIGHT">
-                    <Button text="Save Changes"
-                            onAction="#saveChanges"
-                            styleClass="primary-button"
-                            style="-fx-background-color: #5469d4; -fx-text-fill: white; -fx-font-weight: 600; -fx-font-size: 14; -fx-padding: 12 32; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(84,105,212,0.3), 10, 0, 0, 3);"/>
+                    <Button onAction="#updateGuard" style="-fx-background-color: #5469d4; -fx-text-fill: white; -fx-font-weight: 600; -fx-padding: 12 32; -fx-background-radius: 6;" text="Save Changes" />
                 </HBox>
-
             </VBox>
-
         </HBox>
     </center>
-
 </BorderPane>

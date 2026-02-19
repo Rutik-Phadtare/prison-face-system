@@ -108,6 +108,11 @@ public class GuardController {
 
             controller.setGuard(guard);
 
+            // 🔥 NEW: Pass the refresh logic to the profile controller
+            controller.setOnSaveCallback(() -> {
+                refreshTable(); // This calls the method already in your GuardController
+            });
+
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Guard Profile");
             stage.setScene(new javafx.scene.Scene(root));

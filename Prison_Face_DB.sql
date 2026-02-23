@@ -33,6 +33,12 @@ ALTER TABLE guards ADD COLUMN gender VARCHAR(20);
 ALTER TABLE guards ADD COLUMN transferFrom VARCHAR(100);
 ALTER TABLE guards ADD COLUMN salary DOUBLE;
 
+ALTER TABLE guards 
+ADD COLUMN aadhar_number VARCHAR(20),
+ADD COLUMN phone_number VARCHAR(15),
+ADD COLUMN batch_id VARCHAR(20),
+ADD COLUMN email VARCHAR(100);
+
 ALTER TABLE guards CHANGE COLUMN birthDate birth_date DATE;
 ALTER TABLE guards CHANGE COLUMN transferFrom transfer_from VARCHAR(100);
 

@@ -36,7 +36,7 @@ public class FaceRecognitionController {
             return;
         }
 
-        // ✅ LOG EVERY EVENT
+        // ✅ LOG EVERY EVENT+
         logRecognition(result);
 
         String[] parts = result.split("\\|");

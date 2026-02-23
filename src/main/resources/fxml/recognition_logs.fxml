@@ -2,20 +2,184 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="15" style="-fx-padding: 20;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.prison.controller.RecognitionLogController">
+<VBox spacing="0"
+      xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      fx:controller="com.prison.controller.RecognitionLogController"
+      style="-fx-background-color: #f8fafc;">
 
-    <Label style="-fx-font-size: 26;" styleClass="page-title" text="Face Recognition Logs" />
+    <!-- ══════════════════════════════
+         PAGE HEADER
+         ══════════════════════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-background-color: white; -fx-padding: 20 24 20 24;
+                 -fx-border-color: transparent transparent #e2e8f0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+        <VBox spacing="2">
+            <Label text="Face Recognition Logs"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+            <Label fx:id="subtitleLabel" text="Loading records…"
+                   style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshBtn" text="⟳  Refresh" onAction="#onRefresh"
+                style="-fx-background-color: white; -fx-text-fill: #374151;
+                       -fx-font-size: 13px; -fx-background-radius: 8;
+                       -fx-border-color: #d1d5db; -fx-border-radius: 8;
+                       -fx-border-width: 1; -fx-padding: 8 18 8 18; -fx-cursor: hand;"/>
+        <Button fx:id="exportBtn" text="⬇  Export CSV" onAction="#onExport"
+                style="-fx-background-color: #6366f1; -fx-text-fill: white;
+                       -fx-font-size: 13px; -fx-font-weight: bold;
+                       -fx-background-radius: 8; -fx-padding: 8 18 8 18; -fx-cursor: hand;"/>
+    </HBox>
 
-    <TableView fx:id="logTable" prefHeight="500">
+    <!-- ══════════════════════════════
+         STATS CARDS
+         ══════════════════════════════ -->
+    <HBox spacing="16">
+        <HBox.margin><Insets top="16" right="20" bottom="0" left="20"/></HBox.margin>
+
+        <VBox HBox.hgrow="ALWAYS" spacing="4"
+              style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-border-color: #bfdbfe; -fx-border-radius: 12; -fx-border-width: 1;
+                     -fx-padding: 16 20 16 20;
+                     -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+            <Label text="TOTAL SCANS"
+                   style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+            <Label fx:id="totalScansLbl" text="0"
+                   style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #1d4ed8;"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" spacing="4"
+              style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-border-color: #bbf7d0; -fx-border-radius: 12; -fx-border-width: 1;
+                     -fx-padding: 16 20 16 20;
+                     -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+            <Label text="RECOGNIZED"
+                   style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+            <Label fx:id="recognizedLbl" text="0"
+                   style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #15803d;"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" spacing="4"
+              style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-border-color: #fde68a; -fx-border-radius: 12; -fx-border-width: 1;
+                     -fx-padding: 16 20 16 20;
+                     -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+            <Label text="UNKNOWN"
+                   style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+            <Label fx:id="unknownLbl" text="0"
+                   style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #b45309;"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" spacing="4"
+              style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-border-color: #fecaca; -fx-border-radius: 12; -fx-border-width: 1;
+                     -fx-padding: 16 20 16 20;
+                     -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+            <Label text="FAILED"
+                   style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+            <Label fx:id="failedLbl" text="0"
+                   style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #b91c1c;"/>
+        </VBox>
+    </HBox>
+
+    <!-- ══════════════════════════════
+         FILTER / SEARCH BAR
+         ══════════════════════════════ -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-background-color: white; -fx-padding: 12 16 12 16;
+                 -fx-background-radius: 12; -fx-border-color: #e2e8f0;
+                 -fx-border-radius: 12; -fx-border-width: 1;
+                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,1);">
+        <HBox.margin><Insets top="16" right="20" bottom="0" left="20"/></HBox.margin>
+
+        <Label text="🔍" style="-fx-font-size: 16px; -fx-text-fill: #94a3b8;"/>
+        <TextField fx:id="searchField" promptText="Search by name, ID, type, location…"
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-background-color: #f1f5f9; -fx-background-radius: 8;
+                          -fx-border-color: transparent; -fx-padding: 8 12 8 12;
+                          -fx-font-size: 13px;"/>
+
+        <Label text="Type:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+        <ComboBox fx:id="typeFilter" prefWidth="130"
+                  style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-font-size: 12px;"/>
+
+        <Label text="Result:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+        <ComboBox fx:id="resultFilter" prefWidth="130"
+                  style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-font-size: 12px;"/>
+
+        <Label text="From:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+        <DatePicker fx:id="fromDate" prefWidth="140"
+                    style="-fx-background-color: #f1f5f9; -fx-font-size: 12px;"/>
+
+        <Label text="To:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+        <DatePicker fx:id="toDate" prefWidth="140"
+                    style="-fx-background-color: #f1f5f9; -fx-font-size: 12px;"/>
+
+        <Button text="✕ Clear" onAction="#onClearFilters"
+                style="-fx-background-color: transparent; -fx-text-fill: #6b7280;
+                       -fx-font-size: 12px; -fx-background-radius: 6;
+                       -fx-padding: 6 12 6 12; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- ══════════════════════════════
+         TABLE
+         ══════════════════════════════ -->
+    <TableView fx:id="logTable" VBox.vgrow="ALWAYS" tableMenuButtonVisible="true"
+               style="-fx-background-color: white; -fx-background-radius: 12;
+                      -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-border-width: 1;
+                      -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.05),10,0,0,2);">
+        <VBox.margin><Insets top="16" right="20" bottom="0" left="20"/></VBox.margin>
+
+        <placeholder>
+            <VBox alignment="CENTER" spacing="8">
+                <Label text="🔎" style="-fx-font-size: 40px;"/>
+                <Label text="No logs found"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+                <Label text="Try adjusting your filters"
+                       style="-fx-font-size: 13px; -fx-text-fill: #cbd5e1;"/>
+            </VBox>
+        </placeholder>
 
         <columns>
-            <TableColumn fx:id="timeCol" prefWidth="180" text="Detected At" />
-            <TableColumn fx:id="typeCol" prefWidth="150" text="Person Type" />
-            <TableColumn fx:id="idCol" prefWidth="120" text="Person ID" />
-            <TableColumn fx:id="resultCol" prefWidth="150" text="Result" />
+            <TableColumn fx:id="rowNumCol"     text="#"                prefWidth="55"  minWidth="50"  sortable="false"/>
+            <TableColumn fx:id="timeCol"       text="Detected At"      prefWidth="175" minWidth="140"/>
+            <TableColumn fx:id="nameCol"       text="Full Name"        prefWidth="200" minWidth="160"/>
+            <TableColumn fx:id="typeCol"       text="Person Type"      prefWidth="120" minWidth="100"/>
+            <TableColumn fx:id="idCol"         text="Person ID"        prefWidth="100" minWidth="80"/>
+            <TableColumn fx:id="deptCol"       text="Block / Dept"     prefWidth="150" minWidth="120"/>
+            <TableColumn fx:id="confidenceCol" text="Confidence"       prefWidth="130" minWidth="110"/>
+            <TableColumn fx:id="locationCol"   text="Camera / Location" prefWidth="160" minWidth="120"/>
+            <TableColumn fx:id="resultCol"     text="Result"           prefWidth="130" minWidth="100"/>
+            <TableColumn fx:id="actionCol"     text="Details"          prefWidth="90"  minWidth="80"  sortable="false" resizable="false"/>
         </columns>
-
     </TableView>
+
+    <!-- ══════════════════════════════
+         FOOTER / PAGINATION
+         ══════════════════════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: white; -fx-padding: 10 20 10 20;
+                 -fx-border-color: #e2e8f0 transparent transparent transparent;
+                 -fx-border-width: 1 0 0 0;">
+        <HBox.margin><Insets top="0" right="20" bottom="20" left="20"/></HBox.margin>
+
+        <Label fx:id="rowCountLabel" text="0 records"
+               style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Rows per page:" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        <ComboBox fx:id="pageSizeCombo" prefWidth="75"
+                  style="-fx-background-color: #f1f5f9; -fx-background-radius: 6; -fx-font-size: 12px;"/>
+        <Label fx:id="pageLabel" text="Page 1 of 1"
+               style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        <Button fx:id="prevPageBtn" text="‹" onAction="#onPrevPage"
+                style="-fx-background-color: white; -fx-text-fill: #374151; -fx-font-size: 16px;
+                       -fx-background-radius: 6; -fx-border-color: #d1d5db; -fx-border-radius: 6;
+                       -fx-border-width: 1; -fx-min-width: 32px; -fx-min-height: 32px; -fx-cursor: hand;"/>
+        <Button fx:id="nextPageBtn" text="›" onAction="#onNextPage"
+                style="-fx-background-color: white; -fx-text-fill: #374151; -fx-font-size: 16px;
+                       -fx-background-radius: 6; -fx-border-color: #d1d5db; -fx-border-radius: 6;
+                       -fx-border-width: 1; -fx-min-width: 32px; -fx-min-height: 32px; -fx-cursor: hand;"/>
+    </HBox>
 
 </VBox>

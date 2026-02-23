@@ -2,25 +2,215 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" spacing="18" style="-fx-padding: 20;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.FaceRecognitionController">
+<BorderPane prefHeight="780.0" prefWidth="1300.0"
+            style="-fx-background-color: #0f172a;"
+            stylesheets="@../css/modern.css"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.prison.controller.FaceRecognitionController">
 
-    <!-- TITLE -->
-    <Label style="-fx-text-fill: 'black';" styleClass="title" text="Face Recognition" />
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TOP HEADER BAR
+    ═══════════════════════════════════════════════════════════════════ -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-background-color: #1e293b;
+                     -fx-border-color: #334155;
+                     -fx-border-width: 0 0 1 0;
+                     -fx-padding: 16 30;">
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 11;
+                              -fx-font-weight: 700; -fx-letter-spacing: 3;"
+                       text="DEPARTMENT OF CORRECTIONS — SECURITY TERMINAL" />
+                <Label style="-fx-text-fill: #f1f5f9; -fx-font-size: 26;
+                              -fx-font-weight: 900;"
+                       text="Biometric Face Recognition" />
+            </VBox>
+            <!-- Live clock -->
+            <VBox alignment="CENTER_RIGHT" spacing="2">
+                <Label fx:id="clockLabel"
+                       style="-fx-text-fill: #38bdf8; -fx-font-size: 22;
+                              -fx-font-weight: 800; -fx-font-family: monospace;" text="00:00:00" />
+                <Label fx:id="dateLabel"
+                       style="-fx-text-fill: #64748b; -fx-font-size: 12;"
+                       text="—" />
+            </VBox>
+        </HBox>
+    </top>
 
-    <!-- 🔴 IMPORTANT: INFO DISPLAY AREA -->
-    <VBox fx:id="infoBox" alignment="CENTER_LEFT" prefWidth="420" spacing="8" />
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN BODY — LEFT SCAN PANEL + RIGHT RESULT PANEL
+    ═══════════════════════════════════════════════════════════════════ -->
+    <center>
+        <HBox spacing="0" style="-fx-background-color: #0f172a;">
 
-    <!-- ACTION BUTTON -->
-    <Button onAction="#startRecognition" prefHeight="50.0" prefWidth="229.0" styleClass="primary-button" text="Start Recognition" />
-   <Label alignment="CENTER_RIGHT" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Click the Scan Face button to start face detection.ture">
-      <VBox.margin>
-         <Insets top="70.0" />
-      </VBox.margin></Label>
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="168.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Look straight toward the camera and keep your face centered." />
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="201.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Ensure proper lighting and remove masks, caps, or glasses if possible." />
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="235.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Do not move or turn your head during scanning." />
-   <Label alignment="CENTER_RIGHT" layoutX="144.0" layoutY="268.0" style="-fx-font-family: 'Arial'; -fx-font-size: 16; -fx-text-fill: #1c3cd6;" text="• Follow system instructions for accurate and secure identification." />
+            <!-- ╔═══════════════════════════════╗
+                 ║   LEFT — SCAN PANEL           ║
+                 ╚═══════════════════════════════╝ -->
+            <VBox alignment="TOP_CENTER" prefWidth="430" spacing="0"
+                  style="-fx-background-color: #1e293b;
+                         -fx-border-color: #334155;
+                         -fx-border-width: 0 1 0 0;">
+                <padding>
+                    <Insets bottom="32" left="32" right="32" top="32" />
+                </padding>
 
-</VBox>
+                <!-- Scan viewport mockup -->
+                <StackPane prefHeight="260" prefWidth="360"
+                           style="-fx-background-color: #0f172a;
+                                  -fx-background-radius: 16;
+                                  -fx-border-color: #334155;
+                                  -fx-border-width: 2;
+                                  -fx-border-radius: 16;">
+                    <VBox alignment="CENTER" spacing="14">
+                        <!-- Face silhouette icon -->
+                        <Label style="-fx-font-size: 72; -fx-text-fill: #334155;"
+                               text="👤" />
+                        <Label fx:id="scanStatusLabel"
+                               style="-fx-text-fill: #475569; -fx-font-size: 13;
+                                      -fx-font-weight: 700; -fx-letter-spacing: 2;"
+                               text="AWAITING SCAN" />
+                        <!-- Scan line animation via pulse label -->
+                        <Label fx:id="scanPulse"
+                               style="-fx-text-fill: #38bdf8; -fx-font-size: 11;
+                                      -fx-font-weight: 600;"
+                               text="● ● ●" />
+                    </VBox>
+
+                    <!-- Corner brackets — top-left -->
+                    <Region maxWidth="20" maxHeight="20"
+                            style="-fx-border-color: #38bdf8; -fx-border-width: 3 0 0 3;"
+                            StackPane.alignment="TOP_LEFT" />
+                    <!-- top-right -->
+                    <Region maxWidth="20" maxHeight="20"
+                            style="-fx-border-color: #38bdf8; -fx-border-width: 3 3 0 0;"
+                            StackPane.alignment="TOP_RIGHT" />
+                    <!-- bottom-left -->
+                    <Region maxWidth="20" maxHeight="20"
+                            style="-fx-border-color: #38bdf8; -fx-border-width: 0 0 3 3;"
+                            StackPane.alignment="BOTTOM_LEFT" />
+                    <!-- bottom-right -->
+                    <Region maxWidth="20" maxHeight="20"
+                            style="-fx-border-color: #38bdf8; -fx-border-width: 0 3 3 0;"
+                            StackPane.alignment="BOTTOM_RIGHT" />
+                </StackPane>
+
+                <VBox.margin>
+                    <Insets bottom="24" />
+                </VBox.margin>
+
+                <!-- Scan button -->
+                <Button fx:id="scanButton"
+                        onAction="#startRecognition"
+                        prefHeight="54" prefWidth="360"
+                        style="-fx-background-color: #0ea5e9;
+                               -fx-text-fill: white;
+                               -fx-font-weight: 900;
+                               -fx-font-size: 15;
+                               -fx-background-radius: 12;
+                               -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(14,165,233,0.5), 16, 0, 0, 5);"
+                        text="🔍  SCAN FACE" />
+
+                <VBox.margin>
+                    <Insets top="24" />
+                </VBox.margin>
+
+                <!-- Divider -->
+                <Separator style="-fx-background-color: #334155;" />
+
+                <VBox.margin>
+                    <Insets bottom="20" top="20" />
+                </VBox.margin>
+
+                <!-- Instructions -->
+                <VBox spacing="14">
+                    <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 12;
+                                  -fx-font-weight: 700; -fx-letter-spacing: 2;"
+                           text="SCANNING INSTRUCTIONS" />
+
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label style="-fx-text-fill: #0ea5e9; -fx-font-size: 16;" text="①" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 13;"
+                               wrapText="true" prefWidth="295"
+                               text="Click SCAN FACE to activate the camera." />
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label style="-fx-text-fill: #0ea5e9; -fx-font-size: 16;" text="②" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 13;"
+                               wrapText="true" prefWidth="295"
+                               text="Look straight at the camera, face centered." />
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label style="-fx-text-fill: #0ea5e9; -fx-font-size: 16;" text="③" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 13;"
+                               wrapText="true" prefWidth="295"
+                               text="Ensure good lighting. Remove masks, caps, or glasses." />
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label style="-fx-text-fill: #0ea5e9; -fx-font-size: 16;" text="④" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 13;"
+                               wrapText="true" prefWidth="295"
+                               text="Hold still — do not move or turn your head." />
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label style="-fx-text-fill: #0ea5e9; -fx-font-size: 16;" text="⑤" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 13;"
+                               wrapText="true" prefWidth="295"
+                               text="Results appear automatically on the right panel." />
+                    </HBox>
+                </VBox>
+
+                <!-- Log counter at bottom -->
+                <Region VBox.vgrow="ALWAYS" />
+                <HBox alignment="CENTER_LEFT" spacing="8"
+                      style="-fx-background-color: #0f172a;
+                             -fx-background-radius: 10;
+                             -fx-padding: 12 16;">
+                    <Label style="-fx-text-fill: #475569; -fx-font-size: 12;" text="Session scans:" />
+                    <Label fx:id="scanCountLabel"
+                           style="-fx-text-fill: #38bdf8; -fx-font-size: 14;
+                                  -fx-font-weight: 800;" text="0" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="lastScanLabel"
+                           style="-fx-text-fill: #475569; -fx-font-size: 11;" text="" />
+                </HBox>
+
+            </VBox>
+
+            <!-- ╔═══════════════════════════════════════╗
+                 ║   RIGHT — RESULT PANEL (scrollable)  ║
+                 ╚═══════════════════════════════════════╝ -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent;
+                               -fx-background: #0f172a;"
+                        HBox.hgrow="ALWAYS">
+                <content>
+                    <VBox fx:id="infoBox" alignment="TOP_CENTER"
+                          spacing="0" style="-fx-background-color: #0f172a;
+                                             -fx-padding: 32 36;">
+
+                        <!-- ── IDLE STATE — shown before first scan ───────── -->
+                        <VBox fx:id="idlePane" alignment="CENTER" spacing="18"
+                              style="-fx-padding: 80 0;">
+                            <Label style="-fx-font-size: 64;" text="🛡️" />
+                            <Label style="-fx-text-fill: #334155; -fx-font-size: 22;
+                                          -fx-font-weight: 800;"
+                                   text="Awaiting Identity Scan" />
+                            <Label style="-fx-text-fill: #475569; -fx-font-size: 14;"
+                                   wrapText="true" textAlignment="CENTER"
+                                   text="Recognition results — guard or prisoner profile — will appear here." />
+                        </VBox>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+        </HBox>
+    </center>
+
+</BorderPane>

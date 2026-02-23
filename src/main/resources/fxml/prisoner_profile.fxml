@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="1250" style="-fx-background-color: #f0f2f5;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.PrisonerProfileController">
+
+    <!-- ═══ TOP HEADER ════════════════════════════════════════════════════════ -->
+    <top>
+        <VBox style="-fx-background-color: white;                      -fx-border-color: #d1d9e6;                      -fx-border-width: 0 0 2 0;                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 2);">
+            <padding>
+                <Insets bottom="25" left="30" right="30" top="25" />
+            </padding>
+            <Label fx:id="profileModeLabel" style="-fx-text-fill: #b91c1c;                           -fx-font-size: 13;                           -fx-font-weight: 800;                           -fx-letter-spacing: 2;" text="INMATE RECORDS SYSTEM" />
+            <Label fx:id="profileTitleLabel" style="-fx-font-size: 32;                           -fx-font-weight: 900;                           -fx-text-fill: #172b4d;                           -fx-padding: 5 0 0 0;" text="Prisoner Profile" />
+        </VBox>
+    </top>
+
+    <!-- ═══ SCROLLABLE BODY ════════════════════════════════════════════════════ -->
+    <center>
+        <ScrollPane fx:id="mainScrollPane" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-background-color: transparent;                            -fx-background: transparent;                            -fx-focus-color: transparent;" vbarPolicy="AS_NEEDED">
+            <content>
+                <HBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 40 30 40 30;">
+
+                    <!-- ═══ LEFT: PHOTO + STATUS CARD ══════════════════════════ -->
+                    <VBox alignment="CENTER" maxHeight="560" spacing="20" style="-fx-background-color: white;                                  -fx-background-radius: 15;                                  -fx-border-color: #cad1d7;                                  -fx-border-width: 2;                                  -fx-border-radius: 15;                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 5);">
+                        <padding>
+                            <Insets bottom="30" left="30" right="30" top="30" />
+                        </padding>
+
+                        <VBox alignment="CENTER" spacing="8">
+                            <Label style="-fx-text-fill: #172b4d; -fx-font-weight: 800; -fx-font-size: 16;" text="Inmate Photo" />
+                            <Label style="-fx-text-fill: #8898aa; -fx-font-size: 12; -fx-font-weight: 600;" text="Official record photograph" />
+                        </VBox>
+
+                        <StackPane style="-fx-background-color: #f4f5f7;                                           -fx-border-color: #adb5bd;                                           -fx-border-width: 3;                                           -fx-border-style: dashed;                                           -fx-background-radius: 10;                                           -fx-border-radius: 10;">
+                            <padding>
+                                <Insets bottom="15" left="15" right="15" top="15" />
+                            </padding>
+                            <ImageView fx:id="prisonerImage" fitHeight="220" fitWidth="200" preserveRatio="true" />
+                        </StackPane>
+
+                        <Button fx:id="photoButton" onAction="#uploadPhoto" style="-fx-background-color: #b91c1c;                                        -fx-text-fill: white;                                        -fx-font-weight: 700;                                        -fx-font-size: 14;                                        -fx-padding: 12 25;                                        -fx-background-radius: 8;                                        -fx-cursor: hand;" text="Change Photo" />
+
+                        <!-- Danger Level -->
+                        <VBox alignment="CENTER" spacing="5">
+                            <Label style="-fx-text-fill: #8898aa; -fx-font-size: 11; -fx-font-weight: 700;" text="DANGER LEVEL" />
+                            <Label fx:id="dangerBadge" text="LOW" />
+                        </VBox>
+
+                        <!-- Custody Status -->
+                        <VBox alignment="CENTER" spacing="5">
+                            <Label style="-fx-text-fill: #8898aa; -fx-font-size: 11; -fx-font-weight: 700;" text="CUSTODY STATUS" />
+                            <Label fx:id="statusBadge" text="IN CUSTODY" />
+                        </VBox>
+
+                    </VBox>
+
+                    <!-- ═══ RIGHT: FORM CARD ════════════════════════════════════ -->
+                    <VBox maxWidth="870" spacing="20" style="-fx-background-color: white;                                  -fx-background-radius: 15;                                  -fx-border-color: #cad1d7;                                  -fx-border-width: 2;                                  -fx-border-radius: 15;                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 5);" HBox.hgrow="ALWAYS">
+                        <padding>
+                            <Insets bottom="35" left="35" right="35" top="35" />
+                        </padding>
+
+                        <!-- ── Section: Personal Details ──────────────────────── -->
+                        <VBox spacing="8">
+                            <Label style="-fx-text-fill: #172b4d; -fx-font-weight: 800; -fx-font-size: 20;" text="Personal Identification" />
+                            <Separator style="-fx-background-color: #b91c1c; -fx-pref-height: 3;" />
+                        </VBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Full Name" />
+                                <TextField fx:id="nameField" promptText="Name" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox prefWidth="110" spacing="8">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Age" />
+                                <TextField fx:id="ageField" promptText="Age" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Gender" />
+                                <ComboBox fx:id="genderBox" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Nationality" />
+                                <TextField fx:id="nationalityField" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Aadhar / National ID" />
+                                <TextField fx:id="aadharField" promptText="Aadhar" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Blood Type" />
+                                <ComboBox fx:id="bloodTypeBox" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Height" />
+                                <TextField fx:id="heightField" promptText="e.g. 5'10&quot;" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Weight" />
+                                <TextField fx:id="weightField" promptText="e.g. 72 kg" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Identification Marks" />
+                                <TextField fx:id="marksField" promptText="Tattoos, scars..." style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                        </HBox>
+
+                        <VBox spacing="8">
+                            <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Home Address" />
+                            <TextField fx:id="addressField" promptText="Permanent Address" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                        </VBox>
+
+                        <!-- ── Section: Criminal Record ─────────────────────────── -->
+                        <VBox spacing="8" style="-fx-padding: 12 0 0 0;">
+                            <Label style="-fx-text-fill: #172b4d; -fx-font-weight: 800; -fx-font-size: 20;" text="Criminal Record &amp; Classification" />
+                            <Separator style="-fx-background-color: #b91c1c; -fx-pref-height: 3;" />
+                        </VBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Crime Committed" />
+                                <ComboBox fx:id="crimeBox" editable="true" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Cell Number" />
+                                <ComboBox fx:id="cellBox" editable="true" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Danger Level" />
+                                <ComboBox fx:id="dangerBox" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Sentence (Years)" />
+                                <Spinner fx:id="yearSpinner" editable="true" prefHeight="42" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Extra Months" />
+                                <Spinner fx:id="monthSpinner" editable="true" prefHeight="42" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Sentence Start Date" />
+                                <DatePicker fx:id="startDatePicker" editable="true" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Behavior Rating" />
+                                <ComboBox fx:id="behaviorBox" maxWidth="Infinity" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
+                            </VBox>
+                        </HBox>
+
+                        <!-- ── Section: Contacts ───────────────────────────────── -->
+                        <VBox spacing="8" style="-fx-padding: 12 0 0 0;">
+                            <Label style="-fx-text-fill: #172b4d; -fx-font-weight: 800; -fx-font-size: 20;" text="Emergency &amp; Legal Contacts" />
+                            <Separator style="-fx-background-color: #b91c1c; -fx-pref-height: 3;" />
+                        </VBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Emergency Contact (Name)" />
+                                <TextField fx:id="emergencyContactField" promptText="Emergency Contact" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Emergency Phone" />
+                                <TextField fx:id="emergencyPhoneField" promptText="Emergency No." style=" -fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Lawyer / Legal Counsel" />
+                                <TextField fx:id="lawyerNameField" promptText="Lawyer Name" style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Lawyer Phone" />
+                                <TextField fx:id="lawyerPhoneField" promptText="Lawyer No." style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12;" />
+                            </VBox>
+                        </HBox>
+
+                        <!-- ── Section: Notes & Monitoring ────────────────────── -->
+                        <VBox spacing="8" style="-fx-padding: 12 0 0 0;">
+                            <Label style="-fx-text-fill: #172b4d; -fx-font-weight: 800; -fx-font-size: 20;" text="Notes &amp; Monitoring Logs" />
+                            <Separator style="-fx-background-color: #b91c1c; -fx-pref-height: 3;" />
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="General Notes / Case Description" />
+                            <TextArea fx:id="descriptionArea" promptText="Description" prefHeight="80" style="-fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8;" wrapText="true" />
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Incident / Disciplinary / Staff Evaluation Log" />
+                            <TextArea fx:id="incidentArea" prefHeight="90" promptText="Record incidents, disciplinary actions, staff evaluations..." style="-fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8;" wrapText="true" />
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Activity Monitor — Visitors / Calls / Digital Usage" />
+                            <TextArea fx:id="visitorLogArea" prefHeight="90" promptText="Log visitations, telephone calls, tablet/digital activity..." style="-fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8;" wrapText="true" />
+                        </VBox>
+
+                        <!-- ── Action Buttons ──────────────────────────────────── -->
+                        <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 20 0 0 0;">
+                            <Button fx:id="printProfileBtn" onAction="#handlePrintProfile" prefWidth="160" style="-fx-background-color: #7f1d1d; -fx-text-fill: white; -fx-font-weight: 800; -fx-padding: 15; -fx-background-radius: 10; -fx-cursor: hand;" text="🖨️  PRINT PROFILE" />
+                            <Button fx:id="behavioralLogBtn" onAction="#handleBehavioralLog" prefWidth="180" style="-fx-background-color: #991b1b; -fx-text-fill: white; -fx-font-weight: 800; -fx-padding: 15; -fx-background-radius: 10; -fx-cursor: hand;" text="📋  BEHAVIORAL LOG" />
+                            <Button fx:id="saveBtn" onAction="#savePrisoner" prefWidth="220" style="-fx-background-color: #b91c1c; -fx-text-fill: white; -fx-font-weight: 800; -fx-padding: 15; -fx-background-radius: 10; -fx-cursor: hand;" text="SAVE PROFILE" />
+                        </HBox>
+
+                    </VBox>
+
+                </HBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

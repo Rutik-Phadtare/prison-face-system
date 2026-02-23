@@ -59,6 +59,27 @@ ALTER TABLE prisoners
 ADD COLUMN sentence_start_date DATE;
 ALTER TABLE prisoners 
 DROP COLUMN sentence_start;
+ALTER TABLE prisoners 
+    ADD COLUMN age                  INT           DEFAULT 0,
+    ADD COLUMN gender               VARCHAR(20)   DEFAULT NULL,
+    ADD COLUMN nationality          VARCHAR(100)  DEFAULT NULL,
+    ADD COLUMN home_address         TEXT          DEFAULT NULL,
+    ADD COLUMN aadhar_number        VARCHAR(12)   DEFAULT NULL,
+    ADD COLUMN blood_type           VARCHAR(10)   DEFAULT NULL,
+    ADD COLUMN height               VARCHAR(30)   DEFAULT NULL,
+    ADD COLUMN weight               VARCHAR(30)   DEFAULT NULL,
+    ADD COLUMN identification_marks TEXT          DEFAULT NULL,
+    -- Contact & Legal
+    ADD COLUMN emergency_contact    VARCHAR(120)  DEFAULT NULL,
+    ADD COLUMN emergency_phone      VARCHAR(20)   DEFAULT NULL,
+    ADD COLUMN lawyer_name          VARCHAR(120)  DEFAULT NULL,
+    ADD COLUMN lawyer_phone         VARCHAR(20)   DEFAULT NULL,
+    -- Classification
+    ADD COLUMN danger_level         VARCHAR(20)   DEFAULT 'LOW',
+    ADD COLUMN behavior_rating      VARCHAR(20)   DEFAULT 'GOOD',
+    -- Behavioral Logs
+    ADD COLUMN incident_notes       TEXT          DEFAULT NULL,
+    ADD COLUMN visitor_log          TEXT          DEFAULT NULL;
 
 -- FACE ENCODING METADATA
 drop table face_encodings;

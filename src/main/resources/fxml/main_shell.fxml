@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="0"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.prison.controller.MainShellController"
+      style="-fx-background-color: #0a1020;">
+
+    <!-- ═══ NAVIGATION STRIP  34px ════════════════════════════════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="6" minHeight="34" maxHeight="34"
+          style="-fx-background-color: #060e1f;
+                 -fx-border-color: transparent transparent #1a3060 transparent;
+                 -fx-border-width: 0 0 1 0;
+                 -fx-padding: 0 16 0 16;">
+
+        <!-- Back button -->
+        <Button fx:id="backBtn" text="‹" onAction="#goBack"
+                style="-fx-background-color: transparent;
+                       -fx-text-fill: #aabbd0;
+                       -fx-font-size: 18px;
+                       -fx-font-weight: bold;
+                       -fx-padding: 0 10 2 10;
+                       -fx-cursor: hand;
+                       -fx-background-radius: 4;" />
+
+        <!-- Forward button -->
+        <Button fx:id="forwardBtn" text="›" onAction="#goForward"
+                style="-fx-background-color: transparent;
+                       -fx-text-fill: #aabbd0;
+                       -fx-font-size: 18px;
+                       -fx-font-weight: bold;
+                       -fx-padding: 0 10 2 10;
+                       -fx-cursor: hand;
+                       -fx-background-radius: 4;" />
+
+        <!-- Thin divider -->
+        <Region prefWidth="1" prefHeight="18"
+                style="-fx-background-color: #2a3a5a;" />
+
+        <!-- Home button -->
+        <Button fx:id="homeBtn" text="⌂  Dashboard" onAction="#goHome"
+                style="-fx-background-color: transparent;
+                       -fx-text-fill: #ffd700;
+                       -fx-font-family: 'Georgia';
+                       -fx-font-size: 11px;
+                       -fx-font-weight: bold;
+                       -fx-padding: 0 12 0 12;
+                       -fx-cursor: hand;
+                       -fx-background-radius: 4;" />
+
+        <!-- Thin divider -->
+        <Region prefWidth="1" prefHeight="18"
+                style="-fx-background-color: #2a3a5a;" />
+
+        <!-- Breadcrumb -->
+        <Label fx:id="breadcrumbLabel" text="Dashboard"
+               style="-fx-font-family: 'Georgia';
+                      -fx-font-size: 11px;
+                      -fx-text-fill: #7a99c0;
+                      -fx-font-style: italic;" />
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- User indicator -->
+        <Label fx:id="shellUserLabel"
+               style="-fx-font-family: 'Georgia';
+                      -fx-font-size: 10px;
+                      -fx-text-fill: #4a6080;" />
+    </HBox>
+
+    <!-- ═══ CONTENT AREA — pages load here ═══════════════════════════════ -->
+    <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #f3f4f6;" />
+
+</VBox>

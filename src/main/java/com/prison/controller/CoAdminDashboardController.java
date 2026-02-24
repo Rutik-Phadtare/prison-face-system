@@ -235,16 +235,29 @@ public class CoAdminDashboardController {
         openWindow("/fxml/recognition_logs.fxml", "Recognition Logs");
     }
 
-    private void openWindow(String path, String title) {
-        try {
-            Stage s = new Stage();
-            FXMLLoader l = new FXMLLoader(getClass().getResource(path));
-            Scene sc = new Scene(l.load());
-            sc.getStylesheets().add(getClass().getResource("/css/modern.css").toExternalForm());
-            s.setScene(sc); s.setTitle(title); s.show();
-        } catch (Exception e) { e.printStackTrace(); }
-    }
+    private void openWindow(String fxmlPath, String title) {
+        // 1. Try to get the Shell instance
+        MainShellController shell = MainShellController.getInstance();
 
+        if (shell != null) {
+            // 2. If we are inside the shell, use the shell to navigate (SPA mode)
+            shell.navigate(fxmlPath, title);
+        } else {
+            // 3. Fallback: Open in a new window (for testing/standalone)
+            try {
+                Stage stage = new Stage();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Scene scene = new Scene(loader.load());
+                String css = getClass().getResource("/css/modern.css").toExternalForm();
+                scene.getStylesheets().add(css);
+                stage.setScene(scene);
+                stage.setTitle(title);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     // ── Export today's log PDF ────────────────────────────────────────────────
     @FXML
     public void exportTodayLog() {
@@ -335,15 +348,23 @@ public class CoAdminDashboardController {
     public void logout(ActionEvent event) {
         if (UserSession.getLoginLogId() > 0)
             new UserDao().recordLogout(UserSession.getLoginLogId());
+
         UserSession.clear();
-        try {
-            Stage cur = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            cur.close();
-            Stage ls = new Stage();
-            FXMLLoader l = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Scene sc = new Scene(l.load());
-            sc.getStylesheets().add(getClass().getResource("/css/modern.css").toExternalForm());
-            ls.setScene(sc); ls.setTitle("Login"); ls.show();
-        } catch (Exception e) { e.printStackTrace(); }
+
+        // Route through the shell to maintain the window state
+        MainShellController shell = MainShellController.getInstance();
+        if (shell != null) {
+            shell.navigateToLogin();
+        } else {
+            // Fallback if shell isn't found (e.g., during testing)
+            try {
+                Stage cur = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                cur.close();
+                Stage ls = new Stage();
+                FXMLLoader l = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+                ls.setScene(new Scene(l.load()));
+                ls.show();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
     }
 }

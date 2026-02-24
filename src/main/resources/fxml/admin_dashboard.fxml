@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
@@ -32,7 +33,10 @@
                     </InnerShadow>
                 </effect>
             </VBox>
-            <Region prefWidth="3" style="-fx-background-color: #b8960a;" />
+            <Region prefWidth="3" style="-fx-background-color: #b8960a;">
+            <HBox.margin>
+               <Insets bottom="-10.0" />
+            </HBox.margin></Region>
 
             <!-- Ministry text  — grows to fill available space -->
             <VBox alignment="CENTER_LEFT" spacing="2" style="-fx-padding: 10 0 10 26;" HBox.hgrow="ALWAYS">
@@ -66,20 +70,9 @@
                     <Button onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #ffaaaa;                                    -fx-border-color: #cc4444; -fx-border-radius: 3; -fx-border-width: 1;                                    -fx-font-family: 'Georgia'; -fx-font-size: 11;                                    -fx-padding: 4 13 4 13; -fx-cursor: hand;" text="Sign Out  ›" />
                 </HBox>
             </VBox>
-        </HBox>
-
-        <!-- Navigation bar  ≈ 32 px -->
-        <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: #091840; -fx-min-height: 32; -fx-max-height: 32;                      -fx-border-color: #162d66 transparent transparent transparent; -fx-border-width: 1;">
-            <Region prefWidth="113" style="-fx-background-color: #0d2257; -fx-min-height: 32;" />
-            <Region prefWidth="3" style="-fx-background-color: #8a6200;" />
-            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-padding: 0 0 0 26;" HBox.hgrow="ALWAYS">
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-text-fill: #ffffff;                               -fx-font-weight: bold; -fx-padding: 0 26 0 0;" text="▸ Dashboard" />
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-text-fill: #4a6580;                               -fx-padding: 0 26 0 0;" text="Inmates" />
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-text-fill: #4a6580;                               -fx-padding: 0 26 0 0;" text="Staff" />
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-text-fill: #4a6580;                               -fx-padding: 0 26 0 0;" text="Security" />
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-text-fill: #4a6580;                               -fx-padding: 0 26 0 0;" text="Reports" />
-            </HBox>
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-text-fill: #ffffff; -fx-font-style: italic; -fx-padding: 0 20 0 0;" text="Session: #A4F9-2025" />
+         <VBox.margin>
+            <Insets bottom="5.0" />
+         </VBox.margin>
         </HBox>
 
         <!-- 4 px gold bottom stripe -->
@@ -94,7 +87,10 @@
             <Label style="-fx-font-size: 13; -fx-text-fill: white; -fx-font-weight: bold;" text="⚠" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                           -fx-text-fill: white;" text="Alerts" />
         </HBox>
-        <Region prefWidth="1" style="-fx-background-color: #e0aa30;" />
+        <Region prefWidth="1" style="-fx-background-color: #e0aa30;">
+         <HBox.margin>
+            <Insets />
+         </HBox.margin></Region>
         <StackPane style="-fx-padding: 0 16 0 16;" HBox.hgrow="ALWAYS">
             <Label fx:id="alertTicker" style="-fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-text-fill: #7a4e00; -fx-font-style: italic;" text="Cell Block D — Routine headcount discrepancy detected  ·  Visitor access: 3 pending approvals  ·  Medical: Inmate #2841 appointment at 14:00  ·  Perimeter sensor test at 22:00  ·  Shift change: 06:00 roster confirmed" />
         </StackPane>
@@ -156,7 +152,10 @@
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13; -fx-font-weight: bold;                           -fx-text-fill: #0d2257;" text="Prisoner Management" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #7a8eaa;                           -fx-font-style: italic; -fx-wrap-text: true;" text="Intake, records, classification, cell assignment and release scheduling." wrapText="true" />
             <Region prefHeight="4" />
-            <Button onAction="#openPrisonerManagement" style="-fx-background-color: #0d2257; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›" />
+            <Button onAction="#openPrisonerManagement" style="-fx-background-color: #0d2257; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›">
+            <effect>
+               <Reflection topOpacity="0.2" />
+            </effect></Button>
         </VBox>
 
         <!-- 2. Guard Management — UNCHANGED -->
@@ -165,7 +164,10 @@
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13; -fx-font-weight: bold;                           -fx-text-fill: #0d2257;" text="Guard Management" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #7a8eaa;                           -fx-font-style: italic; -fx-wrap-text: true;" text="Guard roster, shift scheduling, duty assignments and performance records." wrapText="true" />
             <Region prefHeight="4" />
-            <Button fx:id="guardManagementBtn" onAction="#openGuardManagement" style="-fx-background-color: #276b2e; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›" />
+            <Button fx:id="guardManagementBtn" onAction="#openGuardManagement" style="-fx-background-color: #276b2e; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›">
+            <effect>
+               <Reflection topOpacity="0.2" />
+            </effect></Button>
         </VBox>
 
         <!-- 3. Face Recognition — UNCHANGED -->
@@ -174,7 +176,10 @@
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13; -fx-font-weight: bold;                           -fx-text-fill: #0d2257;" text="Face Recognition" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #7a8eaa;                           -fx-font-style: italic; -fx-wrap-text: true;" text="Biometric identification, access verification and facial scan operations." wrapText="true" />
             <Region prefHeight="4" />
-            <Button fx:id="faceRecognitionBtn" onAction="#openFaceRecognition" style="-fx-background-color: #5e1a8e; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›" />
+            <Button fx:id="faceRecognitionBtn" onAction="#openFaceRecognition" style="-fx-background-color: #5e1a8e; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›">
+            <effect>
+               <Reflection topOpacity="0.2" />
+            </effect></Button>
         </VBox>
 
         <!-- 4. Recognition Logs — UNCHANGED -->
@@ -183,7 +188,10 @@
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13; -fx-font-weight: bold;                           -fx-text-fill: #0d2257;" text="Recognition Logs" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #7a8eaa;                           -fx-font-style: italic; -fx-wrap-text: true;" text="Full audit trail of recognition events, access attempts and scan history." wrapText="true" />
             <Region prefHeight="4" />
-            <Button onAction="#openRecognitionLogs" style="-fx-background-color: #c45e00; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›" />
+            <Button onAction="#openRecognitionLogs" style="-fx-background-color: #c45e00; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›">
+            <effect>
+               <Reflection topOpacity="0.2" />
+            </effect></Button>
         </VBox>
 
         <!-- 5. Co-Admin Management — UNCHANGED -->
@@ -192,7 +200,10 @@
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13; -fx-font-weight: bold;                           -fx-text-fill: #5a3c00;" text="Co-Admin Management" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #9a7840;                           -fx-font-style: italic; -fx-wrap-text: true;" text="Create, suspend and manage delegated administrator accounts and permissions." wrapText="true" />
             <Region prefHeight="4" />
-            <Button onAction="#openCoAdminManagement" style="-fx-background-color: #b8960a; -fx-text-fill: #1a1000;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›" />
+            <Button onAction="#openCoAdminManagement" style="-fx-background-color: #b8960a; -fx-text-fill: #1a1000;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›">
+            <effect>
+               <Reflection topOpacity="0.2" />
+            </effect></Button>
         </VBox>
 
         <!-- 6. Admin Management — NEW CARD ADDED -->
@@ -201,8 +212,14 @@
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13; -fx-font-weight: bold;                           -fx-text-fill: #4a0000;" text="Admin Management" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #9a6060;                           -fx-font-style: italic; -fx-wrap-text: true;" text="Add admins, change passwords and emergency account recovery." wrapText="true" />
             <Region prefHeight="4" />
-            <Button onAction="#openAdminAccountManagement" style="-fx-background-color: #8b0000; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›" />
+            <Button onAction="#openAdminAccountManagement" style="-fx-background-color: #8b0000; -fx-text-fill: white;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-padding: 7 16 7 16; -fx-cursor: hand; -fx-background-radius: 3;" text="Open Module  ›">
+            <effect>
+               <Reflection topOpacity="0.2" />
+            </effect></Button>
         </VBox>
+      <VBox.margin>
+         <Insets bottom="10.0" top="10.0" />
+      </VBox.margin>
 
     </HBox>
 
@@ -227,6 +244,9 @@
                 <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-text-fill: #ffffff; -fx-font-style: italic;" text="— All incidents requiring officer attention" textFill="WHITE" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Label fx:id="alertSlideIndex" style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-text-fill: #ffffff; -fx-font-style: italic;" text="1 of 5" />
+            <VBox.margin>
+               <Insets bottom="10.0" top="10.0" />
+            </VBox.margin>
             </HBox>
 
             <!-- Slide body  ≈ 70 px -->
@@ -295,6 +315,9 @@
         <HBox alignment="CENTER" style="-fx-background-color: #091840; -fx-padding: 6 40 6 40;">
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic; -fx-text-fill: #fffb00;" text="© 2025 Department of Corrections. Restricted — Unauthorised access is a criminal offence under Section 44 of the Computer Misuse Act." textFill="#fffb00" />
         </HBox>
+      <VBox.margin>
+         <Insets top="10.0" />
+      </VBox.margin>
     </VBox>
 
 </VBox>

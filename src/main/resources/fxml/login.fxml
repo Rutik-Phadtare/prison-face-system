@@ -8,7 +8,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane minHeight="100.0" minWidth="100.0" prefHeight="820.0" prefWidth="1530.0" style="-fx-background-image: url(/images/bg_login.png); -fx-background-size: cover; -fx-background-repeat: no-repeat;" styleClass="root" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.LoginController">
+<StackPane prefHeight="825.0" prefWidth="1540.0" style="-fx-background-image: url(/images/bg_login.png); -fx-background-size: cover; -fx-background-repeat: no-repeat;" styleClass="root" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.LoginController">
 
     <VBox alignment="CENTER" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="0.93" prefHeight="600.0" prefWidth="500.0" spacing="18" style="-fx-background-radius: 30; -fx-border-color: Orange; -fx-border-radius: 30;" styleClass="login-card" StackPane.alignment="CENTER">
 

@@ -40,7 +40,6 @@ public class AdminDashboardController {
     @FXML private Label alertTicker;
     @FXML private Label alertTime;
 
-    // Alert slideshow
     @FXML private Label alertSlideTitle;
     @FXML private Label alertSlideDetail;
     @FXML private Label alertSlideIndex;
@@ -83,11 +82,11 @@ public class AdminDashboardController {
     private final Label[] dots = new Label[5];
 
     /* ═══════════════════════════════════════════════════════════════════════
-       initialize  (original logic preserved, new UI logic appended)
+       initialize  (original logic preserved)
     ═══════════════════════════════════════════════════════════════════════ */
     @FXML
     public void initialize() {
-        /* ── ORIGINAL LOGIC (do not remove) ─────────────────────────────── */
+        /* ── ORIGINAL LOGIC ─────────────────────────────────────────────── */
         updateCounts();
         startAutoRefresh();
 
@@ -110,40 +109,36 @@ public class AdminDashboardController {
             loggedInUser.setText(user.getUsername().toUpperCase() + "  [" + user.getRole() + "]");
         }
 
-        dots[0] = alertDot1;
-        dots[1] = alertDot2;
-        dots[2] = alertDot3;
-        dots[3] = alertDot4;
-        dots[4] = alertDot5;
+        dots[0] = alertDot1; dots[1] = alertDot2; dots[2] = alertDot3;
+        dots[3] = alertDot4; dots[4] = alertDot5;
 
         startLiveClock();
         startAlertSlideshow();
         startAlertTickerAnimation();
     }
 
-    /* ── Original: updateCounts (unchanged) ─────────────────────────────── */
+    /* ── Original: updateCounts ──────────────────────────────────────────── */
     private void updateCounts() {
         prisonerCountButton.setText(String.valueOf(prisonerDao.countActivePrisoners()));
         guardCountButton.setText(String.valueOf(guardDao.countActiveGuards()));
         guardCount.setText(String.valueOf(guardDao.countGuards()));
     }
 
-    /* ── Original: startAutoRefresh (unchanged) ──────────────────────────── */
+    /* ── Original: startAutoRefresh ──────────────────────────────────────── */
     private void startAutoRefresh() {
         Timeline t = new Timeline(new KeyFrame(Duration.seconds(5), e -> updateCounts()));
         t.setCycleCount(Animation.INDEFINITE);
         t.play();
     }
 
-    /* ── NEW: Live clock ─────────────────────────────────────────────────── */
+    /* ── Live clock ──────────────────────────────────────────────────────── */
     private void startLiveClock() {
         if (liveClock == null) return;
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm:ss");
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy");
-
         Timeline clock = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             liveClock.setText(LocalTime.now().format(timeFmt));
-            if (liveDate != null) liveDate.setText(LocalDate.now().format(dateFmt).toUpperCase());
+            if (liveDate  != null) liveDate.setText(LocalDate.now().format(dateFmt).toUpperCase());
             if (alertTime != null) alertTime.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         }));
         clock.setCycleCount(Animation.INDEFINITE);
@@ -152,61 +147,65 @@ public class AdminDashboardController {
         if (liveDate != null) liveDate.setText(LocalDate.now().format(dateFmt).toUpperCase());
     }
 
-    /* ── NEW: Alert slideshow ─────────────────────────────────────────────── */
+    /* ── Alert slideshow ─────────────────────────────────────────────────── */
     private void startAlertSlideshow() {
         if (alertSlideTitle == null) return;
         showSlide(0);
 
         Timeline slideshow = new Timeline(new KeyFrame(Duration.seconds(6), e -> {
             currentAlertIndex = (currentAlertIndex + 1) % ALERTS.length;
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(350), alertSlideTitle);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0.0);
-            FadeTransition fadeOut2 = new FadeTransition(Duration.millis(350), alertSlideDetail);
-            fadeOut2.setFromValue(1.0);
-            fadeOut2.setToValue(0.0);
-            fadeOut.setOnFinished(ev -> {
+
+            // Fade Out
+            FadeTransition fo1 = new FadeTransition(Duration.millis(350), alertSlideTitle);
+            fo1.setFromValue(1.0);
+            fo1.setToValue(0.0);
+
+            FadeTransition fo2 = new FadeTransition(Duration.millis(350), alertSlideDetail);
+            fo2.setFromValue(1.0);
+            fo2.setToValue(0.0);
+
+            fo1.setOnFinished(ev -> {
                 showSlide(currentAlertIndex);
-                FadeTransition fadeIn = new FadeTransition(Duration.millis(350), alertSlideTitle);
-                fadeIn.setFromValue(0.0);
-                fadeIn.setToValue(1.0);
-                FadeTransition fadeIn2 = new FadeTransition(Duration.millis(350), alertSlideDetail);
-                fadeIn2.setFromValue(0.0);
-                fadeIn2.setToValue(1.0);
-                fadeIn.play();
-                fadeIn2.play();
+
+                // FIX: Removed the double braces {{ }}
+                FadeTransition fi1 = new FadeTransition(Duration.millis(350), alertSlideTitle);
+                fi1.setFromValue(0.0);
+                fi1.setToValue(1.0);
+                fi1.play();
+
+                FadeTransition fi2 = new FadeTransition(Duration.millis(350), alertSlideDetail);
+                fi2.setFromValue(0.0);
+                fi2.setToValue(1.0);
+                fi2.play();
             });
-            fadeOut.play();
-            fadeOut2.play();
+
+            fo1.play();
+            fo2.play();
         }));
+
         slideshow.setCycleCount(Animation.INDEFINITE);
         slideshow.play();
     }
-
     private void showSlide(int index) {
         alertSlideTitle.setText(ALERTS[index][0]);
         alertSlideDetail.setText(ALERTS[index][1]);
-        if (alertSlideIndex != null)
-            alertSlideIndex.setText((index + 1) + " of " + ALERTS.length);
-        for (int i = 0; i < dots.length; i++) {
+        if (alertSlideIndex != null) alertSlideIndex.setText((index + 1) + " of " + ALERTS.length);
+        for (int i = 0; i < dots.length; i++)
             if (dots[i] != null)
                 dots[i].setStyle("-fx-font-size: 8; -fx-text-fill: " + (i == index ? "#cc0000" : "#2a3a4a") + ";");
-        }
     }
 
-    /* ── NEW: Alert ticker pulse ─────────────────────────────────────────── */
+    /* ── Alert ticker ────────────────────────────────────────────────────── */
     private void startAlertTickerAnimation() {
         if (alertTicker == null) return;
         FadeTransition pulse = new FadeTransition(Duration.seconds(2), alertTicker);
-        pulse.setFromValue(1.0);
-        pulse.setToValue(0.55);
-        pulse.setAutoReverse(true);
-        pulse.setCycleCount(Animation.INDEFINITE);
+        pulse.setFromValue(1.0); pulse.setToValue(0.55);
+        pulse.setAutoReverse(true); pulse.setCycleCount(Animation.INDEFINITE);
         pulse.play();
     }
 
     /* ══════════════════════════════════════════════════════════════════════
-       ORIGINAL ACTION METHODS — unchanged
+       ORIGINAL ACTION METHODS — module buttons unchanged, routing updated
     ══════════════════════════════════════════════════════════════════════ */
 
     @FXML
@@ -238,13 +237,15 @@ public class AdminDashboardController {
         openWindow("/fxml/co_admin_management.fxml", "Co-Admin Management");
     }
 
-    /* ── NEW METHOD — only addition to this file ─────────────────────────── */
     @FXML
     public void openAdminAccountManagement() {
         if (!isAdmin()) return;
         openWindow("/fxml/admin_account_management.fxml", "Admin Account Management");
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       LOGOUT — updated to route through MainShellController
+    ══════════════════════════════════════════════════════════════════════ */
     @FXML
     public void logout(ActionEvent event) {
         if (UserSession.getLoginLogId() > 0) {
@@ -252,6 +253,14 @@ public class AdminDashboardController {
         }
         UserSession.clear();
 
+        // ── If running inside the shell, let the shell handle login routing ──
+        MainShellController shell = MainShellController.getInstance();
+        if (shell != null) {
+            shell.navigateToLogin();
+            return;
+        }
+
+        // ── Fallback: original behaviour (direct stage load) ──────────────
         try {
             Stage current = (Stage) ((Node) event.getSource()).getScene().getWindow();
             current.close();
@@ -266,21 +275,35 @@ public class AdminDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    /* ── helpers (unchanged) ─────────────────────────────────────────────── */
+    /* ── helpers ─────────────────────────────────────────────────────────── */
     private boolean isAdmin() {
         User u = UserSession.getUser();
         return u != null && "ADMIN".equals(u.getRole());
     }
 
+    /*
+     * ══════════════════════════════════════════════════════════════════════
+     *  openWindow — KEY CHANGE
+     *  If the MainShellController shell is active, navigate inside it.
+     *  Falls back to opening a new Stage if the shell is not available
+     *  (e.g. launched standalone during development/testing).
+     * ══════════════════════════════════════════════════════════════════════
+     */
     private void openWindow(String fxmlPath, String title) {
+        // ── SPA mode: load page inside the shell content area ─────────────
+        MainShellController shell = MainShellController.getInstance();
+        if (shell != null) {
+            shell.navigate(fxmlPath, title);
+            return;
+        }
+
+        // ── Fallback: original new-Stage behaviour ─────────────────────────
         try {
             java.net.URL url = getClass().getResource(fxmlPath);
             if (url == null) {
-                javafx.scene.control.Alert a = new javafx.scene.control.Alert(
+                new javafx.scene.control.Alert(
                         javafx.scene.control.Alert.AlertType.ERROR,
-                        "FXML file not found on classpath:\n" + fxmlPath +
-                                "\n\nMake sure the file is saved at:\nsrc/main/resources" + fxmlPath);
-                a.showAndWait();
+                        "FXML not found:\n" + fxmlPath).showAndWait();
                 return;
             }
             Stage stage = new Stage();

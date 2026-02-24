@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
 <!--
   HEIGHT BUDGET (total = 830px):
@@ -17,208 +17,127 @@
     Remaining / breathing  :  100px  (absorbed by VBox.vgrow on table)
   Total                   : 830px
 -->
-<VBox prefHeight="830.0" prefWidth="1420.0" maxHeight="830.0" spacing="0"
-      style="-fx-background-color: #f3f4f6;"
-      stylesheets="@../css/modern.css"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.prison.controller.AdminManagementController">
+
+<VBox maxHeight="830.0" prefHeight="830.0" prefWidth="1420.0" spacing="0" style="-fx-background-color: #f3f4f6;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.AdminManagementController">
 
     <!-- ══ BANNER  62px ═══════════════════════════════════════════════════ -->
-    <VBox minHeight="62" maxHeight="62" style="-fx-background-color: #0d2257; -fx-padding: 0 36 0 0;">
+    <VBox maxHeight="62" minHeight="62" style="-fx-background-color: #0d2257; -fx-padding: 0 36 0 0;">
         <HBox alignment="CENTER_LEFT" spacing="0" VBox.vgrow="ALWAYS">
             <!-- Dark red accent bar on left -->
             <Region minWidth="6" style="-fx-background-color: #8b0000;" />
             <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 0 0 0 22;" HBox.hgrow="ALWAYS">
                 <Label style="-fx-font-size: 26;" text="👑" />
                 <VBox spacing="1">
-                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 16; -fx-font-weight: bold;
-                                  -fx-text-fill: white;" text="ADMIN ACCOUNT MANAGEMENT" />
-                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-style: italic;
-                                  -fx-text-fill: #7a99c0;"
-                           text="Create administrator accounts · Change passwords · Emergency recovery" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 16; -fx-font-weight: bold;                                   -fx-text-fill: white;" text="ADMIN ACCOUNT MANAGEMENT" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-style: italic;                                   -fx-text-fill: #7a99c0;" text="Create administrator accounts · Change passwords · Emergency recovery" />
+               <padding>
+                  <Insets top="15.0" />
+               </padding>
                 </VBox>
             </HBox>
-            <Button onAction="#onRefresh" text="⟳  Refresh"
-                    style="-fx-background-color: #ffd700; -fx-text-fill: #1a1000;
-                           -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;
-                           -fx-background-radius: 3; -fx-padding: 7 18 7 18; -fx-cursor: hand;" />
+            <Button onAction="#onRefresh" style="-fx-background-color: #ffd700; -fx-text-fill: #1a1000;                            -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                            -fx-background-radius: 3; -fx-padding: 7 18 7 18; -fx-cursor: hand;" text="⟳  Refresh" />
         </HBox>
     </VBox>
 
     <!-- Gold stripe  5px -->
-    <Region prefHeight="5" minHeight="5" maxHeight="5"
-            style="-fx-background-color: linear-gradient(to right,#8a6200,#ffd700,#f5c400,#ffd700,#8a6200);" />
+    <Region maxHeight="5" minHeight="5" prefHeight="5" style="-fx-background-color: linear-gradient(to right,#8a6200,#ffd700,#f5c400,#ffd700,#8a6200);" />
 
     <!-- ══ STAT CARDS  108px (14 top + 80 cards + 14 bot) ════════════════ -->
-    <HBox spacing="14" style="-fx-padding: 14 36 14 36; -fx-background-color: #f3f4f6;"
-          minHeight="108" maxHeight="108">
+    <HBox maxHeight="108" minHeight="108" spacing="14" style="-fx-padding: 14 36 14 36; -fx-background-color: #f3f4f6;">
 
         <!-- Total admins -->
-        <VBox alignment="TOP_LEFT" spacing="2" HBox.hgrow="ALWAYS"
-              style="-fx-background-color: white;
-                     -fx-border-color: #dde4ef #dde4ef #dde4ef #1a56c4;
-                     -fx-border-width: 1 1 1 5; -fx-padding: 12 18 12 18;
-                     -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.09),8,0,0,2);">
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;
-                          -fx-text-fill: #1a56c4;" text="👑  TOTAL ADMINS" />
-            <Label fx:id="totalAdminsLbl" text="—"
-                   style="-fx-font-family: 'Georgia'; -fx-font-size: 34; -fx-font-weight: bold;
-                          -fx-text-fill: #1a56c4; -fx-padding: 0;" />
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #aabbd0;
-                          -fx-font-style: italic;" text="Registered admin accounts" />
+        <VBox alignment="TOP_LEFT" spacing="2" style="-fx-background-color: white;                      -fx-border-color: #dde4ef #dde4ef #dde4ef #1a56c4;                      -fx-border-width: 1 1 1 5; -fx-padding: 12 18 12 18;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.09),8,0,0,2);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;                           -fx-text-fill: #1a56c4;" text="👑  TOTAL ADMINS" />
+            <Label fx:id="totalAdminsLbl" style="-fx-font-family: 'Georgia'; -fx-font-size: 34; -fx-font-weight: bold;                           -fx-text-fill: #1a56c4; -fx-padding: 0;" text="—" />
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #aabbd0;                           -fx-font-style: italic;" text="Registered admin accounts" />
         </VBox>
 
         <!-- Active admins -->
-        <VBox alignment="TOP_LEFT" spacing="2" HBox.hgrow="ALWAYS"
-              style="-fx-background-color: white;
-                     -fx-border-color: #dde4ef #dde4ef #dde4ef #276b2e;
-                     -fx-border-width: 1 1 1 5; -fx-padding: 12 18 12 18;
-                     -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.09),8,0,0,2);">
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;
-                          -fx-text-fill: #276b2e;" text="✅  ACTIVE ADMINS" />
-            <Label fx:id="activeAdminsLbl" text="—"
-                   style="-fx-font-family: 'Georgia'; -fx-font-size: 34; -fx-font-weight: bold;
-                          -fx-text-fill: #276b2e; -fx-padding: 0;" />
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #aabbd0;
-                          -fx-font-style: italic;" text="Currently enabled accounts" />
+        <VBox alignment="TOP_LEFT" spacing="2" style="-fx-background-color: white;                      -fx-border-color: #dde4ef #dde4ef #dde4ef #276b2e;                      -fx-border-width: 1 1 1 5; -fx-padding: 12 18 12 18;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.09),8,0,0,2);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;                           -fx-text-fill: #276b2e;" text="✅  ACTIVE ADMINS" />
+            <Label fx:id="activeAdminsLbl" style="-fx-font-family: 'Georgia'; -fx-font-size: 34; -fx-font-weight: bold;                           -fx-text-fill: #276b2e; -fx-padding: 0;" text="—" />
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #aabbd0;                           -fx-font-style: italic;" text="Currently enabled accounts" />
         </VBox>
 
         <!-- Emergency key display -->
-        <VBox alignment="TOP_LEFT" spacing="2" HBox.hgrow="ALWAYS"
-              style="-fx-background-color: #fffbef;
-                     -fx-border-color: #ede0aa #ede0aa #ede0aa #b8960a;
-                     -fx-border-width: 1 1 1 5; -fx-padding: 12 18 12 18;
-                     -fx-effect: dropshadow(gaussian,rgba(184,150,10,0.16),8,0,0,2);">
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;
-                          -fx-text-fill: #7a4e00;" text="🔑  EMERGENCY RESET KEY" />
-            <Label text="PRISON-RESET-2025"
-                   style="-fx-font-family: monospace; -fx-font-size: 16; -fx-font-weight: bold;
-                          -fx-text-fill: #8b0000; -fx-padding: 4 0 4 0;" />
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #9a7840;
-                          -fx-font-style: italic;" text="Keep safe · Share only with trusted administrators" />
+        <VBox alignment="TOP_LEFT" spacing="2" style="-fx-background-color: #fffbef;                      -fx-border-color: #ede0aa #ede0aa #ede0aa #b8960a;                      -fx-border-width: 1 1 1 5; -fx-padding: 12 18 12 18;                      -fx-effect: dropshadow(gaussian,rgba(184,150,10,0.16),8,0,0,2);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;                           -fx-text-fill: #7a4e00;" text="🔑  EMERGENCY RESET KEY" />
+            <Label style="-fx-font-family: monospace; -fx-font-size: 16; -fx-font-weight: bold;                           -fx-text-fill: #8b0000; -fx-padding: 4 0 4 0;" text="PRISON-RESET-2025" />
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #9a7840;                           -fx-font-style: italic;" text="Keep safe · Share only with trusted administrators" />
         </VBox>
 
     </HBox>
 
     <!-- ══ MAIN BODY  14px top margin + 296px content ════════════════════ -->
-    <HBox spacing="14" style="-fx-padding: 0 36 0 36; -fx-background-color: #f3f4f6;"
-          VBox.vgrow="ALWAYS">
+    <HBox spacing="14" style="-fx-padding: 0 36 0 36; -fx-background-color: #f3f4f6;" VBox.vgrow="ALWAYS">
 
         <!-- Admin accounts table — fills remaining height -->
-        <VBox HBox.hgrow="ALWAYS" spacing="0"
-              style="-fx-background-color: white;
-                     -fx-border-color: #dde4ef; -fx-border-width: 1;
-                     -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.08),8,0,0,2);">
+        <VBox spacing="0" style="-fx-background-color: white;                      -fx-border-color: #dde4ef; -fx-border-width: 1;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.08),8,0,0,2);" HBox.hgrow="ALWAYS">
 
             <!-- Table header bar -->
-            <HBox alignment="CENTER_LEFT" spacing="10" minHeight="38" maxHeight="38"
-                  style="-fx-padding: 0 16 0 16; -fx-background-color: #0d2257;
-                         -fx-border-color: transparent transparent #162d66 transparent;
-                         -fx-border-width: 0 0 1 0;">
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-font-weight: bold;
-                              -fx-text-fill: #c8d8f0;" text="👑  Admin Accounts" />
+            <HBox alignment="CENTER_LEFT" maxHeight="38" minHeight="38" spacing="10" style="-fx-padding: 0 16 0 16; -fx-background-color: #0d2257;                          -fx-border-color: transparent transparent #162d66 transparent;                          -fx-border-width: 0 0 1 0;">
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-font-weight: bold;                               -fx-text-fill: #c8d8f0;" text="👑  Admin Accounts" />
             </HBox>
 
-            <TableView fx:id="adminTable" VBox.vgrow="ALWAYS"
-                       style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <TableView fx:id="adminTable" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="colRow"       text="#"            prefWidth="42" />
-                    <TableColumn fx:id="colDisplay"   text="Display Name" prefWidth="155" />
-                    <TableColumn fx:id="colUsername"  text="Username"     prefWidth="135" />
-                    <TableColumn fx:id="colCreatedAt" text="Created"      prefWidth="148" />
-                    <TableColumn fx:id="colLastLogin" text="Last Login"   prefWidth="148" />
-                    <TableColumn fx:id="colStatus"    text="Status"       prefWidth="90" />
-                    <TableColumn fx:id="colActions"   text="Actions"      prefWidth="160" />
+                    <TableColumn fx:id="colRow" prefWidth="42" text="#" />
+                    <TableColumn fx:id="colDisplay" prefWidth="155" text="Display Name" />
+                    <TableColumn fx:id="colUsername" prefWidth="135" text="Username" />
+                    <TableColumn fx:id="colCreatedAt" prefWidth="148" text="Created" />
+                    <TableColumn fx:id="colLastLogin" prefWidth="148" text="Last Login" />
+                    <TableColumn fx:id="colStatus" prefWidth="90" text="Status" />
+                    <TableColumn fx:id="colActions" prefWidth="160" text="Actions" />
                 </columns>
             </TableView>
         </VBox>
 
         <!-- Create / Change Password form — fixed 288px wide -->
-        <VBox prefWidth="288" minWidth="288" maxWidth="288" spacing="8"
-              style="-fx-background-color: white;
-                     -fx-border-color: #dde4ef; -fx-border-width: 1;
-                     -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.08),8,0,0,2);">
+        <VBox maxWidth="288" minWidth="288" prefWidth="288" spacing="8" style="-fx-background-color: white;                      -fx-border-color: #dde4ef; -fx-border-width: 1;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.08),8,0,0,2);">
 
             <!-- Form header bar -->
-            <HBox alignment="CENTER_LEFT" minHeight="38" maxHeight="38"
-                  style="-fx-padding: 0 16 0 16; -fx-background-color: #0d2257;
-                         -fx-border-color: transparent transparent #162d66 transparent;
-                         -fx-border-width: 0 0 1 0;">
-                <Label fx:id="formTitle" text="➕  New Admin Account"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-font-weight: bold;
-                              -fx-text-fill: #c8d8f0;" />
+            <HBox alignment="CENTER_LEFT" maxHeight="38" minHeight="38" style="-fx-padding: 0 16 0 16; -fx-background-color: #0d2257;                          -fx-border-color: transparent transparent #162d66 transparent;                          -fx-border-width: 0 0 1 0;">
+                <Label fx:id="formTitle" style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-font-weight: bold;                               -fx-text-fill: #c8d8f0;" text="➕  New Admin Account" />
             </HBox>
 
             <VBox spacing="8" style="-fx-padding: 12 16 12 16;">
 
                 <!-- Display Name -->
                 <VBox spacing="3">
-                    <Label text="Display Name"
-                           style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                                  -fx-text-fill: #374151;" />
-                    <TextField fx:id="fldDisplayName" promptText="e.g. John Smith"
-                               style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                      -fx-border-color: #d0d8e8; -fx-padding: 6;
-                                      -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                                   -fx-text-fill: #374151;" text="Display Name" />
+                    <TextField fx:id="fldDisplayName" promptText="e.g. John Smith" style="-fx-background-radius: 3; -fx-border-radius: 3;                                       -fx-border-color: #d0d8e8; -fx-padding: 6;                                       -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
                 </VBox>
 
                 <!-- Username -->
                 <VBox spacing="3">
-                    <Label text="Username"
-                           style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                                  -fx-text-fill: #374151;" />
-                    <TextField fx:id="fldUsername" promptText="4–30 chars, letters/digits/_"
-                               style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                      -fx-border-color: #d0d8e8; -fx-padding: 6;
-                                      -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                                   -fx-text-fill: #374151;" text="Username" />
+                    <TextField fx:id="fldUsername" promptText="4–30 chars, letters/digits/_" style="-fx-background-radius: 3; -fx-border-radius: 3;                                       -fx-border-color: #d0d8e8; -fx-padding: 6;                                       -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
                 </VBox>
 
                 <!-- Password + strength -->
                 <VBox spacing="3">
-                    <Label text="Password"
-                           style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                                  -fx-text-fill: #374151;" />
-                    <PasswordField fx:id="fldPassword" promptText="Min 8 chars"
-                                   style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                          -fx-border-color: #d0d8e8; -fx-padding: 6;
-                                          -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <ProgressBar fx:id="barStrength" prefWidth="130" prefHeight="5" progress="0" />
-                        <Label fx:id="lblStrength" text=""
-                               style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                                   -fx-text-fill: #374151;" text="Password" />
+                    <PasswordField fx:id="fldPassword" promptText="Min 8 chars" style="-fx-background-radius: 3; -fx-border-radius: 3;                                           -fx-border-color: #d0d8e8; -fx-padding: 6;                                           -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <ProgressBar fx:id="barStrength" prefHeight="5" prefWidth="130" progress="0" />
+                        <Label fx:id="lblStrength" style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;" text="" />
                     </HBox>
-                    <Label text="↑ Uppercase  ·  ↓ Lowercase  ·  # Digit  ·  @ Special"
-                           style="-fx-font-family: 'Georgia'; -fx-font-size: 9;
-                                  -fx-text-fill: #94a3b8; -fx-font-style: italic;" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9;                                   -fx-text-fill: #94a3b8; -fx-font-style: italic;" text="↑ Uppercase  ·  ↓ Lowercase  ·  # Digit  ·  @ Special" />
                 </VBox>
 
                 <!-- Confirm Password -->
                 <VBox spacing="3">
-                    <Label text="Confirm Password"
-                           style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                                  -fx-text-fill: #374151;" />
-                    <PasswordField fx:id="fldConfirm" promptText="Re-enter password"
-                                   style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                          -fx-border-color: #d0d8e8; -fx-padding: 6;
-                                          -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                    <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                                   -fx-text-fill: #374151;" text="Confirm Password" />
+                    <PasswordField fx:id="fldConfirm" promptText="Re-enter password" style="-fx-background-radius: 3; -fx-border-radius: 3;                                           -fx-border-color: #d0d8e8; -fx-padding: 6;                                           -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
                 </VBox>
 
                 <!-- Error label -->
-                <Label fx:id="lblError" text="" wrapText="true" maxWidth="256"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-text-fill: #b02020;" />
+                <Label fx:id="lblError" maxWidth="256" style="-fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-text-fill: #b02020;" text="" wrapText="true" />
 
                 <!-- Save / Clear buttons -->
                 <HBox spacing="8">
-                    <Button fx:id="btnSave" text="Save" onAction="#onFormSave"
-                            HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                            style="-fx-background-color: #0d2257; -fx-text-fill: white;
-                                   -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;
-                                   -fx-background-radius: 3; -fx-padding: 8; -fx-cursor: hand;" />
-                    <Button text="Clear" onAction="#onFormClear"
-                            style="-fx-background-color: #e8ecf3; -fx-text-fill: #374151;
-                                   -fx-font-family: 'Georgia'; -fx-font-size: 11;
-                                   -fx-background-radius: 3; -fx-padding: 8 14 8 14; -fx-cursor: hand;" />
+                    <Button fx:id="btnSave" maxWidth="Infinity" onAction="#onFormSave" style="-fx-background-color: #0d2257; -fx-text-fill: white;                                    -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                                    -fx-background-radius: 3; -fx-padding: 8; -fx-cursor: hand;" text="Save" HBox.hgrow="ALWAYS" />
+                    <Button onAction="#onFormClear" style="-fx-background-color: #e8ecf3; -fx-text-fill: #374151;                                    -fx-font-family: 'Georgia'; -fx-font-size: 11;                                    -fx-background-radius: 3; -fx-padding: 8 14 8 14; -fx-cursor: hand;" text="Clear" />
                 </HBox>
 
             </VBox>
@@ -226,106 +145,64 @@
     </HBox>
 
     <!-- ══ EMERGENCY RESET  14px top-margin + 215px content + 16px bot ═══ -->
-    <VBox spacing="0"
-          style="-fx-background-color: white;
-                 -fx-border-color: #e8cc60; -fx-border-width: 2;
-                 -fx-effect: dropshadow(gaussian,rgba(184,150,10,0.14),8,0,0,2);">
+    <VBox spacing="0" style="-fx-background-color: white;                  -fx-border-color: #e8cc60; -fx-border-width: 2;                  -fx-effect: dropshadow(gaussian,rgba(184,150,10,0.14),8,0,0,2);">
         <VBox.margin>
-            <Insets top="14" right="36" bottom="16" left="36" />
+            <Insets bottom="16" left="36" right="36" top="14" />
         </VBox.margin>
 
         <!-- Section header  40px -->
-        <HBox alignment="CENTER_LEFT" spacing="12" minHeight="40" maxHeight="40"
-              style="-fx-padding: 0 18 0 18; -fx-background-color: #fffbef;
-                     -fx-border-color: transparent transparent #e8cc60 transparent;
-                     -fx-border-width: 0 0 1 0;">
+        <HBox alignment="CENTER_LEFT" maxHeight="40" minHeight="40" spacing="12" style="-fx-padding: 0 18 0 18; -fx-background-color: #fffbef;                      -fx-border-color: transparent transparent #e8cc60 transparent;                      -fx-border-width: 0 0 1 0;">
             <Label style="-fx-font-size: 16;" text="🚨" />
             <VBox spacing="1">
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-font-weight: bold;
-                              -fx-text-fill: #7a4e00;" text="EMERGENCY PASSWORD RESET" />
-                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;
-                              -fx-text-fill: #b8960a;"
-                       text="Use when an admin is locked out. Requires the master reset key shown in the card above." />
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 12; -fx-font-weight: bold;                               -fx-text-fill: #7a4e00;" text="EMERGENCY PASSWORD RESET" />
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;                               -fx-text-fill: #b8960a;" text="Use when an admin is locked out. Requires the master reset key shown in the card above." />
             </VBox>
         </HBox>
 
         <!-- Reset form fields  ≈ 140px -->
-        <HBox spacing="14" alignment="CENTER_LEFT" style="-fx-padding: 12 18 10 18;">
+        <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 12 18 10 18;">
 
             <!-- Master key -->
-            <VBox spacing="4" prefWidth="200">
-                <Label text="🔑  Master Reset Key"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                              -fx-text-fill: #7a4e00;" />
-                <TextField fx:id="fldMasterKey" promptText="Enter key exactly"
-                           style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                  -fx-border-color: #e8cc60; -fx-border-width: 2;
-                                  -fx-padding: 7; -fx-font-family: monospace; -fx-font-size: 12;" />
-                <Label text="Copy from the stat card above"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;
-                              -fx-text-fill: #b8960a;" />
+            <VBox prefWidth="200" spacing="4">
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                               -fx-text-fill: #7a4e00;" text="🔑  Master Reset Key" />
+                <TextField fx:id="fldMasterKey" promptText="Enter key exactly" style="-fx-background-radius: 3; -fx-border-radius: 3;                                   -fx-border-color: #e8cc60; -fx-border-width: 2;                                   -fx-padding: 7; -fx-font-family: monospace; -fx-font-size: 12;" />
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;                               -fx-text-fill: #b8960a;" text="Copy from the stat card above" />
             </VBox>
 
             <!-- Username -->
-            <VBox spacing="4" prefWidth="190">
-                <Label text="👤  Account Username"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                              -fx-text-fill: #374151;" />
-                <TextField fx:id="fldResetUsername" promptText="Username to reset"
-                           style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                  -fx-border-color: #d0d8e8; -fx-padding: 7;
-                                  -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
-                <Label text="Works for admin or co-admin"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;
-                              -fx-text-fill: #94a3b8;" />
+            <VBox prefWidth="190" spacing="4">
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                               -fx-text-fill: #374151;" text="👤  Account Username" />
+                <TextField fx:id="fldResetUsername" promptText="Username to reset" style="-fx-background-radius: 3; -fx-border-radius: 3;                                   -fx-border-color: #d0d8e8; -fx-padding: 7;                                   -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;                               -fx-text-fill: #94a3b8;" text="Works for admin or co-admin" />
             </VBox>
 
             <!-- New password + strength -->
-            <VBox spacing="4" prefWidth="200">
-                <Label text="🔒  New Password"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                              -fx-text-fill: #374151;" />
-                <PasswordField fx:id="fldResetNewPw" promptText="New password"
-                               style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                      -fx-border-color: #d0d8e8; -fx-padding: 7;
-                                      -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
-                <HBox spacing="6" alignment="CENTER_LEFT">
-                    <ProgressBar fx:id="barResetStrength" prefWidth="110" prefHeight="5" progress="0" />
-                    <Label fx:id="lblResetStrength" text=""
-                           style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;" />
+            <VBox prefWidth="200" spacing="4">
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                               -fx-text-fill: #374151;" text="🔒  New Password" />
+                <PasswordField fx:id="fldResetNewPw" promptText="New password" style="-fx-background-radius: 3; -fx-border-radius: 3;                                       -fx-border-color: #d0d8e8; -fx-padding: 7;                                       -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                <HBox alignment="CENTER_LEFT" spacing="6">
+                    <ProgressBar fx:id="barResetStrength" prefHeight="5" prefWidth="110" progress="0" />
+                    <Label fx:id="lblResetStrength" style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-weight: bold;" text="" />
                 </HBox>
             </VBox>
 
             <!-- Confirm -->
-            <VBox spacing="4" prefWidth="200">
-                <Label text="🔒  Confirm Password"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;
-                              -fx-text-fill: #374151;" />
-                <PasswordField fx:id="fldResetConfirm" promptText="Re-enter new password"
-                               style="-fx-background-radius: 3; -fx-border-radius: 3;
-                                      -fx-border-color: #d0d8e8; -fx-padding: 7;
-                                      -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
-                <Label text="Same rules as the form above"
-                       style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;
-                              -fx-text-fill: #94a3b8;" />
+            <VBox prefWidth="200" spacing="4">
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                               -fx-text-fill: #374151;" text="🔒  Confirm Password" />
+                <PasswordField fx:id="fldResetConfirm" promptText="Re-enter new password" style="-fx-background-radius: 3; -fx-border-radius: 3;                                       -fx-border-color: #d0d8e8; -fx-padding: 7;                                       -fx-font-family: 'Georgia'; -fx-font-size: 12;" />
+                <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-font-style: italic;                               -fx-text-fill: #94a3b8;" text="Same rules as the form above" />
             </VBox>
 
             <!-- Reset button — aligned to field baseline -->
-            <VBox spacing="4" alignment="BOTTOM_LEFT" prefWidth="150">
+            <VBox alignment="BOTTOM_LEFT" prefWidth="150" spacing="4">
                 <Region prefHeight="24" />
-                <Button onAction="#onEmergencyReset" text="🚨  Reset Password"
-                        maxWidth="Infinity"
-                        style="-fx-background-color: #8b0000; -fx-text-fill: white;
-                               -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;
-                               -fx-background-radius: 3; -fx-padding: 8 16 8 16; -fx-cursor: hand;
-                               -fx-effect: dropshadow(gaussian,rgba(139,0,0,0.40),6,0,0,2);" />
+                <Button maxWidth="Infinity" onAction="#onEmergencyReset" style="-fx-background-color: #8b0000; -fx-text-fill: white;                                -fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-font-weight: bold;                                -fx-background-radius: 3; -fx-padding: 8 16 8 16; -fx-cursor: hand;                                -fx-effect: dropshadow(gaussian,rgba(139,0,0,0.40),6,0,0,2);" text="🚨  Reset Password" />
             </VBox>
         </HBox>
 
         <!-- Error label row  25px -->
-        <HBox minHeight="25" maxHeight="25" style="-fx-padding: 0 18 0 18;">
-            <Label fx:id="lblResetError" text="" wrapText="true"
-                   style="-fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-text-fill: #b02020;" />
+        <HBox maxHeight="25" minHeight="25" style="-fx-padding: 0 18 0 18;">
+            <Label fx:id="lblResetError" style="-fx-font-family: 'Georgia'; -fx-font-size: 11; -fx-text-fill: #b02020;" text="" wrapText="true" />
         </HBox>
 
     </VBox>

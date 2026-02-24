@@ -12,6 +12,34 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 1. Update Users Table
+-- Note: MySQL does not support 'IF NOT EXISTS' within ALTER TABLE.
+-- If these columns already exist, this statement will throw an error.
+ALTER TABLE users 
+    ADD COLUMN display_name VARCHAR(100)  DEFAULT NULL,
+    ADD COLUMN is_active    TINYINT(1)   DEFAULT 1,
+    ADD COLUMN created_by  VARCHAR(50)   DEFAULT NULL,
+    ADD COLUMN last_login  TIMESTAMP     DEFAULT NULL;
+
+-- 2. Co-Admin login activity log
+CREATE TABLE IF NOT EXISTS co_admin_login_logs (
+    log_id       INT AUTO_INCREMENT PRIMARY KEY,
+    user_id      INT          NOT NULL,
+    username     VARCHAR(50)  NOT NULL,
+    display_name VARCHAR(100) DEFAULT NULL,
+    login_at     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    logout_at    TIMESTAMP    DEFAULT NULL,
+    session_mins INT          DEFAULT NULL,
+    ip_address   VARCHAR(45)  DEFAULT 'localhost',
+    status       ENUM('ACTIVE','LOGGED_OUT','TIMEOUT') DEFAULT 'ACTIVE',
+    CONSTRAINT fk_cal_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- 3. Create Indexes
+-- In MySQL, indexes are usually created during CREATE TABLE or via CREATE INDEX (without IF NOT EXISTS).
+CREATE INDEX idx_cal_user  ON co_admin_login_logs(user_id);
+CREATE INDEX idx_cal_login ON co_admin_login_logs(login_at);
+
 -- GUARDS TABLE
 drop table guards;
 CREATE TABLE guards (

@@ -148,8 +148,8 @@
             <TableColumn fx:id="typeCol"       text="Person Type"      prefWidth="120" minWidth="100"/>
             <TableColumn fx:id="idCol"         text="Person ID"        prefWidth="100" minWidth="80"/>
             <TableColumn fx:id="deptCol"       text="Block / Dept"     prefWidth="150" minWidth="120"/>
-            <TableColumn fx:id="confidenceCol" text="Confidence"       prefWidth="130" minWidth="110"/>
-            <TableColumn fx:id="locationCol"   text="Camera / Location" prefWidth="160" minWidth="120"/>
+            <TableColumn fx:id="confidenceCol" text="Shift / Crime"    prefWidth="140" minWidth="110"/>
+            <TableColumn fx:id="locationCol"   text="Phone / Danger"   prefWidth="140" minWidth="120"/>
             <TableColumn fx:id="resultCol"     text="Result"           prefWidth="130" minWidth="100"/>
             <TableColumn fx:id="actionCol"     text="Details"          prefWidth="90"  minWidth="80"  sortable="false" resizable="false"/>
         </columns>

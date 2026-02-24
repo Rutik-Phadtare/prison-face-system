@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="825.0" spacing="0" style="-fx-background-color: #e8ecf3;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.CoAdminManagementController">
+
+    <VBox style="-fx-background-color: #0a1f5c; -fx-padding: 12 36 12 36;">
+        <HBox alignment="CENTER_LEFT" spacing="14">
+            <Label style="-fx-font-size: 24;" text="🛡" />
+            <VBox spacing="1">
+                <Label style="-fx-font-family: 'Arial Black'; -fx-font-size: 18; -fx-text-fill: white;" text="CO-ADMIN MANAGEMENT" />
+                <Label style="-fx-font-size: 11; -fx-text-fill: #a8c4f0;" text="Create accounts · Reset passwords · Monitor login activity" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#onRefreshAccounts" style="-fx-background-color: #ffd700; -fx-text-fill: #0a1f5c;                            -fx-font-weight: bold; -fx-background-radius: 8;                            -fx-padding: 6 16 6 16; -fx-cursor: hand;" text="⟳  Refresh" />
+        </HBox>
+    </VBox>
+    <HBox prefHeight="3" style="-fx-background-color: linear-gradient(to right, #0a1f5c, #1565c0, #ffd700, #1565c0, #0a1f5c);" />
+
+    <HBox spacing="16" style="-fx-padding: 12 36 0 36;">
+        <VBox alignment="CENTER" spacing="4" style="-fx-background-color: linear-gradient(to bottom, #0a1f5c, #163a8c);                      -fx-background-radius: 14 0 14 0; -fx-padding: 12;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.35),12,0,2,4);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #a8c4f0;" text="👥  TOTAL CO-ADMINS" />
+            <Label fx:id="totalLbl" style="-fx-font-family: 'Arial Black'; -fx-font-size: 26; -fx-text-fill: #ffd700;" text="0" />
+        </VBox>
+        <VBox alignment="CENTER" spacing="4" style="-fx-background-color: linear-gradient(to bottom, #0a1f5c, #163a8c);                      -fx-background-radius: 14 0 14 0; -fx-padding: 12;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.35),12,0,2,4);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #86efac;" text="✅  ACTIVE" />
+            <Label fx:id="activeLbl" style="-fx-font-family: 'Arial Black'; -fx-font-size: 26; -fx-text-fill: #86efac;" text="0" />
+        </VBox>
+        <VBox alignment="CENTER" spacing="4" style="-fx-background-color: linear-gradient(to bottom, #8b0000, #c0392b);                      -fx-background-radius: 14 0 14 0; -fx-padding: 12;                      -fx-effect: dropshadow(gaussian,rgba(192,57,43,0.40),12,0,2,4);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #ffc0bb;" text="🚫  INACTIVE" />
+            <Label fx:id="inactiveLbl" style="-fx-font-family: 'Arial Black'; -fx-font-size: 26; -fx-text-fill: white;" text="0" />
+        </VBox>
+        <VBox alignment="CENTER" spacing="4" style="-fx-background-color: linear-gradient(to bottom, #0a1f5c, #163a8c);                      -fx-background-radius: 14 0 14 0; -fx-padding: 12;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.35),12,0,2,4);" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #a8c4f0;" text="📋  TOTAL SESSIONS" />
+            <Label fx:id="totalSessionsLbl" style="-fx-font-family: 'Arial Black'; -fx-font-size: 26; -fx-text-fill: #ffd700;" text="0" />
+        </VBox>
+    </HBox>
+
+    <HBox spacing="16" style="-fx-padding: 12 36 0 36;" VBox.vgrow="ALWAYS">
+
+        <VBox spacing="0" style="-fx-background-color: white; -fx-background-radius: 14;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.12),10,0,2,3);" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" style="-fx-padding: 10 18 10 18;                          -fx-border-color: transparent transparent #e2e8f0 transparent;                          -fx-border-width: 0 0 1 0;">
+                <Label style="-fx-font-family: 'Arial Black'; -fx-font-size: 13; -fx-text-fill: #0a1f5c;" text="👥  Co-Admin Accounts" />
+            </HBox>
+            <TableView fx:id="accountsTable" prefWidth="992.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colRow" prefWidth="40" text="#" />
+                    <TableColumn fx:id="colDisplay" prefWidth="170" text="Display Name" />
+                    <TableColumn fx:id="colUsername" prefWidth="140" text="Username" />
+                    <TableColumn fx:id="colCreatedBy" prefWidth="120" text="Created By" />
+                    <TableColumn fx:id="colStatus" prefWidth="100" text="Status" />
+                    <TableColumn fx:id="colActions" prefWidth="250" text="Actions" />
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox minWidth="300" prefWidth="320" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14;                      -fx-padding: 16;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.12),10,0,2,3);">
+
+            <Label fx:id="formTitle" style="-fx-font-family: 'Arial Black'; -fx-font-size: 13; -fx-text-fill: #0a1f5c;" text="➕  New Co-Admin" />
+            <Separator />
+
+            <VBox spacing="2">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 11; -fx-text-fill: #374151;" text="Display Name" />
+                <TextField fx:id="fldDisplayName" promptText="e.g. John Smith" style="-fx-background-radius: 8; -fx-border-radius: 8;                                   -fx-border-color: #cbd5e1; -fx-padding: 6; -fx-font-size: 12;" />
+            </VBox>
+
+            <VBox spacing="2">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 11; -fx-text-fill: #374151;" text="Username" />
+                <TextField fx:id="fldUsername" promptText="4–30 chars" style="-fx-background-radius: 8; -fx-border-radius: 8;                                   -fx-border-color: #cbd5e1; -fx-padding: 6; -fx-font-size: 12;" />
+            </VBox>
+
+            <VBox spacing="3">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 11; -fx-text-fill: #374151;" text="Password" />
+                <PasswordField fx:id="fldPassword" promptText="Min 8 chars" style="-fx-background-radius: 8; -fx-border-radius: 8;                                       -fx-border-color: #cbd5e1; -fx-padding: 6; -fx-font-size: 12;" />
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <ProgressBar fx:id="barStrength" prefHeight="5" prefWidth="150" progress="0" />
+                    <Label fx:id="lblStrength" style="-fx-font-size: 10px; -fx-font-weight: bold;" text="" />
+                </HBox>
+                <Label style="-fx-font-size: 9; -fx-text-fill: #94a3b8;" text="• Min 8 chars  • Case sensitive  • Digit/Special" wrapText="true" />
+            </VBox>
+
+            <VBox spacing="2">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 11; -fx-text-fill: #374151;" text="Confirm Password" />
+                <PasswordField fx:id="fldConfirm" promptText="Re-enter password" style="-fx-background-radius: 8; -fx-border-radius: 8;                                       -fx-border-color: #cbd5e1; -fx-padding: 6; -fx-font-size: 12;" />
+            </VBox>
+
+            <Label fx:id="lblError" prefWidth="280" style="-fx-font-size: 11; -fx-text-fill: #c0392b;" text="" wrapText="true" />
+
+            <HBox spacing="10">
+                <Button fx:id="btnSave" maxWidth="Infinity" onAction="#onFormSave" style="-fx-background-color: #0a1f5c; -fx-text-fill: white;                                -fx-font-weight: bold; -fx-background-radius: 8;                                -fx-padding: 8; -fx-cursor: hand;" text="Create Account" HBox.hgrow="ALWAYS" />
+                <Button onAction="#onFormClear" style="-fx-background-color: #e8ecf3; -fx-text-fill: #374151;                                -fx-background-radius: 8; -fx-padding: 8 12 8 12; -fx-cursor: hand;" text="Clear" />
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="0" style="-fx-background-color: white; -fx-background-radius: 14;                  -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.15),12,0,2,4);" VBox.vgrow="ALWAYS">
+        <VBox.margin><Insets bottom="10" left="36" right="36" top="12" /></VBox.margin>
+
+        <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: #0a1f5c;                      -fx-background-radius: 14 14 0 0;                      -fx-padding: 8 20 8 20;">
+
+            <Label style="-fx-font-size: 14;" text="📋" />
+            <Label style="-fx-font-family: 'Arial Black'; -fx-font-size: 13; -fx-text-fill: white;" text="Login Activity Log" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <HBox alignment="CENTER_LEFT" spacing="6" style="-fx-background-color: rgba(255,255,255,0.12);                          -fx-background-radius: 8; -fx-padding: 4 10 4 10;">
+                <Label style="-fx-font-size: 11; -fx-text-fill: #a8c4f0;" text="🔍" />
+                <TextField fx:id="logSearchField" prefWidth="150" promptText="Search..." style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 11;" />
+            </HBox>
+
+            <Button onAction="#onExportPdf" style="-fx-background-color: #ffd700; -fx-text-fill: #0a1f5c;                            -fx-font-weight: bold; -fx-background-radius: 8;                            -fx-padding: 4 12 4 12; -fx-cursor: hand;" text="⬇  Export PDF" />
+        </HBox>
+
+        <HBox style="-fx-background-color: #f0f4ff; -fx-padding: 6 0 6 0; -fx-border-color: transparent transparent #dde4f5 transparent; -fx-border-width: 0 0 1 0;">
+            <Label prefWidth="54" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 0 0 0 14;" text="#" />
+            <Label prefWidth="150" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b;" text="Username" />
+            <Label prefWidth="170" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b;" text="Display Name" />
+            <Label prefWidth="180" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b;" text="Login Time" />
+            <Label prefWidth="180" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b;" text="Logout Time" />
+            <Label prefWidth="110" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b;" text="Duration" />
+            <Label prefWidth="130" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #64748b;" text="Status" />
+        </HBox>
+
+        <TableView fx:id="logTable" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-table-header-row-height: 0;" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="lColRow" prefWidth="54" text="#" />
+                <TableColumn fx:id="lColUser" prefWidth="150" text="Username" />
+                <TableColumn fx:id="lColDisplay" prefWidth="170" text="Display Name" />
+                <TableColumn fx:id="lColLogin" prefWidth="180" text="Login Time" />
+                <TableColumn fx:id="lColLogout" prefWidth="180" text="Logout Time" />
+                <TableColumn fx:id="lColDuration" prefWidth="110" text="Duration" />
+                <TableColumn fx:id="lColStatus" prefWidth="130" text="Status" />
+            </columns>
+        </TableView>
+    </VBox>
+
+</VBox>

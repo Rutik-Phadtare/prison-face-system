@@ -299,8 +299,10 @@ public class PrisonerProfileController {
                 File photo = new File(
                         "python-face/photos/prisoners/" + prisonerId + ".jpg");
                 if (photo.exists()) {
-                    prisonerImage.setImage(new Image(
-                            photo.toURI() + "?t=" + System.currentTimeMillis()));
+                    // Load via InputStream to bypass JavaFX URL cache
+                    try (java.io.FileInputStream fis = new java.io.FileInputStream(photo)) {
+                        prisonerImage.setImage(new Image(fis));
+                    } catch (Exception ignored) {}
                 }
                 photoButton.setDisable(false);
                 photoButton.setText("🔄  Retake Photo");
@@ -334,9 +336,12 @@ public class PrisonerProfileController {
                 currentPrisoner = p;
                 isNewPrisoner = false;
 
-               // updateUIForExistingPrisoner(); // Helper to clean up the code
+                // updateUIForExistingPrisoner(); // Helper to clean up the code
 
                 if (onSaveCallback != null) onSaveCallback.run();
+
+                // ── Refresh image immediately after new save ──
+                loadPrisonerImage(id);
 
                 new Alert(Alert.AlertType.INFORMATION, "Prisoner registered! ID: PRN-" + String.format("%06d", id)).show();
 
@@ -358,6 +363,9 @@ public class PrisonerProfileController {
                 // AUTO-REFRESH UI Badge and Danger Level
                 applyStatusBadge(currentPrisoner.getStatus());
                 applyDangerBadge(currentPrisoner.getDangerLevel());
+
+                // ── Refresh image immediately after update ──
+                loadPrisonerImage(currentPrisoner.getPrisonerId());
 
                 // Trigger main table refresh
                 if (onSaveCallback != null) onSaveCallback.run();
@@ -608,6 +616,8 @@ public class PrisonerProfileController {
 
             DateTimeFormatter dateStyle = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
 
+            addVerificationStrip(document, crimson);
+
             // ── Criminal record ───────────────────────────────────────────
             addSectionWithRows(document, sec, "CRIMINAL RECORD & SENTENCE",
                     new String[][]{
@@ -680,25 +690,14 @@ public class PrisonerProfileController {
                     try {
                         PdfContentByte cb = w.getDirectContent();
                         cb.setLineWidth(2.5f); cb.setColorStroke(crimson);
-                        cb.rectangle(28, 28,
-                                doc.getPageSize().getWidth() - 56,
-                                doc.getPageSize().getHeight() - 56); cb.stroke();
+                        cb.rectangle(28, 28, doc.getPageSize().getWidth() - 56, doc.getPageSize().getHeight() - 56); cb.stroke();
                         cb.setLineWidth(0.5f); cb.setColorStroke(new Color(200, 150, 150));
-                        cb.rectangle(33, 33,
-                                doc.getPageSize().getWidth() - 66,
-                                doc.getPageSize().getHeight() - 66); cb.stroke();
-                        cb.setLineWidth(1f); cb.moveTo(38, 50);
-                        cb.lineTo(doc.getPageSize().getWidth() - 38, 50); cb.stroke();
-                        Font ff = FontFactory.getFont(FontFactory.HELVETICA, 7,
-                                new Color(140, 80, 80));
-                        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
-                                new Phrase("CONFIDENTIAL BEHAVIORAL RECORD", ff), 40, 36, 0);
-                        ColumnText.showTextAligned(cb, Element.ALIGN_CENTER,
-                                new Phrase("Inmate Monitoring & Disciplinary Log", ff),
-                                doc.getPageSize().getWidth() / 2, 36, 0);
-                        ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT,
-                                new Phrase("Page " + w.getPageNumber(), ff),
-                                doc.getPageSize().getWidth() - 40, 36, 0);
+                        cb.rectangle(33, 33, doc.getPageSize().getWidth() - 66, doc.getPageSize().getHeight() - 66); cb.stroke();
+                        cb.setLineWidth(1f); cb.moveTo(38, 50); cb.lineTo(doc.getPageSize().getWidth() - 38, 50); cb.stroke();
+                        Font ff = FontFactory.getFont(FontFactory.HELVETICA, 7, new Color(140, 80, 80));
+                        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("CONFIDENTIAL BEHAVIORAL RECORD", ff), 40, 36, 0);
+                        ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, new Phrase("Inmate Monitoring & Disciplinary Log", ff), doc.getPageSize().getWidth() / 2, 36, 0);
+                        ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, new Phrase("Page " + w.getPageNumber(), ff), doc.getPageSize().getWidth() - 40, 36, 0);
                     } catch (Exception ignored) {}
                 }
             });
@@ -712,27 +711,20 @@ public class PrisonerProfileController {
             ht.addCell(logoCell());
             PdfPCell cc = new PdfPCell(); cc.setBorder(PdfPCell.NO_BORDER);
             cc.setHorizontalAlignment(Element.ALIGN_CENTER); cc.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            Paragraph dp = new Paragraph("DEPARTMENT OF CORRECTIONS & PRISON SECURITY",
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, crimson));
+            Paragraph dp = new Paragraph("DEPARTMENT OF CORRECTIONS & PRISON SECURITY", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, crimson));
             dp.setAlignment(Element.ALIGN_CENTER); dp.setSpacingAfter(6f); cc.addElement(dp);
-            Paragraph tp = new Paragraph("BEHAVIORAL & ACTIVITY MONITORING LOG",
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, crimson));
+            Paragraph tp = new Paragraph("BEHAVIORAL & ACTIVITY MONITORING LOG", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, crimson));
             tp.setAlignment(Element.ALIGN_CENTER); tp.setSpacingAfter(4f); cc.addElement(tp);
-            Paragraph sub = new Paragraph(
-                    "Incident Reports  ·  Disciplinary Actions  ·  Visitation & Communication Logs",
-                    FontFactory.getFont(FontFactory.HELVETICA, 9, new Color(120, 50, 50)));
+            Paragraph sub = new Paragraph("Incident Reports  ·  Disciplinary Actions  ·  Visitation & Communication Logs", FontFactory.getFont(FontFactory.HELVETICA, 9, new Color(120, 50, 50)));
             sub.setAlignment(Element.ALIGN_CENTER); cc.addElement(sub);
             ht.addCell(cc); ht.addCell(logoCell()); document.add(ht);
 
             // ── Meta bar ─────────────────────────────────────────────────
             PdfPTable mt = new PdfPTable(3); mt.setWidthPercentage(100); mt.setSpacingAfter(14f);
             Font mf = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Color.WHITE);
-            addMetaCell(mt, "PRISONER: " + nameField.getText().toUpperCase() +
-                    "  (PRN-" + String.format("%06d", currentPrisoner.getPrisonerId()) + ")", mf, crimson);
-            addMetaCell(mt, "BEHAVIOR RATING: " + nvl(behaviorBox.getValue()) +
-                    "  |  CELL: " + nvl(cellBox.getValue()), mf, darkCrim);
-            addMetaCell(mt, "REPORT DATE: " + LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), mf, crimson);
+            addMetaCell(mt, "PRISONER: " + nameField.getText().toUpperCase() + "  (PRN-" + String.format("%06d", currentPrisoner.getPrisonerId()) + ")", mf, crimson);
+            addMetaCell(mt, "BEHAVIOR RATING: " + nvl(behaviorBox.getValue()) + "  |  CELL: " + nvl(cellBox.getValue()), mf, darkCrim);
+            addMetaCell(mt, "REPORT DATE: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), mf, crimson);
             document.add(mt);
 
             // ── Inmate summary ────────────────────────────────────────────
@@ -742,30 +734,30 @@ public class PrisonerProfileController {
                             {"Crime",           nvl(crimeBox.getValue())},
                             {"Danger Level",    dangerBadge.getText()},
                             {"Current Status",  statusBadge.getText()},
-                            {"Release Date",    currentPrisoner.getReleaseDate() != null
-                                    ? currentPrisoner.getReleaseDate().toString() : ""},
+                            {"Release Date",    currentPrisoner.getReleaseDate() != null ? currentPrisoner.getReleaseDate().toString() : "N/A"},
                             {"Behavior Rating", nvl(behaviorBox.getValue())}
                     }, crimson, midCrim);
 
             // ── Incident / Disciplinary log ───────────────────────────────
-            addBigTextSection(document, sec,
-                    "INCIDENT REPORTS, DISCIPLINARY ACTIONS & STAFF EVALUATIONS",
-                    incidentArea.getText(), lightCrim,
-                    "Date | Type | Description | Action Taken | Reporting Officer");
+            addBigTextSection(document, sec, "INCIDENT REPORTS, DISCIPLINARY ACTIONS & STAFF EVALUATIONS", incidentArea.getText(), lightCrim, "Routine behavior.");
 
             // ── Activity / Visitor log ────────────────────────────────────
-            addBigTextSection(document, sec,
-                    "ACTIVITY MONITORING — VISITATION, TELEPHONE CALLS & DIGITAL USAGE",
-                    visitorLogArea.getText(), lightCrim,
-                    "Date | Type (Visit/Call/Tablet) | Contact Person | Duration | Notes");
+            addBigTextSection(document, sec, "ACTIVITY MONITORING — VISITATION, TELEPHONE CALLS & DIGITAL USAGE", visitorLogArea.getText(), lightCrim, "No recorded activities.");
+
+            // ══════════════════════════════════════════════════════════════
+            //  FORCE NEW PAGE HERE
+            // ══════════════════════════════════════════════════════════════
+            document.newPage();
 
             // ── Periodic assessment checklist ─────────────────────────────
-            document.add(new Paragraph("\n"));
             Paragraph chH = new Paragraph("PERIODIC ASSESSMENT CHECKLIST", sec);
-            chH.setSpacingAfter(8f); document.add(chH);
+            chH.setSpacingAfter(8f);
+            document.add(chH);
 
-            PdfPTable cl = new PdfPTable(new float[]{3f, 1f, 1f, 1f});
+            PdfPTable cl = new PdfPTable(new float[]{3.5f, 1f, 1f, 1f});
             cl.setWidthPercentage(100); cl.setSpacingAfter(15f);
+            cl.setSplitLate(false); // Allows rows to split if they hit the bottom of page 2
+
             Font chLbl = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE);
             Font chVal = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
             for (String h : new String[]{"Assessment Item", "Satisfactory", "Unsatisfactory", "N/A"}) {
@@ -773,6 +765,7 @@ public class PrisonerProfileController {
                 hc.setBackgroundColor(new Color(185, 28, 28)); hc.setPadding(7);
                 hc.setHorizontalAlignment(Element.ALIGN_CENTER); cl.addCell(hc);
             }
+
             String[][] checks = {
                     {"Follows cell rules and regulations"},
                     {"Participates in rehabilitation programs"},
@@ -783,6 +776,7 @@ public class PrisonerProfileController {
                     {"Digital / tablet usage within policy"},
                     {"No contraband found during recent inspections"}
             };
+
             boolean alt = false;
             for (String[] row : checks) {
                 Color rb = alt ? lightCrim : Color.WHITE; alt = !alt;
@@ -800,15 +794,13 @@ public class PrisonerProfileController {
             addVerificationStrip(document, crimson);
 
             document.close();
-            new Alert(Alert.AlertType.INFORMATION,
-                    "Behavioral Log Exported Successfully!").show();
+            new Alert(Alert.AlertType.INFORMATION, "Behavioral Log Exported Successfully!").show();
 
         } catch (Exception e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Export Failed: " + e.getMessage()).show();
         }
     }
-
     // ══════════════════════════════════════════════════════════════════════
     //  BUTTON STYLING HELPERS  (mirrors GuardProfileController exactly)
     // ══════════════════════════════════════════════════════════════════════
@@ -915,27 +907,36 @@ public class PrisonerProfileController {
         ns.addCell(nc); doc.add(ns);
     }
 
-    private void addBigTextSection(Document doc, Font sec, String title,
-                                   String content, Color lightCrim,
-                                   String columnHint) throws Exception {
-        PdfPTable s = new PdfPTable(1); s.setWidthPercentage(100);
-        s.setSpacingBefore(10f); s.setSpacingAfter(14f);
-        PdfPCell hd = new PdfPCell(new Paragraph(title, sec));
-        hd.setBorder(PdfPCell.NO_BORDER); hd.setBackgroundColor(new Color(255, 230, 230));
-        hd.setPadding(8); hd.setPaddingLeft(10); s.addCell(hd);
-        PdfPCell hint = new PdfPCell(new Paragraph("Format: " + columnHint,
-                FontFactory.getFont(FontFactory.HELVETICA, Font.ITALIC, 8, new Color(140, 80, 80))));
-        hint.setBorder(PdfPCell.NO_BORDER); hint.setBackgroundColor(new Color(255, 242, 242));
-        hint.setPadding(5); hint.setPaddingLeft(10); s.addCell(hint);
-        String body = content != null && !content.trim().isEmpty()
-                ? content : "\n\n\n\n\n\n\n\n\n";
-        PdfPCell bc = new PdfPCell(new Paragraph(body,
-                FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK)));
-        bc.setBorder(PdfPCell.BOX); bc.setBorderColor(new Color(200, 150, 150));
-        bc.setPadding(12); bc.setMinimumHeight(130); bc.setBackgroundColor(Color.WHITE);
-        s.addCell(bc); doc.add(s);
-    }
+    private void addBigTextSection(Document doc, Font secFont, String title, String content, Color bgColor, String placeholder) throws Exception {
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(10f);
+        table.setSpacingAfter(10f);
 
+        // CRITICAL: Allow the table to break across pages
+        table.setSplitLate(false);
+        table.setSplitRows(true);
+        table.setKeepTogether(false);
+
+        // Header Cell
+        PdfPCell headerCell = new PdfPCell(new Phrase(title, secFont));
+        headerCell.setBorder(PdfPCell.NO_BORDER);
+        headerCell.setPadding(8);
+        headerCell.setBackgroundColor(new Color(240, 240, 240));
+        table.addCell(headerCell);
+
+        // Content Cell
+        String text = (content == null || content.trim().isEmpty()) ? placeholder : content;
+        PdfPCell contentCell = new PdfPCell(new Phrase(text, FontFactory.getFont(FontFactory.HELVETICA, 10)));
+        contentCell.setBackgroundColor(bgColor);
+        contentCell.setPadding(12);
+        contentCell.setMinimumHeight(60f); // Reduced this so it doesn't force a jump
+        contentCell.setBorderColor(new Color(200, 200, 200));
+
+        table.addCell(contentCell);
+
+        doc.add(table);
+    }
     private void addSignatureBlock(Document doc, Color crimson) throws Exception {
         PdfPTable st = new PdfPTable(2); st.setWidthPercentage(100); st.setSpacingBefore(28f);
         Font sf = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
@@ -994,7 +995,12 @@ public class PrisonerProfileController {
     private void loadPrisonerImage(int id) {
         try {
             File f = new File("python-face/photos/prisoners/" + id + ".jpg");
-            if (f.exists()) prisonerImage.setImage(new Image(f.toURI().toString()));
+            if (f.exists()) {
+                // Load via InputStream to bypass JavaFX URL cache — always shows latest photo
+                try (java.io.FileInputStream fis = new java.io.FileInputStream(f)) {
+                    prisonerImage.setImage(new Image(fis));
+                }
+            }
         } catch (Exception ignored) {}
     }
 

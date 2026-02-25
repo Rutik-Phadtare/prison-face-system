@@ -117,7 +117,7 @@
                         <HBox spacing="20">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Role / Designation" />
-                                <ComboBox fx:id="designationBox" maxWidth="Infinity"
+                                <ComboBox fx:id="designationBox" editable="true" maxWidth="Infinity"
                                           style="-fx-background-color: #ffffff; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 8;" />
                             </VBox>
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
@@ -180,7 +180,7 @@
                             </VBox>
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Label style="-fx-text-fill: #525f7f; -fx-font-size: 13; -fx-font-weight: 700;" text="Salary (Monthly)" />
-                                <TextField fx:id="salaryField" editable="false"
+                                <TextField fx:id="salaryField" editable="true"
                                            style="-fx-background-color: #e9ecef; -fx-border-color: #cad1d7; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 12; -fx-font-weight: 800;" />
                             </VBox>
                             <VBox spacing="8" HBox.hgrow="ALWAYS">

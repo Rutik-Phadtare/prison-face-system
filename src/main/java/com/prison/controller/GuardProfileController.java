@@ -67,15 +67,6 @@ public class GuardProfileController {
     private final GuardDao guardDao = new GuardDao();
     private Runnable   onSaveCallback;
 
-    /**
-     * true  = registering a new guard (INSERT mode).
-     * false = editing an existing guard (UPDATE mode).
-     *
-     * When the user clicks "Add Photo" in new-guard mode, we auto-save the
-     * guard record first (to obtain a DB-assigned ID), then launch the Python
-     * training script with that ID.  After that, this flag flips to false and
-     * the form operates in UPDATE mode for the rest of the session.
-     */
     private boolean isNewGuard = false;
 
     // ══════════════════════════════════════════════════════════════════════
@@ -97,11 +88,12 @@ public class GuardProfileController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  🆕 NEW GUARD MODE
+    //  NEW GUARD MODE
     // ══════════════════════════════════════════════════════════════════════
     public void setNewGuardMode() {
         isNewGuard   = true;
         currentGuard = null;
+        salaryField.setEditable(true);
 
         if (profileModeLabel != null) profileModeLabel.setText("REGISTER NEW PERSONNEL");
         if (profileTitleLabel != null) profileTitleLabel.setText("New Guard Registration");
@@ -142,25 +134,12 @@ public class GuardProfileController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  📷  PHOTO BUTTON — no file explorer; launches the Python webcam script
-    //
-    //  EXISTING GUARD  → run training directly with the guard's ID.
-    //                    Python overwrites python-face/photos/guards/{id}.jpg
-    //                    and python-face/encodings/guards/{id}.npy in place.
-    //
-    //  NEW GUARD       → we need a real DB id before we can train, so we
-    //                    auto-save the guard first (minimal validation), get
-    //                    the id, flip to UPDATE mode, then run training.
-    //
-    //  The Python script is BLOCKING (the user presses SPACE then it exits),
-    //  so we run it on a background thread to keep the UI alive.
-    //  After the script exits we reload the ImageView on the FX thread.
+    //  PHOTO BUTTON
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     private void uploadPhoto() {
 
         if (isNewGuard) {
-            // ── Minimal validation before touching the DB ────────────────
             String name = nameField.getText();
             if (name == null || name.trim().isEmpty()) {
                 showError("Name Required",
@@ -182,7 +161,6 @@ public class GuardProfileController {
                 syncDatePickerValue(birthDatePicker);
                 syncDatePickerValue(joiningDatePicker);
 
-                // Build a partial Guard to persist and obtain a real ID
                 Guard g = buildPartialGuard();
 
                 int id = guardDao.saveAndReturnId(g);
@@ -194,19 +172,16 @@ public class GuardProfileController {
 
                 g.setGuardId(id);
                 currentGuard = g;
-                isNewGuard   = false;   // now in UPDATE mode
+                isNewGuard   = false;
 
-                // Update header + buttons to reflect we have a real record
                 if (profileModeLabel != null) profileModeLabel.setText("PERSONNEL MANAGEMENT");
                 if (profileTitleLabel != null) profileTitleLabel.setText("Guard Profile");
                 stylePhotoBtn(false);
                 styleSaveBtn();
                 showPrintButtons();
 
-                // Notify the list table so the new row appears
                 if (onSaveCallback != null) onSaveCallback.run();
 
-                // ── Launch the Python webcam training script ─────────────
                 launchTrainingAsync(id);
 
             } catch (Exception e) {
@@ -215,7 +190,6 @@ public class GuardProfileController {
             }
 
         } else {
-            // ── EXISTING GUARD — just run training; Python replaces files ─
             if (currentGuard == null) return;
             launchTrainingAsync(currentGuard.getGuardId());
         }
@@ -223,13 +197,6 @@ public class GuardProfileController {
 
     // ══════════════════════════════════════════════════════════════════════
     //  RUN PYTHON TRAINING ON A BACKGROUND THREAD
-    //
-    //  1. Disables the photo button (prevents double-click).
-    //  2. Calls PythonRunnerUtil.trainFace — this MUST block until the script
-    //     exits.  If your implementation is fire-and-forget, swap it for the
-    //     ProcessBuilder block shown in the comment below.
-    //  3. After the script exits, reloads the photo and re-enables the button
-    //     on the JavaFX application thread via Platform.runLater().
     // ══════════════════════════════════════════════════════════════════════
     private void launchTrainingAsync(int guardId) {
         photoButton.setDisable(true);
@@ -237,34 +204,19 @@ public class GuardProfileController {
 
         new Thread(() -> {
 
-            // ── Option A: use your existing utility (must be blocking) ───
             PythonRunnerUtil.trainFace("GUARD", guardId);
 
-            /*
-             * ── Option B: call the script directly (always blocking) ─────
-             *    Use this if PythonRunnerUtil.trainFace() is non-blocking.
-             *
-             *    String scriptDir = "python-face";
-             *    ProcessBuilder pb = new ProcessBuilder(
-             *            "python", scriptDir + "/train.py",
-             *            "GUARD", String.valueOf(guardId));
-             *    pb.directory(new java.io.File(scriptDir));
-             *    pb.inheritIO();   // shows script output / CV2 window in console
-             *    try { pb.start().waitFor(); } catch (Exception ignored) {}
-             */
-
-            // Back on the FX thread: reload image + restore button
             Platform.runLater(() -> {
                 File photo = new File(
                         "python-face/photos/guards/" + guardId + ".jpg");
 
                 if (photo.exists()) {
-                    // Append a timestamp to bust JavaFX's internal image cache
-                    guardImage.setImage(new Image(
-                            photo.toURI() + "?t=" + System.currentTimeMillis()));
+                    // Load via InputStream to bypass JavaFX URL cache — always shows latest photo
+                    try (java.io.FileInputStream fis = new java.io.FileInputStream(photo)) {
+                        guardImage.setImage(new Image(fis));
+                    } catch (Exception ignored) {}
                 }
 
-                // Restore button — user can retake if they weren't happy
                 photoButton.setDisable(false);
                 photoButton.setText("🔄  Retake Photo");
                 photoButton.setStyle(
@@ -277,16 +229,12 @@ public class GuardProfileController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  💾 SAVE / UPDATE PROFILE
-    //
-    //  INSERT path is reached only when the user clicked "Register Guard"
-    //  without ever clicking "Add Photo" first (so the guard has no DB row yet).
+    //  SAVE / UPDATE PROFILE
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     private void updateGuard() {
 
         if (isNewGuard) {
-            // No prior auto-save — full INSERT with complete validation
             if (!validateInputs()) return;
 
             try {
@@ -315,6 +263,9 @@ public class GuardProfileController {
                 applyStatusColor(g.getStatus());
                 if (onSaveCallback != null) onSaveCallback.run();
 
+                // ── Refresh image immediately after new save ──
+                loadGuardImage(id);
+
                 new Alert(Alert.AlertType.INFORMATION,
                         "Guard registered! ID: GJR-" + String.format("%06d", id) +
                                 "\nTip: click 'Change Photo' to capture a face for recognition.").show();
@@ -327,7 +278,6 @@ public class GuardProfileController {
             }
 
         } else {
-            // Standard UPDATE
             if (currentGuard == null) return;
             if (!validateInputs()) return;
 
@@ -339,6 +289,9 @@ public class GuardProfileController {
 
                 applyStatusColor(currentGuard.getStatus());
                 if (onSaveCallback != null) onSaveCallback.run();
+
+                // ── Refresh image immediately after update ──
+                loadGuardImage(currentGuard.getGuardId());
 
                 new Alert(Alert.AlertType.INFORMATION,
                         "Guard Profile Updated & Database Synced!").show();
@@ -355,8 +308,6 @@ public class GuardProfileController {
     // ══════════════════════════════════════════════════════════════════════
     //  FORM → MODEL HELPERS
     // ══════════════════════════════════════════════════════════════════════
-
-    /** Full mapping — used by updateGuard() */
     private void mapFormToGuard(Guard g) {
         g.setName(nameField.getText().trim());
         try { g.setAge(Integer.parseInt(ageField.getText().trim())); } catch (Exception ignored) {}
@@ -376,7 +327,6 @@ public class GuardProfileController {
         g.setStatus(calculateLiveStatus(g.getShift()));
     }
 
-    /** Partial mapping — used by uploadPhoto() auto-save (before ID is known) */
     private Guard buildPartialGuard() {
         Guard g = new Guard();
         g.setName(nameField.getText().trim());
@@ -473,7 +423,7 @@ public class GuardProfileController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  PRINT — unchanged from original
+    //  PRINT
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     private void handlePrint() {
@@ -637,7 +587,7 @@ public class GuardProfileController {
         addSectionWithRows(document,sectionFont,"EMPLOYMENT SPECIFICATION",
                 new String[][]{
                         {"Shift Schedule",shiftBox.getValue()},
-                        {"Annual Salary Grade","$"+salaryField.getText()},
+                        {"Annual Salary Grade"," "+salaryField.getText()},
                         {"Current Duty Status",statusBadge.getText()},
                         {"Enlistment Date",joiningDatePicker.getValue()!=null?joiningDatePicker.getValue().toString():"N/A"},
                         {"Transfer From",transferField.getText()},
@@ -683,20 +633,20 @@ public class GuardProfileController {
         double base=0; try{base=Double.parseDouble(salaryField.getText());}catch(Exception ignored){}
         double hra=base*0.20, transport=500.0, special=base*0.10, total=base+hra+transport+special;
         PdfPTable et=new PdfPTable(2); et.setWidthPercentage(100); et.setSpacingAfter(15f);
-        addPayslipRow(et,"Basic Salary",          String.format("$%.2f",base),      darkBlue,lightBlue,false);
-        addPayslipRow(et,"HRA (20%)",             String.format("$%.2f",hra),       darkBlue,lightBlue,false);
-        addPayslipRow(et,"Transport Allowance",   String.format("$%.2f",transport), darkBlue,lightBlue,false);
-        addPayslipRow(et,"Special Allowance (10%)",String.format("$%.2f",special),  darkBlue,lightBlue,false);
-        addPayslipRow(et,"TOTAL EARNINGS",        String.format("$%.2f",total),     darkBlue,new Color(200,230,201),true);
+        addPayslipRow(et,"Basic Salary",          String.format("%.2f",base),      darkBlue,lightBlue,false);
+        addPayslipRow(et,"HRA (20%)",             String.format("%.2f",hra),       darkBlue,lightBlue,false);
+        addPayslipRow(et,"Transport Allowance",   String.format("%.2f",transport), darkBlue,lightBlue,false);
+        addPayslipRow(et,"Special Allowance (10%)",String.format("%.2f",special),  darkBlue,lightBlue,false);
+        addPayslipRow(et,"TOTAL EARNINGS",        String.format("Rs.%.2f",total),     darkBlue,new Color(200,230,201),true);
         document.add(et);
 
         Paragraph dedH=new Paragraph("DEDUCTIONS",sectionFont); dedH.setSpacingAfter(10f); document.add(dedH);
         double pf=base*0.12, tax=base*0.05, ins=150.0, tDed=pf+tax+ins;
         PdfPTable dt=new PdfPTable(2); dt.setWidthPercentage(100); dt.setSpacingAfter(15f);
-        addPayslipRow(dt,"Provident Fund (12%)",String.format("$%.2f",pf),   darkBlue,lightBlue,false);
-        addPayslipRow(dt,"Income Tax (5%)",     String.format("$%.2f",tax),  darkBlue,lightBlue,false);
-        addPayslipRow(dt,"Insurance Premium",   String.format("$%.2f",ins),  darkBlue,lightBlue,false);
-        addPayslipRow(dt,"TOTAL DEDUCTIONS",    String.format("$%.2f",tDed), darkBlue,new Color(255,205,210),true);
+        addPayslipRow(dt,"Provident Fund (12%)",String.format("%.2f",pf),   darkBlue,lightBlue,false);
+        addPayslipRow(dt,"Income Tax (5%)",     String.format("%.2f",tax),  darkBlue,lightBlue,false);
+        addPayslipRow(dt,"Insurance Premium",   String.format("%.2f",ins),  darkBlue,lightBlue,false);
+        addPayslipRow(dt,"TOTAL DEDUCTIONS",    String.format("Rs.%.2f",tDed), darkBlue,new Color(255,205,210),true);
         document.add(dt);
 
         double net=total-tDed;
@@ -704,7 +654,7 @@ public class GuardProfileController {
         PdfPCell nc3=new PdfPCell(); nc3.setBorder(PdfPCell.BOX); nc3.setBorderColor(darkBlue); nc3.setBorderWidth(2f);
         nc3.setPadding(20); nc3.setBackgroundColor(new Color(232,245,233)); nc3.setHorizontalAlignment(Element.ALIGN_CENTER);
         Paragraph nl=new Paragraph("NET PAYABLE AMOUNT",sectionFont); nl.setAlignment(Element.ALIGN_CENTER); nl.setSpacingAfter(10f); nc3.addElement(nl);
-        Paragraph na=new Paragraph(String.format("$%.2f",net),totalFont); na.setAlignment(Element.ALIGN_CENTER); nc3.addElement(na);
+        Paragraph na=new Paragraph(String.format("Rs.%.2f",net),totalFont); na.setAlignment(Element.ALIGN_CENTER); nc3.addElement(na);
         nt.addCell(nc3); document.add(nt);
 
         Paragraph payH=new Paragraph("PAYMENT DETAILS",sectionFont); payH.setSpacingAfter(10f); document.add(payH);
@@ -717,7 +667,7 @@ public class GuardProfileController {
         PdfPTable noteT=new PdfPTable(1); noteT.setWidthPercentage(100); noteT.setSpacingAfter(20f);
         PdfPCell noteC=new PdfPCell(new Paragraph(
                 "NOTE: Computer-generated payslip. No physical signature required. " +
-                        "All amounts in USD. Report discrepancies to HR within 7 days.",
+                        "All amounts in INR. Report discrepancies to HR within 7 days.",
                 FontFactory.getFont(FontFactory.HELVETICA,8,Color.DARK_GRAY)));
         noteC.setBorder(PdfPCell.BOX); noteC.setBorderColor(Color.LIGHT_GRAY);
         noteC.setPadding(10); noteC.setBackgroundColor(new Color(255,248,225));
@@ -806,16 +756,17 @@ public class GuardProfileController {
     }
 
     private void updateSalary(String role) {
-        if (role==null) return;
-        double amount=switch(role){
-            case "Supervisor"   ->5500.0;
-            case "Control Room" ->4800.0;
-            case "Tower Guard"  ->4200.0;
-            default             ->3500.0;
+        if (role == null) return;
+        double amount = switch (role) {
+            case "Supervisor"     -> 65000.0;
+            case "Control Room"   -> 48000.0;
+            case "Escort Officer" -> 42000.0;
+            case "Tower Guard"    -> 38000.0;
+            case "Gate Guard"     -> 35000.0;
+            default               -> 30000.0;
         };
         salaryField.setText(String.valueOf(amount));
     }
-
     private String calculateLiveStatus(String shift) {
         if (shift==null||shift.equalsIgnoreCase("On Leave")) return "INACTIVE";
         try {
@@ -834,9 +785,14 @@ public class GuardProfileController {
 
     private void loadGuardImage(int guardId) {
         try {
-            File f=new File("python-face/photos/guards/"+guardId+".jpg");
-            if (f.exists()) guardImage.setImage(new Image(f.toURI().toString()));
-        } catch(Exception ignored){}
+            File f = new File("python-face/photos/guards/" + guardId + ".jpg");
+            if (f.exists()) {
+                // Load via InputStream to bypass JavaFX URL cache — always shows latest photo
+                try (java.io.FileInputStream fis = new java.io.FileInputStream(f)) {
+                    guardImage.setImage(new Image(fis));
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private void syncDatePickerValue(DatePicker picker) {

@@ -312,10 +312,23 @@ public class LoginController {
             if (css == null) css = getClass().getResource("/css/style.css");
             if (css != null) shellScene.getStylesheets().add(css.toExternalForm());
 
+            // Hide stage first to prevent flicker
+            stage.hide();
+
             stage.setScene(shellScene);
-            stage.setMaximized(true);          // full-screen like a real desktop app
+            stage.setMaximized(true);
             stage.setTitle("Prison Management System");
+
+// Fade in smoothly on show
+            shellRoot.setOpacity(0);
             stage.show();
+
+            javafx.animation.FadeTransition fade =
+                    new javafx.animation.FadeTransition(
+                            javafx.util.Duration.millis(300), shellRoot);
+            fade.setFromValue(0.0);
+            fade.setToValue(1.0);
+            fade.play();
 
             // ── Navigate to the correct starting dashboard ───────────────────────
             if ("ADMIN".equals(user.getRole())) {

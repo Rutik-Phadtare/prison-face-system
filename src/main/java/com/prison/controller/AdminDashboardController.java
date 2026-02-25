@@ -32,6 +32,7 @@ public class AdminDashboardController {
     @FXML private Button prisonerCountButton;
     @FXML private Button guardCountButton;
     @FXML private Button guardCount;
+    @FXML private Button securityAlertCount;
 
     /* ── New UI bindings ──────────────────────────────────────────────────── */
     @FXML private Label liveClock;
@@ -55,7 +56,8 @@ public class AdminDashboardController {
     private final UserDao     userDao     = new UserDao();
 
     /* ── Alert data for slideshow ─────────────────────────────────────────── */
-    private static final String[][] ALERTS = {
+    /* ── Alert data — dynamic daily alerts ───────────────────────────────── */
+    private static final String[][] ALL_ALERTS = {
             {
                     "● Cell Block D — Routine headcount discrepancy detected",
                     "Count mismatch of 1 inmate in Block D reported at 08:42. Investigation underway by duty officer. Status: PENDING RESOLUTION."
@@ -75,9 +77,31 @@ public class AdminDashboardController {
             {
                     "● Shift Change — 06:00 roster confirmed",
                     "Morning shift handover at 06:00 has been logged and confirmed. All 14 guard positions filled. Night shift debrief report filed."
+            },
+            {
+                    "● Gate B — Access card reader malfunction reported",
+                    "Gate B access reader reported unresponsive at 07:15. Maintenance team dispatched. Manual check-in protocol in effect until resolved."
+            },
+            {
+                    "● Block A — Noise complaint filed by night shift",
+                    "Night shift officer filed a noise disturbance report from Block A at 02:30. Situation de-escalated. Incident logged for review."
+            },
+            {
+                    "● Transfer Order — 2 inmates scheduled for relocation",
+                    "Two inmates scheduled for inter-facility transfer at 11:00. Paperwork cleared. Escort team assigned and briefed."
+            },
+            {
+                    "● CCTV — Camera 7 offline since midnight",
+                    "Camera 7 covering north corridor has been offline since 00:00. IT department notified. Manual patrol coverage assigned to the area."
+            },
+            {
+                    "● Kitchen — Supplier delivery delayed by 2 hours",
+                    "Morning food supply delivery delayed. Revised ETA 10:00. Kitchen staff notified. No impact on scheduled meal times."
             }
     };
 
+    // Daily alerts — count changes every day (0–10), consistent within same day
+    private String[][] ALERTS;
     private int currentAlertIndex = 0;
     private final Label[] dots = new Label[5];
 
@@ -86,7 +110,21 @@ public class AdminDashboardController {
     ═══════════════════════════════════════════════════════════════════════ */
     @FXML
     public void initialize() {
-        /* ── ORIGINAL LOGIC ─────────────────────────────────────────────── */
+        // Generate today's alert count (1–5 max shown, seeded by date)
+        java.util.Random rng = new java.util.Random(LocalDate.now().toEpochDay());
+        int alertCount = 1 + rng.nextInt(5); // 1 to 5 alerts per day
+        ALERTS = new String[alertCount][];
+
+        // Pick random alerts for today without repeating
+        java.util.List<Integer> indices = new java.util.ArrayList<>();
+        for (int i = 0; i < ALL_ALERTS.length; i++) indices.add(i);
+        java.util.Collections.shuffle(indices, rng);
+        for (int i = 0; i < alertCount; i++) {
+            ALERTS[i] = ALL_ALERTS[indices.get(i)];
+        }
+        if (securityAlertCount != null)
+            securityAlertCount.setText(String.valueOf(ALERTS.length));
+
         updateCounts();
         startAutoRefresh();
 
@@ -104,13 +142,20 @@ public class AdminDashboardController {
             }
         }
 
-        /* ── NEW UI LOGIC ─────────────────────────────────────────────────── */
         if (loggedInUser != null && user.getUsername() != null) {
             loggedInUser.setText(user.getUsername().toUpperCase() + "  [" + user.getRole() + "]");
         }
 
         dots[0] = alertDot1; dots[1] = alertDot2; dots[2] = alertDot3;
         dots[3] = alertDot4; dots[4] = alertDot5;
+
+        // Hide dots that exceed today's alert count
+        for (int i = 0; i < dots.length; i++) {
+            if (dots[i] != null) {
+                dots[i].setVisible(i < alertCount);
+                dots[i].setManaged(i < alertCount);
+            }
+        }
 
         startLiveClock();
         startAlertSlideshow();
@@ -152,31 +197,26 @@ public class AdminDashboardController {
         if (alertSlideTitle == null) return;
         showSlide(0);
 
+        // Only cycle if more than 1 alert today
+        if (ALERTS.length <= 1) return;
+
         Timeline slideshow = new Timeline(new KeyFrame(Duration.seconds(6), e -> {
             currentAlertIndex = (currentAlertIndex + 1) % ALERTS.length;
 
-            // Fade Out
             FadeTransition fo1 = new FadeTransition(Duration.millis(350), alertSlideTitle);
-            fo1.setFromValue(1.0);
-            fo1.setToValue(0.0);
+            fo1.setFromValue(1.0); fo1.setToValue(0.0);
 
             FadeTransition fo2 = new FadeTransition(Duration.millis(350), alertSlideDetail);
-            fo2.setFromValue(1.0);
-            fo2.setToValue(0.0);
+            fo2.setFromValue(1.0); fo2.setToValue(0.0);
 
             fo1.setOnFinished(ev -> {
                 showSlide(currentAlertIndex);
 
-                // FIX: Removed the double braces {{ }}
                 FadeTransition fi1 = new FadeTransition(Duration.millis(350), alertSlideTitle);
-                fi1.setFromValue(0.0);
-                fi1.setToValue(1.0);
-                fi1.play();
+                fi1.setFromValue(0.0); fi1.setToValue(1.0); fi1.play();
 
                 FadeTransition fi2 = new FadeTransition(Duration.millis(350), alertSlideDetail);
-                fi2.setFromValue(0.0);
-                fi2.setToValue(1.0);
-                fi2.play();
+                fi2.setFromValue(0.0); fi2.setToValue(1.0); fi2.play();
             });
 
             fo1.play();
@@ -189,10 +229,12 @@ public class AdminDashboardController {
     private void showSlide(int index) {
         alertSlideTitle.setText(ALERTS[index][0]);
         alertSlideDetail.setText(ALERTS[index][1]);
-        if (alertSlideIndex != null) alertSlideIndex.setText((index + 1) + " of " + ALERTS.length);
+        if (alertSlideIndex != null)
+            alertSlideIndex.setText((index + 1) + " of " + ALERTS.length);
         for (int i = 0; i < dots.length; i++)
-            if (dots[i] != null)
-                dots[i].setStyle("-fx-font-size: 8; -fx-text-fill: " + (i == index ? "#cc0000" : "#2a3a4a") + ";");
+            if (dots[i] != null && i < ALERTS.length)
+                dots[i].setStyle("-fx-font-size: 8; -fx-text-fill: " +
+                        (i == index ? "#cc0000" : "#2a3a4a") + ";");
     }
 
     /* ── Alert ticker ────────────────────────────────────────────────────── */

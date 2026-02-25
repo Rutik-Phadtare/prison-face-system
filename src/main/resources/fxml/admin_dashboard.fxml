@@ -103,7 +103,7 @@
     <HBox alignment="CENTER" spacing="0" style="-fx-padding: 14 40 12 40; -fx-background-color: #f3f4f6;">
 
         <VBox alignment="TOP_LEFT" spacing="3" style="-fx-background-color: white;                      -fx-border-color: #dde4ef #dde4ef #dde4ef #1a56c4;                      -fx-border-width: 1 1 1 5; -fx-padding: 14 20 14 20;                      -fx-effect: dropshadow(gaussian,rgba(10,31,92,0.09),8,0,0,2);" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                           -fx-text-fill: #1a56c4;" text="Total Inmates" />
+            <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                           -fx-text-fill: #1a56c4;" text="Total Inmates in Custody" />
             <Button fx:id="prisonerCountButton" focusTraversable="false" style="-fx-background-color: transparent; -fx-text-fill: #1a56c4;                            -fx-font-family: 'Georgia'; -fx-font-size: 36; -fx-font-weight: bold;                            -fx-cursor: default; -fx-padding: 0; -fx-border-width: 0;" text="—" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #aabbd0;                           -fx-font-style: italic;" text="Active incarcerated persons" />
         </VBox>
@@ -128,7 +128,7 @@
 
         <VBox alignment="TOP_LEFT" spacing="3" style="-fx-background-color: #fff7f7;                      -fx-border-color: #f0cccc #f0cccc #f0cccc #b02020;                      -fx-border-width: 1 1 1 5; -fx-padding: 14 20 14 20;                      -fx-effect: dropshadow(gaussian,rgba(176,32,32,0.12),8,0,0,2);" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 10; -fx-font-weight: bold;                           -fx-text-fill: #b02020;" text="Security Alerts" />
-            <Button focusTraversable="false" style="-fx-background-color: transparent; -fx-text-fill: #b02020;                            -fx-font-family: 'Georgia'; -fx-font-size: 36; -fx-font-weight: bold;                            -fx-cursor: default; -fx-padding: 0; -fx-border-width: 0;" text="3" />
+            <Button fx:id="securityAlertCount" focusTraversable="false" style="-fx-background-color: transparent; -fx-text-fill: #b02020;     -fx-font-family: 'Georgia'; -fx-font-size: 36; -fx-font-weight: bold;     -fx-cursor: default; -fx-padding: 0; -fx-border-width: 0;" text="—" />
             <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #c0a0a0;                           -fx-font-style: italic;" text="Unresolved incidents today" />
         </VBox>
     </HBox>
@@ -258,10 +258,10 @@
             <!-- Dots row  ≈ 28 px -->
             <HBox alignment="CENTER_LEFT" spacing="7" style="-fx-padding: 4 22 8 22;                          -fx-border-color: #eef0f4 transparent transparent transparent; -fx-border-width: 1;">
                 <Label fx:id="alertDot1" style="-fx-font-size: 9; -fx-text-fill: #b02020;" text="●" />
-                <Label fx:id="alertDot2" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" />
-                <Label fx:id="alertDot3" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" />
-                <Label fx:id="alertDot4" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" />
-                <Label fx:id="alertDot5" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" />
+                <Label fx:id="alertDot2" managed="false" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" visible="false" />
+                <Label fx:id="alertDot3" managed="false" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" visible="false" />
+                <Label fx:id="alertDot4" managed="false" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" visible="false" />
+                <Label fx:id="alertDot5" managed="false" style="-fx-font-size: 9; -fx-text-fill: #ccd8e8;" text="●" visible="false" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 9; -fx-text-fill: #c0ccdd;                               -fx-font-style: italic;" text="Advances automatically every 6 seconds" />
             </HBox>

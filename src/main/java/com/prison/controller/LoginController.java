@@ -95,7 +95,7 @@ public class LoginController {
        ═══════════════════════════════════════════════════════════════════════ */
     @FXML
     public void handleacount() {
-        String secretKey = "PRISON-RESET-2024-XK9";
+        String secretKey = "PRISON-RESET-2025";
 
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Security Verification");

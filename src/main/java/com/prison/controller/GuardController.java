@@ -14,8 +14,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;          // explicit import — wins over com.lowagie wildcard
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -33,12 +42,20 @@ public class GuardController {
     @FXML private TableView<Guard> guardTable;
     @FXML private TableColumn<Guard, Integer> idCol;
     @FXML private TableColumn<Guard, String> nameCol, designationCol, shiftCol, statusCol, joiningCol, descCol;
-
     @FXML private Label statusInfoLabel;
+    @FXML private Label guardCount;
 
-    private final GuardDao dao = new GuardDao();
+    /** javafx.scene.control.TextField — explicit import prevents lowagie ambiguity */
+    @FXML private TextField searchField;
+
+    private final GuardDao dao      = new GuardDao();
+    private final GuardDao guardDao = new GuardDao();
     private Guard selectedGuard;
 
+    private ObservableList<Guard> masterList  = FXCollections.observableArrayList();
+    private FilteredList<Guard>   filteredList;
+
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         updateCounts();
@@ -46,7 +63,7 @@ public class GuardController {
         setupTable();
         refreshTable();
 
-        // Double-click → open full profile for editing
+        // Double-click → open full profile
         guardTable.setRowFactory(tv -> {
             TableRow<Guard> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -57,7 +74,7 @@ public class GuardController {
             return row;
         });
 
-        // Selection → track for delete + update status label
+        // Selection → update status label
         guardTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, g) -> {
             selectedGuard = g;
             if (g == null) {
@@ -67,10 +84,20 @@ public class GuardController {
             String liveStatus = calculateLiveStatus(g.getShift());
             statusInfoLabel.setText("Selected: " + g.getName() + "  |  Live Status: " + liveStatus);
         });
+
+        // ── SEARCH: filter on every keystroke ────────────────────────────────
+        searchField.textProperty().addListener((obs, oldText, newText) -> {
+            String query = (newText == null) ? "" : newText.trim().toLowerCase();
+            filteredList.setPredicate(guard -> {
+                if (query.isEmpty()) return true;
+                if (String.valueOf(guard.getGuardId()).startsWith(query)) return true;
+                return guard.getName() != null && guard.getName().toLowerCase().contains(query);
+            });
+        });
     }
 
     /* ============================================================
-       🔥 LIVE STATUS LOGIC (TIME-BASED)
+       LIVE STATUS LOGIC (TIME-BASED)
        ============================================================ */
     private String calculateLiveStatus(String shift) {
         if (shift == null || shift.equalsIgnoreCase("On Leave")) {
@@ -79,8 +106,8 @@ public class GuardController {
         try {
             String hoursOnly = shift.replaceAll("[^0-9-]", "");
             String[] parts = hoursOnly.split("-");
-            int startHour = Integer.parseInt(parts[0]);
-            int endHour   = Integer.parseInt(parts[1]);
+            int startHour   = Integer.parseInt(parts[0]);
+            int endHour     = Integer.parseInt(parts[1]);
             int currentHour = LocalTime.now().getHour();
             boolean isActive;
             if (startHour < endHour) {
@@ -94,18 +121,10 @@ public class GuardController {
         }
     }
 
-    @FXML
-    private Label guardCount;
-
-    private final GuardDao guardDao = new GuardDao();
     private void updateCounts() {
-
-
-        guardCount.setText(
-                "🧑‍✈️ " + guardDao.countGuards()
-        );
-
+        guardCount.setText("🧑‍✈️ " + guardDao.countGuards());
     }
+
     private void startAutoRefresh() {
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(5), e -> updateCounts())
@@ -113,8 +132,9 @@ public class GuardController {
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
+
     /* ============================================================
-       🆕 OPEN EMPTY PROFILE PAGE FOR NEW GUARD
+       OPEN EMPTY PROFILE PAGE FOR NEW GUARD
        ============================================================ */
     @FXML
     public void openNewGuardProfile() {
@@ -124,7 +144,7 @@ public class GuardController {
             javafx.scene.Parent root = loader.load();
 
             GuardProfileController controller = loader.getController();
-            controller.setNewGuardMode(); // ← puts profile in INSERT mode
+            controller.setNewGuardMode();
             controller.setOnSaveCallback(this::refreshTable);
 
             javafx.stage.Stage stage = new javafx.stage.Stage();
@@ -159,7 +179,7 @@ public class GuardController {
     }
 
     /* ============================================================
-       🗑️ DELETE SELECTED GUARD
+       DELETE SELECTED GUARD
        ============================================================ */
     @FXML
     public void deleteGuard() {
@@ -172,7 +192,7 @@ public class GuardController {
         confirm.setHeaderText("Remove Guard: " + selectedGuard.getName());
         confirm.setContentText("This action cannot be undone. Proceed?");
         confirm.showAndWait().ifPresent(result -> {
-            if (result == javafx.scene.control.ButtonType.OK) {
+            if (result == ButtonType.OK) {
                 dao.delete(selectedGuard.getGuardId());
                 selectedGuard = null;
                 statusInfoLabel.setText("Guard removed.");
@@ -182,7 +202,7 @@ public class GuardController {
     }
 
     /* ============================================================
-       🖨️ PRINT GUARD TABLE — full styled PDF of all guards
+       PRINT GUARD TABLE — full styled PDF
        ============================================================ */
     @FXML
     public void printGuardTable() {
@@ -198,18 +218,15 @@ public class GuardController {
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + ".pdf");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
         File file = fileChooser.showSaveDialog(guardTable.getScene().getWindow());
-
         if (file == null) return;
 
         try {
-            // ── Document Setup ──────────────────────────────────────────
             Document document = new Document(PageSize.A4.rotate(), 40, 40, 60, 55);
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
 
             Color darkBlue   = new Color(0, 51, 102);
             Color accentBlue = new Color(94, 114, 228);
 
-            // Page event: border + footer
             writer.setPageEvent(new PdfPageEventHelper() {
                 @Override
                 public void onEndPage(PdfWriter w, Document doc) {
@@ -219,19 +236,15 @@ public class GuardController {
                         cb.setColorStroke(darkBlue);
                         cb.rectangle(25, 25, doc.getPageSize().getWidth() - 50, doc.getPageSize().getHeight() - 50);
                         cb.stroke();
-
                         cb.setLineWidth(0.4f);
                         cb.setColorStroke(new Color(180, 180, 180));
                         cb.rectangle(30, 30, doc.getPageSize().getWidth() - 60, doc.getPageSize().getHeight() - 60);
                         cb.stroke();
-
-                        // Footer divider
                         cb.setLineWidth(0.8f);
                         cb.setColorStroke(new Color(200, 200, 200));
                         cb.moveTo(35, 42);
                         cb.lineTo(doc.getPageSize().getWidth() - 35, 42);
                         cb.stroke();
-
                         Font footerFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Color.GRAY);
                         ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
                                 new Phrase("CONFIDENTIAL — DEPARTMENT OF CORRECTIONS", footerFont), 40, 32, 0);
@@ -249,60 +262,39 @@ public class GuardController {
 
             document.open();
 
-            // ── Header ──────────────────────────────────────────────────
+            // Header
             PdfPTable headerTable = new PdfPTable(new float[]{1, 5, 1});
             headerTable.setWidthPercentage(100);
             headerTable.setSpacingAfter(18f);
-
-            // Left logo
             PdfPCell leftLogo = new PdfPCell();
             leftLogo.setBorder(PdfPCell.NO_BORDER);
             leftLogo.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            try {
-                Image logo = Image.getInstance("src/main/resources/images/logo.jpeg");
-                logo.scaleToFit(55, 55);
-                leftLogo.addElement(logo);
-            } catch (Exception ignored) {}
+            try { Image logo = Image.getInstance("src/main/resources/images/logo.jpeg"); logo.scaleToFit(55,55); leftLogo.addElement(logo); } catch (Exception ignored) {}
             headerTable.addCell(leftLogo);
-
-            // Center text
-            PdfPCell center = new PdfPCell();
-            center.setBorder(PdfPCell.NO_BORDER);
-            center.setHorizontalAlignment(Element.ALIGN_CENTER);
-            Paragraph dept = new Paragraph("DEPARTMENT OF CORRECTIONS & PRISON SECURITY",
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, darkBlue));
-            dept.setAlignment(Element.ALIGN_CENTER);
-            dept.setSpacingAfter(4f);
-            center.addElement(dept);
-            Paragraph titleP = new Paragraph("GUARD FORCE PERSONNEL REGISTRY",
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, darkBlue));
-            titleP.setAlignment(Element.ALIGN_CENTER);
-            titleP.setSpacingAfter(3f);
-            center.addElement(titleP);
-            Paragraph subP = new Paragraph("Confidential Personnel Report — Security Clearance: Restricted",
-                    FontFactory.getFont(FontFactory.HELVETICA, 9, Color.DARK_GRAY));
+            PdfPCell centerCell = new PdfPCell();
+            centerCell.setBorder(PdfPCell.NO_BORDER);
+            centerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            Paragraph dept = new Paragraph("DEPARTMENT OF CORRECTIONS & PRISON SECURITY", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, darkBlue));
+            dept.setAlignment(Element.ALIGN_CENTER); dept.setSpacingAfter(4f);
+            centerCell.addElement(dept);
+            Paragraph titleP = new Paragraph("GUARD FORCE PERSONNEL REGISTRY", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, darkBlue));
+            titleP.setAlignment(Element.ALIGN_CENTER); titleP.setSpacingAfter(3f);
+            centerCell.addElement(titleP);
+            Paragraph subP = new Paragraph("Confidential Personnel Report — Security Clearance: Restricted", FontFactory.getFont(FontFactory.HELVETICA, 9, Color.DARK_GRAY));
             subP.setAlignment(Element.ALIGN_CENTER);
-            center.addElement(subP);
-            headerTable.addCell(center);
-
-            // Right logo
+            centerCell.addElement(subP);
+            headerTable.addCell(centerCell);
             PdfPCell rightLogo = new PdfPCell();
             rightLogo.setBorder(PdfPCell.NO_BORDER);
             rightLogo.setVerticalAlignment(Element.ALIGN_MIDDLE);
             rightLogo.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            try {
-                Image logo2 = Image.getInstance("src/main/resources/images/logo.jpeg");
-                logo2.scaleToFit(55, 55);
-                rightLogo.addElement(logo2);
-            } catch (Exception ignored) {}
+            try { Image logo2 = Image.getInstance("src/main/resources/images/logo.jpeg"); logo2.scaleToFit(55,55); rightLogo.addElement(logo2); } catch (Exception ignored) {}
             headerTable.addCell(rightLogo);
-
             document.add(headerTable);
 
-            // ── Meta bar ────────────────────────────────────────────────
+            // Meta bar
             PdfPTable metaBar = new PdfPTable(3);
-            metaBar.setWidthPercentage(100);
-            metaBar.setSpacingAfter(14f);
+            metaBar.setWidthPercentage(100); metaBar.setSpacingAfter(14f);
             Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 8, Color.WHITE);
             addMetaCell(metaBar, "TOTAL PERSONNEL: " + guards.size(), metaFont, darkBlue);
             addMetaCell(metaBar, "ACTIVE: " + guards.stream().filter(g -> "ACTIVE".equals(g.getStatus())).count() +
@@ -310,101 +302,72 @@ public class GuardController {
             addMetaCell(metaBar, "GENERATED: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), metaFont, darkBlue);
             document.add(metaBar);
 
-            // ── Data Table ───────────────────────────────────────────────
+            // Data table
             PdfPTable table = new PdfPTable(new float[]{0.5f, 2.2f, 1.6f, 1.8f, 1.0f, 1.4f, 2.5f});
-            table.setWidthPercentage(100);
-            table.setSpacingAfter(20f);
-            table.setHeaderRows(1);
-
-            // Header row
+            table.setWidthPercentage(100); table.setSpacingAfter(20f); table.setHeaderRows(1);
             String[] headers = {"ID", "Guard Name", "Designation", "Shift", "Status", "Joined", "Notes"};
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE);
             for (String h : headers) {
                 PdfPCell hCell = new PdfPCell(new Phrase(h, headerFont));
-                hCell.setBackgroundColor(accentBlue);
-                hCell.setPadding(9);
-                hCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                hCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                hCell.setBackgroundColor(accentBlue); hCell.setPadding(9);
+                hCell.setHorizontalAlignment(Element.ALIGN_CENTER); hCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 hCell.setBorderColor(new Color(180, 180, 180));
                 table.addCell(hCell);
             }
-
-            // Data rows
-            Font dataFont  = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
-            Font boldFont  = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.BLACK);
-            Color rowAlt   = new Color(245, 247, 255);
-            Color rowWhite = Color.WHITE;
+            Font dataFont     = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
+            Font boldFont     = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.BLACK);
+            Color rowAlt      = new Color(245, 247, 255);
+            Color rowWhite    = Color.WHITE;
             Color activeGreen = new Color(220, 252, 231);
             Color inactiveRed = new Color(254, 226, 226);
-
             for (int i = 0; i < guards.size(); i++) {
                 Guard g = guards.get(i);
                 Color rowBg = (i % 2 == 0) ? rowWhite : rowAlt;
                 String liveStatus = calculateLiveStatus(g.getShift());
-
                 addDataCell(table, String.valueOf(g.getGuardId()), dataFont, rowBg, Element.ALIGN_CENTER);
-                addDataCell(table, g.getName() != null ? g.getName() : "—", boldFont, rowBg, Element.ALIGN_LEFT);
+                addDataCell(table, g.getName()        != null ? g.getName()        : "—", boldFont, rowBg, Element.ALIGN_LEFT);
                 addDataCell(table, g.getDesignation() != null ? g.getDesignation() : "—", dataFont, rowBg, Element.ALIGN_LEFT);
-                addDataCell(table, g.getShift() != null ? g.getShift() : "—", dataFont, rowBg, Element.ALIGN_CENTER);
-
-                // Status cell with color
+                addDataCell(table, g.getShift()       != null ? g.getShift()       : "—", dataFont, rowBg, Element.ALIGN_CENTER);
                 PdfPCell statusCell = new PdfPCell(new Phrase(liveStatus,
                         FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9,
-                                "ACTIVE".equals(liveStatus) ? new Color(22, 101, 52) : new Color(153, 27, 27))));
+                                "ACTIVE".equals(liveStatus) ? new Color(22,101,52) : new Color(153,27,27))));
                 statusCell.setBackgroundColor("ACTIVE".equals(liveStatus) ? activeGreen : inactiveRed);
-                statusCell.setPadding(8);
-                statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                statusCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                statusCell.setBorderColor(new Color(200, 200, 200));
+                statusCell.setPadding(8); statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                statusCell.setVerticalAlignment(Element.ALIGN_MIDDLE); statusCell.setBorderColor(new Color(200,200,200));
                 table.addCell(statusCell);
-
-                addDataCell(table,
-                        g.getJoiningDate() != null ? g.getJoiningDate().toString() : "—",
-                        dataFont, rowBg, Element.ALIGN_CENTER);
-                addDataCell(table,
-                        g.getDescription() != null ? g.getDescription() : "—",
-                        dataFont, rowBg, Element.ALIGN_LEFT);
+                addDataCell(table, g.getJoiningDate()  != null ? g.getJoiningDate().toString() : "—", dataFont, rowBg, Element.ALIGN_CENTER);
+                addDataCell(table, g.getDescription()  != null ? g.getDescription()             : "—", dataFont, rowBg, Element.ALIGN_LEFT);
             }
-
             document.add(table);
 
-            // ── Summary section ─────────────────────────────────────────
+            // Summary
             PdfPTable summaryTable = new PdfPTable(4);
-            summaryTable.setWidthPercentage(60);
-            summaryTable.setHorizontalAlignment(Element.ALIGN_LEFT);
-            summaryTable.setSpacingAfter(15f);
-
+            summaryTable.setWidthPercentage(60); summaryTable.setHorizontalAlignment(Element.ALIGN_LEFT); summaryTable.setSpacingAfter(15f);
             Font sumLabel = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, darkBlue);
             Font sumVal   = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.BLACK);
-
             long activeCount   = guards.stream().filter(g -> "ACTIVE".equals(calculateLiveStatus(g.getShift()))).count();
             long inactiveCount = guards.size() - activeCount;
-
-            addSummaryCell(summaryTable, "Total Guards",      String.valueOf(guards.size()), sumLabel, sumVal, new Color(240, 245, 250));
-            addSummaryCell(summaryTable, "Active Now",        String.valueOf(activeCount),   sumLabel, sumVal, new Color(220, 252, 231));
-            addSummaryCell(summaryTable, "Off Duty / Leave",  String.valueOf(inactiveCount), sumLabel, sumVal, new Color(254, 226, 226));
+            addSummaryCell(summaryTable, "Total Guards",     String.valueOf(guards.size()), sumLabel, sumVal, new Color(240,245,250));
+            addSummaryCell(summaryTable, "Active Now",       String.valueOf(activeCount),   sumLabel, sumVal, new Color(220,252,231));
+            addSummaryCell(summaryTable, "Off Duty / Leave", String.valueOf(inactiveCount), sumLabel, sumVal, new Color(254,226,226));
             addSummaryCell(summaryTable, "Report Generated",
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),        sumLabel, sumVal, new Color(255, 248, 225));
-
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),       sumLabel, sumVal, new Color(255,248,225));
             document.add(summaryTable);
 
-            // Verification strip
+            // Verify strip
             PdfPTable verifyTable = new PdfPTable(1);
             verifyTable.setWidthPercentage(100);
             Font verifyFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Color.DARK_GRAY);
             PdfPCell verifyCell = new PdfPCell(new Phrase(
                     "This is an official government document. Unauthorized reproduction or disclosure is prohibited. " +
                             "Report ID: RPT-" + System.currentTimeMillis() % 1000000, verifyFont));
-            verifyCell.setBorder(PdfPCell.TOP);
-            verifyCell.setBorderColor(Color.LIGHT_GRAY);
-            verifyCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            verifyCell.setPadding(8);
-            verifyCell.setBackgroundColor(new Color(248, 248, 248));
+            verifyCell.setBorder(PdfPCell.TOP); verifyCell.setBorderColor(Color.LIGHT_GRAY);
+            verifyCell.setHorizontalAlignment(Element.ALIGN_CENTER); verifyCell.setPadding(8);
+            verifyCell.setBackgroundColor(new Color(248,248,248));
             verifyTable.addCell(verifyCell);
             document.add(verifyTable);
 
             document.close();
-
             new Alert(Alert.AlertType.INFORMATION, "Guard Table Report exported successfully!").show();
 
         } catch (Exception e) {
@@ -413,38 +376,29 @@ public class GuardController {
         }
     }
 
-    // ── PDF helper methods ───────────────────────────────────────────────────
+    // ── PDF helpers ──────────────────────────────────────────────────────────
     private void addMetaCell(PdfPTable t, String text, Font f, Color bg) {
         PdfPCell c = new PdfPCell(new Phrase(text, f));
-        c.setBackgroundColor(bg);
-        c.setBorder(PdfPCell.NO_BORDER);
-        c.setPadding(6);
-        c.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c.setBackgroundColor(bg); c.setBorder(PdfPCell.NO_BORDER);
+        c.setPadding(6); c.setHorizontalAlignment(Element.ALIGN_CENTER);
         t.addCell(c);
     }
-
     private void addDataCell(PdfPTable t, String text, Font f, Color bg, int align) {
         PdfPCell c = new PdfPCell(new Phrase(text, f));
-        c.setBackgroundColor(bg);
-        c.setPadding(8);
-        c.setHorizontalAlignment(align);
-        c.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        c.setBackgroundColor(bg); c.setPadding(8);
+        c.setHorizontalAlignment(align); c.setVerticalAlignment(Element.ALIGN_MIDDLE);
         c.setBorderColor(new Color(210, 210, 210));
         t.addCell(c);
     }
-
     private void addSummaryCell(PdfPTable t, String label, String value, Font lf, Font vf, Color bg) {
         PdfPCell c = new PdfPCell();
-        c.setBackgroundColor(bg);
-        c.setPadding(10);
-        c.setHorizontalAlignment(Element.ALIGN_CENTER);
-        c.setBorderColor(new Color(210, 210, 210));
-        c.addElement(new Phrase(label, lf));
-        c.addElement(new Phrase(value,  vf));
+        c.setBackgroundColor(bg); c.setPadding(10);
+        c.setHorizontalAlignment(Element.ALIGN_CENTER); c.setBorderColor(new Color(210,210,210));
+        c.addElement(new Phrase(label, lf)); c.addElement(new Phrase(value, vf));
         t.addCell(c);
     }
 
-    // ── Table setup ─────────────────────────────────────────────────────────
+    // ── Table setup ──────────────────────────────────────────────────────────
     private void setupTable() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("guardId"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -454,13 +408,9 @@ public class GuardController {
         statusCol.setCellValueFactory(data -> {
             Guard g = data.getValue();
             String liveStatus = calculateLiveStatus(g.getShift());
-            if (!liveStatus.equals(g.getStatus())) {
-                g.setStatus(liveStatus);
-                dao.update(g);
-            }
+            if (!liveStatus.equals(g.getStatus())) { g.setStatus(liveStatus); dao.update(g); }
             return new SimpleStringProperty(liveStatus);
         });
-
         statusCol.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String status, boolean empty) {
@@ -478,14 +428,27 @@ public class GuardController {
         ));
         descCol.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        idCol.setCellFactory(col -> new StyledCell<>("prisoner-id"));
-        nameCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
-        descCol.setCellFactory(col -> new StyledCell<>("guard-description"));
+        idCol.setCellFactory(col      -> new StyledCell<>("prisoner-id"));
+        nameCol.setCellFactory(col    -> new StyledCell<>("prisoner-name"));
+        descCol.setCellFactory(col    -> new StyledCell<>("guard-description"));
         joiningCol.setCellFactory(col -> new StyledCell<>("prisoner-name"));
     }
 
+    // ── Rebuild master + filtered list, preserve active search query ─────────
     private void refreshTable() {
-        guardTable.setItems(FXCollections.observableArrayList(dao.findAll()));
+        masterList   = FXCollections.observableArrayList(dao.findAll());
+        filteredList = new FilteredList<>(masterList, g -> true);
+
+        if (searchField != null) {
+            String query = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
+            if (!query.isEmpty()) {
+                filteredList.setPredicate(guard -> {
+                    if (String.valueOf(guard.getGuardId()).startsWith(query)) return true;
+                    return guard.getName() != null && guard.getName().toLowerCase().contains(query);
+                });
+            }
+        }
+        guardTable.setItems(filteredList);
     }
 
     private void showAlert(String title, String msg) {

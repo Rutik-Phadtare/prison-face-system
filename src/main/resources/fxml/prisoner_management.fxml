@@ -4,75 +4,48 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="800.0" prefWidth="1500.0"
-            style="-fx-background-color: #f0f2f5;"
-            stylesheets="@../css/modern.css"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.prison.controller.PrisonerController">
+<BorderPane prefHeight="800.0" prefWidth="1500.0" style="-fx-background-color: #f0f2f5;" stylesheets="@../css/modern.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prison.controller.PrisonerController">
 
     <!-- ═══ TOP HEADER ════════════════════════════════════════════════════════ -->
     <top>
-        <VBox style="-fx-background-color: white;
-                     -fx-border-color: #d1d9e6;
-                     -fx-border-width: 0 0 2 0;
-                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);">
+        <VBox style="-fx-background-color: white;                      -fx-border-color: #d1d9e6;                      -fx-border-width: 0 0 2 0;                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);">
             <padding>
                 <Insets bottom="20" left="30" right="30" top="20" />
             </padding>
 
+            <!-- Row 1: Title + Stats -->
             <HBox alignment="CENTER_LEFT" spacing="0">
 
                 <!-- Title block -->
-                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label style="-fx-text-fill: #b91c1c;
-                                  -fx-font-size: 12;
-                                  -fx-font-weight: 800;
-                                  -fx-letter-spacing: 2;"
-                           text="INMATE RECORDS — CLASSIFIED" />
-                    <Label style="-fx-font-size: 30;
-                                  -fx-font-weight: 900;
-                                  -fx-text-fill: #172b4d;"
-                           text="Prisoner Management" />
-                    <Label style="-fx-text-fill: #8898aa;
-                                  -fx-font-size: 13;
-                                  -fx-font-weight: 600;"
-                           text="Manage inmate records securely  •  Double-click any row to open full profile" />
+                <VBox prefWidth="463.0" spacing="4" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: #b91c1c;                                   -fx-font-size: 12;                                   -fx-font-weight: 800;                                   -fx-letter-spacing: 2;" text="INMATE RECORDS — CLASSIFIED" />
+                    <Label style="-fx-font-size: 30;                                   -fx-font-weight: 900;                                   -fx-text-fill: #172b4d;" text="Prisoner Management" />
+                    <Label style="-fx-text-fill: #8898aa;                                   -fx-font-size: 13;                                   -fx-font-weight: 600;" text="Manage inmate records securely  •  Double-click any row to open full profile" />
                 </VBox>
+   
+               <!-- Row 2: Search bar (added) -->
+               <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 14 0 0 0;">
+                   <Label style="-fx-text-fill: #8898aa;                               -fx-font-size: 12;                               -fx-font-weight: 700;" text="SEARCH :" />
+                   <TextField fx:id="searchField" prefHeight="40" prefWidth="340" promptText="🔍  Search by name, ID or crime…" style="-fx-background-color: #f8f9fc;                                   -fx-border-color: #d1d9e6;                                   -fx-border-width: 1.5;                                   -fx-border-radius: 10;                                   -fx-background-radius: 10;                                   -fx-padding: 0 14;                                   -fx-font-size: 13;                                   -fx-text-fill: #172b4d;" />
+                   <Label fx:id="searchResultLabel" prefHeight="23.0" prefWidth="116.0" style="-fx-text-fill: #b91c1c;                               -fx-font-size: 12;                               -fx-font-weight: 600;" text="" />
+               </HBox>
 
                 <!-- Quick stats bar -->
                 <HBox alignment="CENTER" spacing="25" style="-fx-padding: 0 0 0 20;">
 
-                    <VBox alignment="CENTER" spacing="2"
-                          style="-fx-background-color: #fff5f5;
-                                 -fx-background-radius: 10;
-                                 -fx-padding: 12 20;
-                                 -fx-border-color: #b91c1c;
-                                 -fx-border-width: 0 0 0 4;
-                                 -fx-border-radius: 10;">
-                        <Label style="-fx-text-fill: #b91c1c; -fx-font-size: 11; -fx-font-weight: 700;"
-                               text="IN CUSTODY" />
-                        <Label fx:id="prisonerCount"
-                               style="-fx-text-fill: #172b4d; -fx-font-size: 22; -fx-font-weight: 900;"
-                               text="—" />
+                    <VBox alignment="CENTER" spacing="2" style="-fx-background-color: #fff5f5;                                  -fx-background-radius: 10;                                  -fx-padding: 12 20;                                  -fx-border-color: #b91c1c;                                  -fx-border-width: 0 0 0 4;                                  -fx-border-radius: 10;">
+                        <Label style="-fx-text-fill: #b91c1c; -fx-font-size: 11; -fx-font-weight: 700;" text="IN CUSTODY" />
+                        <Label fx:id="prisonerCount" style="-fx-text-fill: #172b4d; -fx-font-size: 22; -fx-font-weight: 900;" text="—" />
                     </VBox>
 
-                    <VBox alignment="CENTER" spacing="2"
-                          style="-fx-background-color: #f0fdf4;
-                                 -fx-background-radius: 10;
-                                 -fx-padding: 12 20;
-                                 -fx-border-color: #16a34a;
-                                 -fx-border-width: 0 0 0 4;
-                                 -fx-border-radius: 10;">
-                        <Label style="-fx-text-fill: #16a34a; -fx-font-size: 11; -fx-font-weight: 700;"
-                               text="RELEASED" />
-                        <Label fx:id="releasedCount"
-                               style="-fx-text-fill: #172b4d; -fx-font-size: 22; -fx-font-weight: 900;"
-                               text="—" />
+                    <VBox alignment="CENTER" spacing="2" style="-fx-background-color: #f0fdf4;                                  -fx-background-radius: 10;                                  -fx-padding: 12 20;                                  -fx-border-color: #16a34a;                                  -fx-border-width: 0 0 0 4;                                  -fx-border-radius: 10;">
+                        <Label style="-fx-text-fill: #16a34a; -fx-font-size: 11; -fx-font-weight: 700;" text="RELEASED" />
+                        <Label fx:id="releasedCount" style="-fx-text-fill: #172b4d; -fx-font-size: 22; -fx-font-weight: 900;" text="—" />
                     </VBox>
 
                 </HBox>
             </HBox>
+
         </VBox>
     </top>
 
@@ -80,71 +53,34 @@
     <center>
         <TableView fx:id="prisonerTable" styleClass="dark-table">
             <columns>
-                <TableColumn fx:id="idCol"        prefWidth="60"  text="ID" />
-                <TableColumn fx:id="nameCol"      prefWidth="250" text="Prisoner Name" />
-                <TableColumn fx:id="crimeCol"     prefWidth="200" text="Crime" />
-                <TableColumn fx:id="cellCol"      prefWidth="90"  text="Cell No" />
-                <TableColumn fx:id="yearsCol"     prefWidth="140" text="Sentence" />
-                <TableColumn fx:id="statusCol"    prefWidth="140" text="Status" />
+                <TableColumn fx:id="idCol" prefWidth="60" text="ID" />
+                <TableColumn fx:id="nameCol" prefWidth="250" text="Prisoner Name" />
+                <TableColumn fx:id="crimeCol" prefWidth="200" text="Crime" />
+                <TableColumn fx:id="cellCol" prefWidth="90" text="Cell No" />
+                <TableColumn fx:id="yearsCol" prefWidth="140" text="Sentence" />
+                <TableColumn fx:id="statusCol" prefWidth="140" text="Status" />
                 <TableColumn fx:id="remainingCol" prefWidth="160" text="Release Date" />
-                <TableColumn fx:id="descCol"      prefWidth="400" text="Notes" />
+                <TableColumn fx:id="descCol" prefWidth="400" text="Notes" />
             </columns>
             <placeholder>
-                <Label style="-fx-font-size: 16; -fx-text-fill: #8898aa; -fx-font-weight: 700;"
-                       text="No prisoner records found. Click 'Add Prisoner' to register one." />
+                <Label style="-fx-font-size: 16; -fx-text-fill: #8898aa; -fx-font-weight: 700;" text="No prisoner records found. Click 'Add Prisoner' to register one." />
             </placeholder>
         </TableView>
     </center>
 
     <!-- ═══ BOTTOM ACTION BAR ═════════════════════════════════════════════════ -->
     <bottom>
-        <HBox alignment="CENTER_LEFT" spacing="15"
-              style="-fx-padding: 18 30;
-                     -fx-background-color: white;
-                     -fx-border-color: #d1d9e6;
-                     -fx-border-width: 1 0 0 0;
-                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, -2);">
+        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 18 30;                      -fx-background-color: white;                      -fx-border-color: #d1d9e6;                      -fx-border-width: 1 0 0 0;                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, -2);">
 
-            <Label fx:id="statusInfoLabel"
-                   style="-fx-text-fill: #525f7f;
-                          -fx-font-size: 13;
-                          -fx-font-weight: 600;"
-                   text="No prisoner selected  •  Double-click a row to open full profile" />
+            <Label fx:id="statusInfoLabel" style="-fx-text-fill: #525f7f;                           -fx-font-size: 13;                           -fx-font-weight: 600;" text="No prisoner selected  •  Double-click a row to open full profile" />
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <Button onAction="#deletePrisoner"
-                    prefHeight="44" prefWidth="175"
-                    style="-fx-background-color: #ef4444;
-                           -fx-text-fill: white;
-                           -fx-font-weight: 800;
-                           -fx-font-size: 13;
-                           -fx-background-radius: 10;
-                           -fx-cursor: hand;
-                           -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.35), 8, 0, 0, 3);"
-                    text="⛔  Remove Prisoner" />
+            <Button onAction="#deletePrisoner" prefHeight="44" prefWidth="175" style="-fx-background-color: #ef4444;                            -fx-text-fill: white;                            -fx-font-weight: 800;                            -fx-font-size: 13;                            -fx-background-radius: 10;                            -fx-cursor: hand;                            -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.35), 8, 0, 0, 3);" text="⛔  Remove Prisoner" />
 
-            <Button onAction="#printPrisonerTable"
-                    prefHeight="44" prefWidth="200"
-                    style="-fx-background-color: #7f1d1d;
-                           -fx-text-fill: white;
-                           -fx-font-weight: 800;
-                           -fx-font-size: 13;
-                           -fx-background-radius: 10;
-                           -fx-cursor: hand;
-                           -fx-effect: dropshadow(gaussian, rgba(127,29,29,0.45), 8, 0, 0, 3);"
-                    text="🖨️  Print Registry" />
+            <Button onAction="#printPrisonerTable" prefHeight="44" prefWidth="200" style="-fx-background-color: #7f1d1d;                            -fx-text-fill: white;                            -fx-font-weight: 800;                            -fx-font-size: 13;                            -fx-background-radius: 10;                            -fx-cursor: hand;                            -fx-effect: dropshadow(gaussian, rgba(127,29,29,0.45), 8, 0, 0, 3);" text="🖨️  Print Registry" />
 
-            <Button onAction="#openNewPrisonerProfile"
-                    prefHeight="44" prefWidth="185"
-                    style="-fx-background-color: #b91c1c;
-                           -fx-text-fill: white;
-                           -fx-font-weight: 800;
-                           -fx-font-size: 14;
-                           -fx-background-radius: 10;
-                           -fx-cursor: hand;
-                           -fx-effect: dropshadow(gaussian, rgba(185,28,28,0.45), 10, 0, 0, 4);"
-                    text="＋  Add Prisoner" />
+            <Button onAction="#openNewPrisonerProfile" prefHeight="44" prefWidth="185" style="-fx-background-color: #b91c1c;                            -fx-text-fill: white;                            -fx-font-weight: 800;                            -fx-font-size: 14;                            -fx-background-radius: 10;                            -fx-cursor: hand;                            -fx-effect: dropshadow(gaussian, rgba(185,28,28,0.45), 10, 0, 0, 4);" text="＋  Add Prisoner" />
         </HBox>
     </bottom>
 

@@ -17,16 +17,23 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-// NOTE: com.lowagie.text.Image used fully-qualified below — no JavaFX Image conflict here
-// but keeping consistent with profile controller style.
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;          // explicit — avoids lowagie wildcard clash
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -51,10 +58,17 @@ public class PrisonerController {
     @FXML private Label prisonerCount;
     @FXML private Label releasedCount;
     @FXML private Label statusInfoLabel;
+    @FXML private Label searchResultLabel;
 
-    private final PrisonerDao dao     = new PrisonerDao();
-    private final PrisonerDao prisonerDao = new PrisonerDao(); // mirrors GuardController pattern
+    /** Search field — javafx.scene.control.TextField (explicit import, no ambiguity) */
+    @FXML private TextField searchField;
+
+    private final PrisonerDao dao        = new PrisonerDao();
+    private final PrisonerDao prisonerDao = new PrisonerDao();
     private Prisoner selectedPrisoner;
+
+    private ObservableList<Prisoner> masterList  = FXCollections.observableArrayList();
+    private FilteredList<Prisoner>   filteredList;
 
     // ══════════════════════════════════════════════════════════════════════
     //  INITIALIZE
@@ -90,10 +104,30 @@ public class PrisonerController {
                                     + "  |  Status: " + p.getStatus()
                                     + (rd.isEmpty() ? "" : "  |  " + rd));
                 });
+
+        // ── SEARCH: filter on every keystroke ────────────────────────────────
+        // Matches ID (prefix), name (contains), or crime (contains) — case-insensitive
+        searchField.textProperty().addListener((obs, oldText, newText) -> {
+            String query = (newText == null) ? "" : newText.trim().toLowerCase();
+            filteredList.setPredicate(prisoner -> {
+                if (query.isEmpty()) {
+                    searchResultLabel.setText("");
+                    return true;
+                }
+                boolean match =
+                        String.valueOf(prisoner.getPrisonerId()).startsWith(query) ||
+                                (prisoner.getName()  != null && prisoner.getName().toLowerCase().contains(query)) ||
+                                (prisoner.getCrime() != null && prisoner.getCrime().toLowerCase().contains(query));
+                return match;
+            });
+            // Update result count label
+            long count = filteredList.size();
+            searchResultLabel.setText(query.isEmpty() ? "" : count + " result" + (count == 1 ? "" : "s") + " found");
+        });
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  COUNTS + AUTO-REFRESH  (mirrors GuardController exactly)
+    //  COUNTS + AUTO-REFRESH
     // ══════════════════════════════════════════════════════════════════════
     private void updateCounts() {
         List<Prisoner> all = prisonerDao.findAll();
@@ -112,7 +146,7 @@ public class PrisonerController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  🆕 OPEN EMPTY PROFILE PAGE FOR NEW PRISONER
+    //  OPEN EMPTY PROFILE PAGE FOR NEW PRISONER
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     public void openNewPrisonerProfile() {
@@ -159,7 +193,7 @@ public class PrisonerController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  🗑️ DELETE SELECTED PRISONER
+    //  DELETE SELECTED PRISONER
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     public void deletePrisoner() {
@@ -172,7 +206,7 @@ public class PrisonerController {
         confirm.setHeaderText("Remove Prisoner: " + selectedPrisoner.getName());
         confirm.setContentText("This action cannot be undone. Proceed?");
         confirm.showAndWait().ifPresent(result -> {
-            if (result == javafx.scene.control.ButtonType.OK) {
+            if (result == ButtonType.OK) {
                 dao.delete(selectedPrisoner.getPrisonerId());
                 selectedPrisoner = null;
                 statusInfoLabel.setText("Prisoner record removed.");
@@ -183,7 +217,7 @@ public class PrisonerController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  🖨️ PRINT PRISONER TABLE — crimson themed PDF
+    //  PRINT PRISONER TABLE — crimson themed PDF
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     public void printPrisonerTable() {
@@ -206,10 +240,9 @@ public class PrisonerController {
             Document document = new Document(PageSize.A4.rotate(), 40, 40, 60, 55);
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
 
-            Color crimson    = new Color(127, 29, 29);
-            Color accentRed  = new Color(185, 28, 28);
+            Color crimson   = new Color(127, 29, 29);
+            Color accentRed = new Color(185, 28, 28);
 
-            // ── Page border + footer ──────────────────────────────────────
             writer.setPageEvent(new PdfPageEventHelper() {
                 @Override
                 public void onEndPage(PdfWriter w, Document doc) {
@@ -217,23 +250,18 @@ public class PrisonerController {
                         PdfContentByte cb = w.getDirectContent();
                         cb.setLineWidth(2f);
                         cb.setColorStroke(crimson);
-                        cb.rectangle(25, 25,
-                                doc.getPageSize().getWidth() - 50,
-                                doc.getPageSize().getHeight() - 50);
+                        cb.rectangle(25, 25, doc.getPageSize().getWidth() - 50, doc.getPageSize().getHeight() - 50);
                         cb.stroke();
                         cb.setLineWidth(0.4f);
                         cb.setColorStroke(new Color(200, 150, 150));
-                        cb.rectangle(30, 30,
-                                doc.getPageSize().getWidth() - 60,
-                                doc.getPageSize().getHeight() - 60);
+                        cb.rectangle(30, 30, doc.getPageSize().getWidth() - 60, doc.getPageSize().getHeight() - 60);
                         cb.stroke();
                         cb.setLineWidth(0.8f);
                         cb.setColorStroke(new Color(200, 150, 150));
                         cb.moveTo(35, 42);
                         cb.lineTo(doc.getPageSize().getWidth() - 35, 42);
                         cb.stroke();
-                        Font ff = FontFactory.getFont(FontFactory.HELVETICA, 7,
-                                new Color(140, 80, 80));
+                        Font ff = FontFactory.getFont(FontFactory.HELVETICA, 7, new Color(140, 80, 80));
                         ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
                                 new Phrase("CONFIDENTIAL — DEPARTMENT OF CORRECTIONS", ff), 40, 32, 0);
                         ColumnText.showTextAligned(cb, Element.ALIGN_CENTER,
@@ -241,8 +269,7 @@ public class PrisonerController {
                                 doc.getPageSize().getWidth() / 2, 32, 0);
                         ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT,
                                 new Phrase("Page " + w.getPageNumber() + " | " +
-                                        LocalDateTime.now().format(
-                                                DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), ff),
+                                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), ff),
                                 doc.getPageSize().getWidth() - 40, 32, 0);
                     } catch (Exception ignored) {}
                 }
@@ -250,31 +277,24 @@ public class PrisonerController {
 
             document.open();
 
-            // ── Header ───────────────────────────────────────────────────
+            // Header
             PdfPTable ht = new PdfPTable(new float[]{1, 5, 1});
             ht.setWidthPercentage(100);
             ht.setSpacingAfter(18f);
-
-            // Left logo
             ht.addCell(logoCell());
-
-            // Center text
             PdfPCell center = new PdfPCell();
             center.setBorder(PdfPCell.NO_BORDER);
             center.setHorizontalAlignment(Element.ALIGN_CENTER);
             center.setVerticalAlignment(Element.ALIGN_MIDDLE);
             Paragraph dept = new Paragraph("DEPARTMENT OF CORRECTIONS & PRISON SECURITY",
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, crimson));
-            dept.setAlignment(Element.ALIGN_CENTER);
-            dept.setSpacingAfter(4f);
+            dept.setAlignment(Element.ALIGN_CENTER); dept.setSpacingAfter(4f);
             center.addElement(dept);
             Paragraph titleP = new Paragraph("PRISONER REGISTRY — CLASSIFIED RECORD",
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20, crimson));
-            titleP.setAlignment(Element.ALIGN_CENTER);
-            titleP.setSpacingAfter(3f);
+            titleP.setAlignment(Element.ALIGN_CENTER); titleP.setSpacingAfter(3f);
             center.addElement(titleP);
-            Paragraph subP = new Paragraph(
-                    "Security Classification: RESTRICTED — Authorised Personnel Only",
+            Paragraph subP = new Paragraph("Security Classification: RESTRICTED — Authorised Personnel Only",
                     FontFactory.getFont(FontFactory.HELVETICA, 9, new Color(120, 50, 50)));
             subP.setAlignment(Element.ALIGN_CENTER);
             center.addElement(subP);
@@ -282,90 +302,59 @@ public class PrisonerController {
             ht.addCell(logoCell());
             document.add(ht);
 
-            // ── Meta bar ─────────────────────────────────────────────────
-            long inCustody = prisoners.stream()
-                    .filter(p -> "IN_CUSTODY".equals(p.getStatus())).count();
-            long released = prisoners.size() - inCustody;
-
+            // Meta bar
+            long inCustody = prisoners.stream().filter(p -> "IN_CUSTODY".equals(p.getStatus())).count();
+            long released  = prisoners.size() - inCustody;
             PdfPTable metaBar = new PdfPTable(3);
-            metaBar.setWidthPercentage(100);
-            metaBar.setSpacingAfter(14f);
+            metaBar.setWidthPercentage(100); metaBar.setSpacingAfter(14f);
             Font mf = FontFactory.getFont(FontFactory.HELVETICA, 8, Color.WHITE);
             addMetaCell(metaBar, "TOTAL PRISONERS: " + prisoners.size(), mf, crimson);
-            addMetaCell(metaBar,
-                    "IN CUSTODY: " + inCustody + "  |  RELEASED: " + released, mf,
-                    new Color(69, 10, 10));
-            addMetaCell(metaBar,
-                    "GENERATED: " + LocalDateTime.now().format(
-                            DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), mf, crimson);
+            addMetaCell(metaBar, "IN CUSTODY: " + inCustody + "  |  RELEASED: " + released, mf, new Color(69, 10, 10));
+            addMetaCell(metaBar, "GENERATED: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm")), mf, crimson);
             document.add(metaBar);
 
-            // ── Data table ───────────────────────────────────────────────
-            PdfPTable table = new PdfPTable(
-                    new float[]{0.5f, 2f, 1.8f, 0.8f, 1.2f, 1.0f, 1.2f, 1.0f, 2f});
-            table.setWidthPercentage(100);
-            table.setSpacingAfter(20f);
-            table.setHeaderRows(1);
-
-            String[] headers = {"ID", "Name", "Crime", "Cell",
-                    "Sentence", "Status", "Release", "Risk", "Notes"};
+            // Data table
+            PdfPTable table = new PdfPTable(new float[]{0.5f, 2f, 1.8f, 0.8f, 1.2f, 1.0f, 1.2f, 1.0f, 2f});
+            table.setWidthPercentage(100); table.setSpacingAfter(20f); table.setHeaderRows(1);
+            String[] headers = {"ID", "Name", "Crime", "Cell", "Sentence", "Status", "Release", "Risk", "Notes"};
             Font hf = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE);
             for (String h : headers) {
                 PdfPCell hc = new PdfPCell(new Phrase(h, hf));
-                hc.setBackgroundColor(accentRed);
-                hc.setPadding(9);
-                hc.setHorizontalAlignment(Element.ALIGN_CENTER);
-                hc.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                hc.setBackgroundColor(accentRed); hc.setPadding(9);
+                hc.setHorizontalAlignment(Element.ALIGN_CENTER); hc.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 hc.setBorderColor(new Color(180, 100, 100));
                 table.addCell(hc);
             }
-
             Font dataFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
             Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.BLACK);
             Color rowAlt   = new Color(255, 245, 245);
             Color rowWhite = Color.WHITE;
-
             for (int i = 0; i < prisoners.size(); i++) {
-                Prisoner p = prisoners.get(i);
+                Prisoner p  = prisoners.get(i);
                 Color rowBg = (i % 2 == 0) ? rowWhite : rowAlt;
-
+                String liveStatus = p.getStatus() != null ? p.getStatus() : "—";
                 addDataCell(table, String.valueOf(p.getPrisonerId()), dataFont, rowBg, Element.ALIGN_CENTER);
                 addDataCell(table, nvl(p.getName()),   boldFont, rowBg, Element.ALIGN_LEFT);
                 addDataCell(table, nvl(p.getCrime()),  dataFont, rowBg, Element.ALIGN_LEFT);
                 addDataCell(table, nvl(p.getCellNo()), dataFont, rowBg, Element.ALIGN_CENTER);
-                addDataCell(table,
-                        p.getSentenceYears() > 0 ? p.getSentenceYears() + " yrs" : "—",
-                        dataFont, rowBg, Element.ALIGN_CENTER);
-
-                // Status — green/red
-                String status = nvl(p.getStatus());
-                boolean custody = "IN_CUSTODY".equals(status);
-                PdfPCell sc = new PdfPCell(new Phrase(status,
+                addDataCell(table, p.getSentenceYears() > 0 ? p.getSentenceYears() + " yrs" : "—", dataFont, rowBg, Element.ALIGN_CENTER);
+                boolean custody = "IN_CUSTODY".equals(liveStatus);
+                PdfPCell sc = new PdfPCell(new Phrase(liveStatus,
                         FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9,
                                 custody ? new Color(22, 101, 52) : new Color(153, 27, 27))));
-                sc.setBackgroundColor(custody
-                        ? new Color(220, 252, 231) : new Color(254, 226, 226));
-                sc.setPadding(8);
-                sc.setHorizontalAlignment(Element.ALIGN_CENTER);
-                sc.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                sc.setBorderColor(new Color(210, 170, 170));
+                sc.setBackgroundColor(custody ? new Color(220, 252, 231) : new Color(254, 226, 226));
+                sc.setPadding(8); sc.setHorizontalAlignment(Element.ALIGN_CENTER);
+                sc.setVerticalAlignment(Element.ALIGN_MIDDLE); sc.setBorderColor(new Color(210, 170, 170));
                 table.addCell(sc);
-
-                // Release date — red if overdue
                 LocalDate rd = p.getReleaseDate();
                 boolean overdue = rd != null && !rd.isAfter(LocalDate.now());
                 PdfPCell rdc = new PdfPCell(new Phrase(rd != null ? rd.toString() : "—",
                         FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9,
                                 overdue ? new Color(153, 27, 27) : new Color(22, 101, 52))));
-                rdc.setBackgroundColor(overdue
-                        ? new Color(254, 226, 226) : new Color(220, 252, 231));
-                rdc.setPadding(8);
-                rdc.setHorizontalAlignment(Element.ALIGN_CENTER);
-                rdc.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                rdc.setBorderColor(new Color(210, 170, 170));
+                rdc.setBackgroundColor(overdue ? new Color(254, 226, 226) : new Color(220, 252, 231));
+                rdc.setPadding(8); rdc.setHorizontalAlignment(Element.ALIGN_CENTER);
+                rdc.setVerticalAlignment(Element.ALIGN_MIDDLE); rdc.setBorderColor(new Color(210, 170, 170));
                 table.addCell(rdc);
-
-                // Danger level
                 String dl = p.getDangerLevel() != null ? p.getDangerLevel() : "LOW";
                 Color dlColor = switch (dl) {
                     case "MAXIMUM" -> new Color(127, 29, 29);
@@ -373,29 +362,20 @@ public class PrisonerController {
                     case "MEDIUM"  -> new Color(180, 100, 0);
                     default        -> new Color(20, 100, 20);
                 };
-                PdfPCell dlCell = new PdfPCell(new Phrase(dl,
-                        FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, dlColor)));
-                dlCell.setBackgroundColor(rowBg);
-                dlCell.setPadding(8);
-                dlCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                dlCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                PdfPCell dlCell = new PdfPCell(new Phrase(dl, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, dlColor)));
+                dlCell.setBackgroundColor(rowBg); dlCell.setPadding(8);
+                dlCell.setHorizontalAlignment(Element.ALIGN_CENTER); dlCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 dlCell.setBorderColor(new Color(210, 170, 170));
                 table.addCell(dlCell);
-
                 addDataCell(table, nvl(p.getDescription()), dataFont, rowBg, Element.ALIGN_LEFT);
             }
             document.add(table);
 
-            // ── Summary ──────────────────────────────────────────────────
-            long maxRisk  = prisoners.stream()
-                    .filter(p -> "MAXIMUM".equals(p.getDangerLevel())).count();
-            long highRisk = prisoners.stream()
-                    .filter(p -> "HIGH".equals(p.getDangerLevel())).count();
-
+            // Summary
+            long maxRisk  = prisoners.stream().filter(p -> "MAXIMUM".equals(p.getDangerLevel())).count();
+            long highRisk = prisoners.stream().filter(p -> "HIGH".equals(p.getDangerLevel())).count();
             PdfPTable sumT = new PdfPTable(4);
-            sumT.setWidthPercentage(65);
-            sumT.setHorizontalAlignment(Element.ALIGN_LEFT);
-            sumT.setSpacingAfter(15f);
+            sumT.setWidthPercentage(65); sumT.setHorizontalAlignment(Element.ALIGN_LEFT); sumT.setSpacingAfter(15f);
             Font sl = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, crimson);
             Font sv = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
             addSummaryCell(sumT, "Total Prisoners", String.valueOf(prisoners.size()), sl, sv, new Color(255, 240, 240));
@@ -404,24 +384,21 @@ public class PrisonerController {
             addSummaryCell(sumT, "HIGH Risk",       String.valueOf(highRisk),         sl, sv, new Color(255, 215, 215));
             document.add(sumT);
 
-            // ── Verification strip ───────────────────────────────────────
+            // Verification strip
             PdfPTable vt = new PdfPTable(1);
             vt.setWidthPercentage(100);
             PdfPCell vc = new PdfPCell(new Phrase(
                     "CLASSIFIED DOCUMENT. Unauthorised access, reproduction or disclosure is a criminal offence. " +
                             "Report ID: RPT-" + System.currentTimeMillis() % 1000000,
                     FontFactory.getFont(FontFactory.HELVETICA, 7, new Color(120, 50, 50))));
-            vc.setBorder(PdfPCell.TOP);
-            vc.setBorderColor(new Color(180, 100, 100));
-            vc.setHorizontalAlignment(Element.ALIGN_CENTER);
-            vc.setPadding(8);
+            vc.setBorder(PdfPCell.TOP); vc.setBorderColor(new Color(180, 100, 100));
+            vc.setHorizontalAlignment(Element.ALIGN_CENTER); vc.setPadding(8);
             vc.setBackgroundColor(new Color(255, 245, 245));
             vt.addCell(vc);
             document.add(vt);
 
             document.close();
-            new Alert(Alert.AlertType.INFORMATION,
-                    "Prisoner Registry Report exported successfully!").show();
+            new Alert(Alert.AlertType.INFORMATION, "Prisoner Registry Report exported successfully!").show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -430,7 +407,7 @@ public class PrisonerController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    //  TABLE SETUP  (mirrors setupTable() in GuardController)
+    //  TABLE SETUP
     // ══════════════════════════════════════════════════════════════════════
     private void setupTable() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("prisonerId"));
@@ -438,7 +415,6 @@ public class PrisonerController {
         crimeCol.setCellValueFactory(new PropertyValueFactory<>("crime"));
         cellCol.setCellValueFactory(new PropertyValueFactory<>("cellNo"));
 
-        // Sentence in years from start→release
         yearsCol.setCellValueFactory(data -> {
             Prisoner p = data.getValue();
             if (p.getSentenceStartDate() == null || p.getReleaseDate() == null)
@@ -448,16 +424,14 @@ public class PrisonerController {
             return new SimpleStringProperty(String.format("%.1f", months / 12.0));
         });
         yearsCol.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String v, boolean empty) {
+            @Override protected void updateItem(String v, boolean empty) {
                 super.updateItem(v, empty);
                 setText(empty || v == null ? null : v + " yrs");
             }
         });
 
-        // Status — auto-update in DB when release date is crossed
         statusCol.setCellValueFactory(data -> {
-            Prisoner p = data.getValue();
+            Prisoner p  = data.getValue();
             LocalDate rd    = p.getReleaseDate();
             LocalDate today = LocalDate.now();
             if (rd != null) {
@@ -472,8 +446,7 @@ public class PrisonerController {
             return new SimpleStringProperty(p.getStatus());
         });
         statusCol.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String s, boolean empty) {
+            @Override protected void updateItem(String s, boolean empty) {
                 super.updateItem(s, empty);
                 if (empty || s == null) { setText(null); setStyle(""); return; }
                 setText(s);
@@ -483,30 +456,24 @@ public class PrisonerController {
             }
         });
 
-        // Release date — red if overdue
         remainingCol.setCellValueFactory(data -> {
             Prisoner p = data.getValue();
             if (p.getReleaseDate() == null) return new SimpleStringProperty("—");
             return new SimpleStringProperty(p.getReleaseDate().toString());
         });
         remainingCol.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String date, boolean empty) {
+            @Override protected void updateItem(String date, boolean empty) {
                 super.updateItem(date, empty);
-                if (empty || date == null || "—".equals(date)) {
-                    setText(null); setStyle(""); return;
-                }
+                if (empty || date == null || "—".equals(date)) { setText(null); setStyle(""); return; }
                 setText(date);
                 boolean past = !LocalDate.parse(date).isAfter(LocalDate.now());
-                setStyle(past
-                        ? "-fx-text-fill: red; -fx-font-weight: bold;"
+                setStyle(past ? "-fx-text-fill: red; -fx-font-weight: bold;"
                         : "-fx-text-fill: green; -fx-font-weight: bold;");
             }
         });
 
         descCol.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        // Cell styling
         idCol.setCellFactory(col    -> new StyledCell<>("prisoner-prisonerId"));
         nameCol.setCellFactory(col  -> new StyledCell<>("prisoner-name"));
         crimeCol.setCellFactory(col -> new StyledCell<>("prisoner-crime"));
@@ -532,41 +499,48 @@ public class PrisonerController {
 
     private void addMetaCell(PdfPTable t, String text, Font f, Color bg) {
         PdfPCell c = new PdfPCell(new Phrase(text, f));
-        c.setBackgroundColor(bg);
-        c.setBorder(PdfPCell.NO_BORDER);
-        c.setPadding(6);
-        c.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c.setBackgroundColor(bg); c.setBorder(PdfPCell.NO_BORDER);
+        c.setPadding(6); c.setHorizontalAlignment(Element.ALIGN_CENTER);
         t.addCell(c);
     }
 
     private void addDataCell(PdfPTable t, String text, Font f, Color bg, int align) {
         PdfPCell c = new PdfPCell(new Phrase(text, f));
-        c.setBackgroundColor(bg);
-        c.setPadding(8);
-        c.setHorizontalAlignment(align);
-        c.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        c.setBackgroundColor(bg); c.setPadding(8);
+        c.setHorizontalAlignment(align); c.setVerticalAlignment(Element.ALIGN_MIDDLE);
         c.setBorderColor(new Color(210, 170, 170));
         t.addCell(c);
     }
 
-    private void addSummaryCell(PdfPTable t, String label, String value,
-                                Font lf, Font vf, Color bg) {
+    private void addSummaryCell(PdfPTable t, String label, String value, Font lf, Font vf, Color bg) {
         PdfPCell c = new PdfPCell();
-        c.setBackgroundColor(bg);
-        c.setPadding(10);
-        c.setHorizontalAlignment(Element.ALIGN_CENTER);
-        c.setBorderColor(new Color(210, 170, 170));
-        c.addElement(new Phrase(label, lf));
-        c.addElement(new Phrase(value, vf));
+        c.setBackgroundColor(bg); c.setPadding(10);
+        c.setHorizontalAlignment(Element.ALIGN_CENTER); c.setBorderColor(new Color(210, 170, 170));
+        c.addElement(new Phrase(label, lf)); c.addElement(new Phrase(value, vf));
         t.addCell(c);
     }
 
     // ══════════════════════════════════════════════════════════════════════
     //  HELPERS
     // ══════════════════════════════════════════════════════════════════════
+
+    // Rebuild master + filtered list; preserve active search query after add/delete
     private void refreshTable() {
-        prisonerTable.setItems(
-                FXCollections.observableArrayList(dao.findAll()));
+        masterList   = FXCollections.observableArrayList(dao.findAll());
+        filteredList = new FilteredList<>(masterList, p -> true);
+
+        if (searchField != null) {
+            String query = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
+            if (!query.isEmpty()) {
+                filteredList.setPredicate(prisoner -> {
+                    if (String.valueOf(prisoner.getPrisonerId()).startsWith(query)) return true;
+                    if (prisoner.getName()  != null && prisoner.getName().toLowerCase().contains(query))  return true;
+                    return prisoner.getCrime() != null && prisoner.getCrime().toLowerCase().contains(query);
+                });
+            }
+        }
+
+        prisonerTable.setItems(filteredList);
         updateCounts();
     }
 

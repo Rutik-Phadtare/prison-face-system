@@ -20,6 +20,10 @@
                     <Label style="-fx-font-size: 30;                                   -fx-font-weight: 900;                                   -fx-text-fill: #172b4d;" text="Guard Force Management" />
                     <Label style="-fx-text-fill: #8898aa;                                   -fx-font-size: 13;                                   -fx-font-weight: 600;" text="Monitor and assign security personnel shifts  •  Double-click any row to open full profile" />
                 </VBox>
+            <Label style="-fx-text-fill: #32434e;" text="SEARCH : " textFill="#32434e" />
+   
+               <!-- ═══ SEARCH BAR (added) ═══ -->
+               <TextField fx:id="searchField" prefHeight="44" prefWidth="454.0" promptText="🔍  Search by name or ID…" style="-fx-background-color: #f0f2f5;                               -fx-border-color: #d1d9e6;                               -fx-border-width: 1.5;                               -fx-border-radius: 10;                               -fx-background-radius: 10;                               -fx-padding: 0 14;                               -fx-font-size: 13;                               -fx-text-fill: #172b4d;" />
 
                 <!-- Quick stats bar -->
                 <HBox alignment="CENTER" spacing="25" style="-fx-padding: 0 0 0 20;">

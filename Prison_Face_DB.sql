@@ -152,3 +152,25 @@ VALUES (
     'ADMIN', 
     'Rutik'
 );
+
+SHOW TABLES FROM prison_face_db;
+
+USE prison_face_db;
+SHOW TABLES;
+
+SELECT table_name, table_type, engine 
+FROM information_schema.tables 
+WHERE table_schema = 'prison_face_db';
+
+SELECT * FROM users;
+SELECT * FROM co_admin_login_logs;
+SELECT * FROM guards;
+SELECT * FROM prisoners;
+SELECT * FROM face_encodings;
+SELECT * FROM recognition_logs;
+
+SELECT 
+    table_name,
+    table_rows AS approx_row_count
+FROM information_schema.tables
+WHERE table_schema = 'prison_face_db';

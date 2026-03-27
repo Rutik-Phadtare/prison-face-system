@@ -87,22 +87,23 @@
                             <TableColumn fx:id="rtTimeCol" prefWidth="165" text="Time" />
                             <TableColumn fx:id="rtNameCol" prefWidth="170" text="Name" />
                             <TableColumn fx:id="rtTypeCol" prefWidth="100" text="Type" />
-                            <TableColumn fx:id="rtResultCol" prefWidth="120" text="Result" />
+                            <TableColumn fx:id="rtResultCol" prefWidth="236.99993896484375" text="Result" />
                         </columns>
                     </TableView>
                 </VBox>
 
                 <!-- High Danger Prisoners -->
-                <VBox minWidth="360" prefWidth="420" spacing="0" style="-fx-background-color: white; -fx-background-radius: 16;                              -fx-border-color: #c0392b; -fx-border-radius: 16; -fx-border-width: 0 0 0 5;                              -fx-effect: dropshadow(gaussian,rgba(192,57,43,0.20),12,0,2,4);">
+                <VBox minWidth="360" prefHeight="332.0" prefWidth="518.0" spacing="0" style="-fx-background-color: white; -fx-background-radius: 16;                              -fx-border-color: #c0392b; -fx-border-radius: 16; -fx-border-width: 0 0 0 5;                              -fx-effect: dropshadow(gaussian,rgba(192,57,43,0.20),12,0,2,4);">
                     <HBox alignment="CENTER_LEFT" style="-fx-padding: 14 18 14 18; -fx-background-color: #fff5f5;                                  -fx-background-radius: 16 16 0 0;                                  -fx-border-color: transparent transparent #fecaca transparent;                                  -fx-border-width: 0 0 1 0;">
                         <Label style="-fx-font-family:'Arial Black'; -fx-font-size: 14;                                       -fx-text-fill: #c0392b;" text="🚨  High-Danger Watch List" />
                     </HBox>
                     <TableView fx:id="dangerTable" prefHeight="280" style="-fx-background-color: transparent; -fx-border-color: transparent;">
                         <columns>
-                            <TableColumn fx:id="dtName" prefWidth="130" text="Name" />
-                            <TableColumn fx:id="dtCrime" prefWidth="140" text="Crime" />
-                            <TableColumn fx:id="dtCell" prefWidth="60" text="Cell" />
-                            <TableColumn fx:id="dtLevel" prefWidth="85" text="Danger" />
+                            <TableColumn fx:id="dtID" prefWidth="54.0" text="ID" />
+                            <TableColumn fx:id="dtName" prefWidth="130.0" text="Name" />
+                            <TableColumn fx:id="dtCrime" prefWidth="130.0" text="Crime" />
+                            <TableColumn fx:id="dtCell" prefWidth="54.0" text="Cell" />
+                            <TableColumn fx:id="dtLevel" prefWidth="158.0" text="Danger" />
                         </columns>
                     </TableView>
                 </VBox>

@@ -54,7 +54,7 @@
         <TableView fx:id="prisonerTable" styleClass="dark-table">
             <columns>
                 <TableColumn fx:id="idCol" prefWidth="60" text="ID" />
-                <TableColumn fx:id="nameCol" prefWidth="250" text="Prisoner Name" />
+                <TableColumn fx:id="nameCol" prefWidth="250" text="Prisoner Name" sortable="true"/>
                 <TableColumn fx:id="crimeCol" prefWidth="200" text="Crime" />
                 <TableColumn fx:id="cellCol" prefWidth="90" text="Cell No" />
                 <TableColumn fx:id="yearsCol" prefWidth="140" text="Sentence" />

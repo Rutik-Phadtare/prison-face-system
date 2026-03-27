@@ -8,6 +8,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.*;
+import javafx.collections.transformation.SortedList;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -435,10 +436,15 @@ public class GuardController {
     }
 
     // ── Rebuild master + filtered list, preserve active search query ─────────
+// ── Rebuild master + filtered list, preserve active search query + enable sorting ─────────
     private void refreshTable() {
-        masterList   = FXCollections.observableArrayList(dao.findAll());
+        // 1. Fetch raw data
+        masterList = FXCollections.observableArrayList(dao.findAll());
+
+        // 2. Wrap in FilteredList for the Search Bar
         filteredList = new FilteredList<>(masterList, g -> true);
 
+        // 3. Re-apply existing search text if user was typing
         if (searchField != null) {
             String query = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
             if (!query.isEmpty()) {
@@ -448,9 +454,18 @@ public class GuardController {
                 });
             }
         }
-        guardTable.setItems(filteredList);
-    }
 
+        // 4. Wrap FilteredList in SortedList to enable Header Clicking
+        SortedList<Guard> sortedList = new SortedList<>(filteredList);
+
+        // 5. Bind the sorted list's comparator to the table's sorting state
+        sortedList.comparatorProperty().bind(guardTable.comparatorProperty());
+
+        // 6. Set the final sorted list to the table
+        guardTable.setItems(sortedList);
+
+        updateCounts();
+    }
     private void showAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);

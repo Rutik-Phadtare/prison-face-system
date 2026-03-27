@@ -60,7 +60,8 @@ public class CoAdminDashboardController {
     @FXML private TableColumn<RecognitionLog, String> rtResultCol;
 
     // ── High-danger table ─────────────────────────────────────────────────────
-    @FXML private TableView<DangerRow>           dangerTable;
+    @FXML private TableView<DangerRow>dangerTable;
+    @FXML private TableColumn<DangerRow, Integer> dtID;
     @FXML private TableColumn<DangerRow, String> dtName;
     @FXML private TableColumn<DangerRow, String> dtCrime;
     @FXML private TableColumn<DangerRow, String> dtCell;
@@ -74,9 +75,24 @@ public class CoAdminDashboardController {
     private static final Color C_AMBER = new Color(255, 245, 200);
 
     // ── Simple read-model for the danger table ────────────────────────────────
+// ── Simple read-model for the danger table ────────────────────────────────
     public static class DangerRow {
-        public final String name, crime, cell, level;
-        public DangerRow(String n, String cr, String ce, String l) { name=n; crime=cr; cell=ce; level=l; }
+        private final String id;
+        private final String name;
+        private final String crime;
+        private final String cell;
+        private final String level;
+
+        public DangerRow(String id, String name, String crime, String cell, String level) {
+            this.id = id;
+            this.name = name;
+            this.crime = crime;
+            this.cell = cell;
+            this.level = level;
+        }
+
+        // Standard public getters - REQUIRED for PropertyValueFactory
+        public String getId()    { return id; }
         public String getName()  { return name; }
         public String getCrime() { return crime; }
         public String getCell()  { return cell; }
@@ -196,6 +212,7 @@ public class CoAdminDashboardController {
 
     // ── High-danger prisoners ────────────────────────────────────────────────
     private void setupDangerTable() {
+        dtID.setCellValueFactory(new PropertyValueFactory<>("id"));
         dtName.setCellValueFactory(new PropertyValueFactory<>("name"));
         dtCrime.setCellValueFactory(new PropertyValueFactory<>("crime"));
         dtCell.setCellValueFactory(new PropertyValueFactory<>("cell"));
@@ -214,18 +231,30 @@ public class CoAdminDashboardController {
 
     private void loadDangerPrisoners() {
         ObservableList<DangerRow> rows = FXCollections.observableArrayList();
-        String sql = "SELECT name, crime, cell_no, danger_level FROM prisoners " +
-                "WHERE danger_level='HIGH' AND status='IN_CUSTODY' ORDER BY name";
+        String sql = "SELECT prisoner_id, name, crime, cell_no, danger_level FROM prisoners " +
+                "WHERE danger_level IN ('HIGH', 'MAXIMUM') " +
+                "AND status = 'IN_CUSTODY' " +
+                "ORDER BY name";
+
         try (Connection c = DatabaseUtil.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next())
-                rows.add(new DangerRow(rs.getString("name"), rs.getString("crime"),
-                        rs.getString("cell_no"), rs.getString("danger_level")));
-        } catch (Exception e) { e.printStackTrace(); }
+
+            while (rs.next()) {
+                // Ensure order matches: id, name, crime, cell, level
+                rows.add(new DangerRow(
+                        rs.getString("prisoner_id"),
+                        rs.getString("name"),
+                        rs.getString("crime"),
+                        rs.getString("cell_no"),
+                        rs.getString("danger_level")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         dangerTable.setItems(rows);
     }
-
     // ── Navigation ────────────────────────────────────────────────────────────
     @FXML public void openPrisoners() {
         openWindow("/fxml/prisoner_management.fxml", "Prisoner Management");

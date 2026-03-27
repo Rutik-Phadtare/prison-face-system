@@ -37,6 +37,7 @@ import javafx.scene.control.TextField;          // explicit — avoids lowagie w
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import javafx.collections.transformation.SortedList;
 
 import java.awt.Color;
 import java.io.File;
@@ -526,24 +527,36 @@ public class PrisonerController {
 
     // Rebuild master + filtered list; preserve active search query after add/delete
     private void refreshTable() {
-        masterList   = FXCollections.observableArrayList(dao.findAll());
+        // 1. Get fresh data from DAO
+        masterList = FXCollections.observableArrayList(dao.findAll());
+
+        // 2. Wrap it in a FilteredList (for search)
         filteredList = new FilteredList<>(masterList, p -> true);
 
+        // 3. Re-apply the current search query if one exists
         if (searchField != null) {
             String query = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
             if (!query.isEmpty()) {
                 filteredList.setPredicate(prisoner -> {
                     if (String.valueOf(prisoner.getPrisonerId()).startsWith(query)) return true;
-                    if (prisoner.getName()  != null && prisoner.getName().toLowerCase().contains(query))  return true;
+                    if (prisoner.getName() != null && prisoner.getName().toLowerCase().contains(query)) return true;
                     return prisoner.getCrime() != null && prisoner.getCrime().toLowerCase().contains(query);
                 });
             }
         }
 
-        prisonerTable.setItems(filteredList);
+        // 4. Wrap the FilteredList in a SortedList (for header clicking)
+        SortedList<Prisoner> sortedList = new SortedList<>(filteredList);
+
+        // 5. Bind the SortedList's comparator to the TableView's comparator
+        // This allows the table headers to control the sorting logic
+        sortedList.comparatorProperty().bind(prisonerTable.comparatorProperty());
+
+        // 6. Set the final sorted list to the table
+        prisonerTable.setItems(sortedList);
+
         updateCounts();
     }
-
     private String nvl(String s) {
         return s != null && !s.isEmpty() ? s : "";
     }

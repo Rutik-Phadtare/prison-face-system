@@ -91,7 +91,7 @@
 
                 <!-- Log counter at bottom -->
                 <Region VBox.vgrow="ALWAYS" />
-                <HBox alignment="CENTER_LEFT" prefHeight="52.0" prefWidth="366.0" spacing="8" style="-fx-background-color: #0f172a;                              -fx-background-radius: 10;                              -fx-padding: 12 16;">
+                <HBox alignment="CENTER_LEFT" prefHeight="42.0" prefWidth="366.0" spacing="8" style="-fx-background-color: #0f172a;                              -fx-background-radius: 10;                              -fx-padding: 12 16;">
                     <Label style="-fx-text-fill: #475569; -fx-font-size: 12;" text="Session scans:" />
                     <Label fx:id="scanCountLabel" style="-fx-text-fill: #38bdf8; -fx-font-size: 14;                                   -fx-font-weight: 800;" text="0" />
                     <Region HBox.hgrow="ALWAYS" />

@@ -7,5 +7,3 @@
 🚀 Key FeaturesBiometric Identification: Real-time facial scanning for inmate check-ins and transfers.Inmate Lifecycle Tracking: From intake to release, track every cell assignment, medical record, and visitor log.Automated Record Generation: One-click PDF report generation for legal documentation.Secure Local Storage: Designed for 100% internal usage—zero external cloud dependency for maximum data privacy.Administrative Command Center: A centralized dashboard for warden-level oversight.
 
 📸 System Previewhttps ://github.com/Rutik-Phadtare/prison-face-system/tree/main/Project%20Screenshots
-
-🛠 Setup & InstallationClone the Repo: git clone https://github.comDatabase: Import the provided .sql file into your local MySQL server.Python Env: Install dependencies: pip install opencv-python.Run: Launch the Main.java file from your IDE.
